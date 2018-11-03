@@ -13,6 +13,6 @@ allprojects {
 2. Add the dependency
 ```
  ependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.02'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.1.1'
 	}
 ```
