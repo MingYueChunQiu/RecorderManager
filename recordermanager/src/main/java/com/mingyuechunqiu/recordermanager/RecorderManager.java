@@ -34,6 +34,9 @@ public class RecorderManager implements Recorderable {
     }
 
     public RecorderManager(Recorderable recorderable) {
+        if (recorderable == null) {
+            throw new IllegalArgumentException("recorderable can not be null!");
+        }
         mRecorderable = recorderable;
     }
 
