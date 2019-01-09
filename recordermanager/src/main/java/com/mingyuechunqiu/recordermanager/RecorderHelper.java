@@ -71,7 +71,12 @@ public class RecorderHelper implements Recorderable {
         sRecorder.setAudioSource(bean.getAudioSource());
         sRecorder.setOutputFormat(bean.getOutputFormat());
         sRecorder.setAudioEncoder(bean.getAudioEncoder());
-        sRecorder.setAudioEncodingBitRate(bean.getBitRate());
+        if (bean.getAudioSamplingRate() > 0) {
+            sRecorder.setAudioSamplingRate(bean.getAudioSamplingRate());
+        }
+        if (bean.getBitRate() > 0) {
+            sRecorder.setAudioEncodingBitRate(bean.getBitRate());
+        }
         if (bean.getMaxDuration() > 0) {
             sRecorder.setMaxDuration(bean.getMaxDuration());
         }

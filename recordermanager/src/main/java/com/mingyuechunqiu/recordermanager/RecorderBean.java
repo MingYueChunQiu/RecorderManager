@@ -18,6 +18,7 @@ public class RecorderBean {
     private int outputFormat;//输出格式
     private int audioEncoder;//音频编码格式
     private int videoEncoder;//视频编码格式
+    private int audioSamplingRate;//音频采样频率（一般44100）
     private int bitRate;//视频编码比特率
     private int frameRate;//视频帧率
     private int videoWidth, videoHeight;//视频宽高
@@ -63,6 +64,14 @@ public class RecorderBean {
 
     public void setVideoEncoder(int videoEncoder) {
         this.videoEncoder = videoEncoder;
+    }
+
+    public int getAudioSamplingRate() {
+        return audioSamplingRate;
+    }
+
+    public void setAudioSamplingRate(int audioSamplingRate) {
+        this.audioSamplingRate = audioSamplingRate;
     }
 
     public int getBitRate() {
@@ -141,9 +150,10 @@ public class RecorderBean {
          */
         public RecorderBean buildDefaultAudioBean(String path) {
             return this.setAudioSource(MediaRecorder.AudioSource.MIC)
-                    .setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-                    .setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                    .setBitRate(1024 * 1024)
+                    .setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                    .setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                    .setFrameRate(44100)
+                    .setBitRate(96000)
                     .setFilePath(path)
                     .build();
         }
@@ -212,6 +222,15 @@ public class RecorderBean {
 
         public Builder setVideoEncoder(int videoEncoder) {
             bean.videoEncoder = videoEncoder;
+            return this;
+        }
+
+        public int getAudioSamplingRate() {
+            return bean.audioSamplingRate;
+        }
+
+        public Builder setAudioSamplingRate(int audioSamplingRate) {
+            bean.audioSamplingRate = audioSamplingRate;
             return this;
         }
 
