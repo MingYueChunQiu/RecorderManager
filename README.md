@@ -10,7 +10,7 @@ allprojects {
 		}
 	}
 ```
-2. Add the dependency
+2.Add the dependency
 ```
  ependencies {
 	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.1.3'
@@ -18,9 +18,12 @@ allprojects {
 ```
 3.调用音频录制
 采用默认配置录制
-```mRecorderManager.recordAudio(mFilePath);```
+```
+mRecorderManager.recordAudio(mFilePath);
+```
 自定义配置参数录制
-```mRecorderManager.recordAudio(new RecorderBean.Builder()
+```
+mRecorderManager.recordAudio(new RecorderBean.Builder()
                         .setAudioSource(MediaRecorder.AudioSource.MIC)
                         .setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                         .setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
