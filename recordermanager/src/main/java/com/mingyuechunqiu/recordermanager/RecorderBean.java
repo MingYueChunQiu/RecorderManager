@@ -152,7 +152,7 @@ public class RecorderBean {
             return this.setAudioSource(MediaRecorder.AudioSource.MIC)
                     .setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                     .setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                    .setFrameRate(44100)
+                    .setAudioSamplingRate(44100)
                     .setBitRate(96000)
                     .setFilePath(path)
                     .build();
