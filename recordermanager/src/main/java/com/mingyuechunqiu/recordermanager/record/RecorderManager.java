@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager;
+package com.mingyuechunqiu.recordermanager.record;
 
 import android.hardware.Camera;
 import android.media.MediaRecorder;
@@ -15,29 +15,34 @@ import android.view.Surface;
  *     version: 1.0
  * </pre>
  */
-public class RecorderManager implements Recorderable {
+public class RecorderManager implements RecorderManagerable {
 
     private Recorderable mRecorderable;
 
-    @NonNull
-    public static RecorderManager getInstance() {
-        return new RecorderManager();
-    }
-
-    @NonNull
-    public static RecorderManager getInstance(Recorderable recorderable) {
-        return new RecorderManager(recorderable);
-    }
-
-    public RecorderManager() {
-        this(new RecorderHelper());
-    }
-
-    public RecorderManager(Recorderable recorderable) {
+    private RecorderManager(Recorderable recorderable) {
         if (recorderable == null) {
             throw new IllegalArgumentException("recorderable can not be null!");
         }
         mRecorderable = recorderable;
+    }
+
+    /**
+     * 创建录制管理类实例（使用默认录制类）
+     *
+     * @return 返回录制管理类实例
+     */
+    public static RecorderManagerable newInstance() {
+        return new RecorderManager(new RecorderHelper());
+    }
+
+    /**
+     * 创建录制管理类实例
+     *
+     * @param recorderable 实际录制类
+     * @return 返回录制管理类实例
+     */
+    public static RecorderManagerable newInstance(Recorderable recorderable) {
+        return new RecorderManager(recorderable);
     }
 
     public Recorderable getRecorderable() {
@@ -57,7 +62,7 @@ public class RecorderManager implements Recorderable {
     }
 
     @Override
-    public boolean recordAudio(RecorderBean bean) {
+    public boolean recordAudio(RecorderOption bean) {
         return mRecorderable.recordAudio(bean);
     }
 
@@ -67,7 +72,7 @@ public class RecorderManager implements Recorderable {
     }
 
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, RecorderBean bean) {
+    public boolean recordVideo(Camera camera, Surface surface, RecorderOption bean) {
         return mRecorderable.recordVideo(camera, surface, bean);
     }
 
@@ -86,7 +91,8 @@ public class RecorderManager implements Recorderable {
      *
      * @return 返回设置好参数的相机
      */
-    public static Camera initCamera() {
+    @Override
+    public Camera initCamera() {
         Camera camera = Camera.open();
         Camera.Parameters parameters = camera.getParameters();
         //设置对焦模式
@@ -105,7 +111,8 @@ public class RecorderManager implements Recorderable {
      *
      * @param camera 相机
      */
-    public static void releaseCamera(Camera camera) {
+    @Override
+    public void releaseCamera(Camera camera) {
         if (camera == null) {
             return;
         }

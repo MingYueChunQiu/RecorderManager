@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">RecorderManager</string>
+    <string name="confirm">同意</string>
+    <string name="cancel">取消</string>
+    <string name="request_record_video">录制权限申请</string>
+    <string name="request_record_video_rationale">请打开相关权限以便进行视频录制</string>
+    <string name="warn_record_time_too_short">录音时间过短，请重试</string>
+    <string name="fill_record_timing">0：%s</string>
 </resources>

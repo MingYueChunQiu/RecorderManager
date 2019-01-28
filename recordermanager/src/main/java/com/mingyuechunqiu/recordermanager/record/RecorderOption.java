@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager;
+package com.mingyuechunqiu.recordermanager.record;
 
 import android.media.MediaRecorder;
 
@@ -11,7 +11,7 @@ import android.media.MediaRecorder;
  *     version: 1.0
  * </pre>
  */
-public class RecorderBean {
+public class RecorderOption {
 
     private int audioSource;//音频源
     private int videoSource;//视频源
@@ -25,6 +25,7 @@ public class RecorderBean {
     private int maxDuration;//最大时长
     private long maxFileSize;//文件最大大小
     private String filePath;//文件存储路径
+    private int orientationHint;//视频录制角度方向
 
     public int getAudioSource() {
         return audioSource;
@@ -130,16 +131,27 @@ public class RecorderBean {
         this.filePath = filePath;
     }
 
+    public int getOrientationHint() {
+        return orientationHint;
+    }
+
+    public void setOrientationHint(int orientationHint) {
+        this.orientationHint = orientationHint;
+    }
+
+    /**
+     * 链式调用
+     */
     public static class Builder {
 
-        private RecorderBean bean;
+        private RecorderOption mOption;
 
         public Builder() {
-            bean = new RecorderBean();
+            mOption = new RecorderOption();
         }
 
-        public RecorderBean build() {
-            return bean;
+        public RecorderOption build() {
+            return mOption;
         }
 
         /**
@@ -148,7 +160,7 @@ public class RecorderBean {
          * @param path 文件地址
          * @return 返回生成的默认配置对象
          */
-        public RecorderBean buildDefaultAudioBean(String path) {
+        public RecorderOption buildDefaultAudioBean(String path) {
             return this.setAudioSource(MediaRecorder.AudioSource.MIC)
                     .setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                     .setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
@@ -164,136 +176,146 @@ public class RecorderBean {
          * @param path 文件地址
          * @return 返回生成的默认配置对象
          */
-        public RecorderBean buildDefaultVideoBean(String path) {
-            //华为荣耀10用640/480拍摄会很卡，且用MPEG_4_SP录制的视频会有问题，要么有时能有时不能放，
-            // 要么视频会只剩下录制的一部分，用H263录制时会一卡一卡的，停止录制时直接崩溃
+        public RecorderOption buildDefaultVideoBean(String path) {
+            //用MPEG_4_SP录制的视频会有问题，在荣耀10上会崩溃和卡
+            //用H263录制时会一卡一卡的，停止录制时直接崩溃
             return this.setAudioSource(MediaRecorder.AudioSource.CAMCORDER)
                     .setVideoSource(MediaRecorder.VideoSource.CAMERA)
                     .setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                    .setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                    .setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                     .setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-                    .setBitRate(1024 * 1024)
-                    .setFrameRate(20)
-                    .setVideoWidth(320)
-                    .setVideoHeight(240)
+                    .setVideoWidth(640)
+                    .setVideoHeight(480)
+                    .setBitRate(3 * 1024 * 1024)
+                    .setFrameRate(30)
+                    .setOrientionHint(90)
                     .setFilePath(path)
                     .build();
         }
 
         public int getAudioSource() {
-            return bean.audioSource;
+            return mOption.audioSource;
         }
 
         public Builder setAudioSource(int audioSource) {
-            bean.audioSource = audioSource;
+            mOption.audioSource = audioSource;
             return this;
         }
 
         public int getVideoSource() {
-            return bean.videoSource;
+            return mOption.videoSource;
         }
 
         public Builder setVideoSource(int videoSource) {
-            bean.videoSource = videoSource;
+            mOption.videoSource = videoSource;
             return this;
         }
 
         public int getOutputFormat() {
-            return bean.outputFormat;
+            return mOption.outputFormat;
         }
 
         public Builder setOutputFormat(int outputFormat) {
-            bean.outputFormat = outputFormat;
+            mOption.outputFormat = outputFormat;
             return this;
         }
 
         public int getAudioEncoder() {
-            return bean.getAudioEncoder();
+            return mOption.getAudioEncoder();
         }
 
         public Builder setAudioEncoder(int audioEncoder) {
-            bean.audioEncoder = audioEncoder;
+            mOption.audioEncoder = audioEncoder;
             return this;
         }
 
         public int getVideoEncoder() {
-            return bean.videoEncoder;
+            return mOption.videoEncoder;
         }
 
         public Builder setVideoEncoder(int videoEncoder) {
-            bean.videoEncoder = videoEncoder;
+            mOption.videoEncoder = videoEncoder;
             return this;
         }
 
         public int getAudioSamplingRate() {
-            return bean.audioSamplingRate;
+            return mOption.audioSamplingRate;
         }
 
         public Builder setAudioSamplingRate(int audioSamplingRate) {
-            bean.audioSamplingRate = audioSamplingRate;
+            mOption.audioSamplingRate = audioSamplingRate;
             return this;
         }
 
         public int getBitRate() {
-            return bean.bitRate;
+            return mOption.bitRate;
         }
 
         public Builder setBitRate(int bitRate) {
-            bean.bitRate = bitRate;
+            mOption.bitRate = bitRate;
             return this;
         }
 
         public int getFrameRate() {
-            return bean.frameRate;
+            return mOption.frameRate;
         }
 
         public Builder setFrameRate(int frameRate) {
-            bean.frameRate = frameRate;
+            mOption.frameRate = frameRate;
             return this;
         }
 
         public int getVideoWidth() {
-            return bean.getVideoWidth();
+            return mOption.getVideoWidth();
         }
 
         public Builder setVideoWidth(int videoWidth) {
-            bean.videoWidth = videoWidth;
+            mOption.videoWidth = videoWidth;
             return this;
         }
 
         public int getVideoHeight() {
-            return bean.getVideoHeight();
+            return mOption.getVideoHeight();
         }
 
         public Builder setVideoHeight(int videoHeight) {
-            bean.videoHeight = videoHeight;
+            mOption.videoHeight = videoHeight;
             return this;
         }
 
         public long getMaxDuration() {
-            return bean.maxDuration;
+            return mOption.maxDuration;
         }
 
         public Builder setMaxDuration(int maxDuration) {
-            bean.maxDuration = maxDuration;
+            mOption.maxDuration = maxDuration;
             return this;
         }
 
         public long getMaxFileSize() {
-            return bean.maxFileSize;
+            return mOption.maxFileSize;
         }
 
         public Builder setMaxFileSize(long maxFileSize) {
-            bean.maxFileSize = maxFileSize;
+            mOption.maxFileSize = maxFileSize;
             return this;
         }
 
         public String getFilePath() {
-            return bean.filePath;
+            return mOption.filePath;
         }
 
         public Builder setFilePath(String filePath) {
-            bean.filePath = filePath;
+            mOption.filePath = filePath;
+            return this;
+        }
+
+        public int getOrientionHint() {
+            return mOption.orientationHint;
+        }
+
+        public Builder setOrientionHint(int orientationHint) {
+            mOption.orientationHint = orientationHint;
             return this;
         }
     }

@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager;
+package com.mingyuechunqiu.recordermanager.record;
 
 import android.hardware.Camera;
 import android.media.MediaRecorder;
@@ -53,37 +53,37 @@ public class RecorderHelper implements Recorderable {
      */
     @Override
     public boolean recordAudio(String path) {
-        return recordAudio(new RecorderBean.Builder().buildDefaultAudioBean(path));
+        return recordAudio(new RecorderOption.Builder().buildDefaultAudioBean(path));
     }
 
     /**
      * 录制音频
      *
-     * @param bean 存储录制信息的对象
+     * @param option 存储录制信息的对象
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
     @Override
-    public boolean recordAudio(RecorderBean bean) {
-        if (bean == null) {
+    public boolean recordAudio(RecorderOption option) {
+        if (option == null) {
             return false;
         }
         resetRecorder();
-        sRecorder.setAudioSource(bean.getAudioSource());
-        sRecorder.setOutputFormat(bean.getOutputFormat());
-        sRecorder.setAudioEncoder(bean.getAudioEncoder());
-        if (bean.getAudioSamplingRate() > 0) {
-            sRecorder.setAudioSamplingRate(bean.getAudioSamplingRate());
+        sRecorder.setAudioSource(option.getAudioSource());
+        sRecorder.setOutputFormat(option.getOutputFormat());
+        sRecorder.setAudioEncoder(option.getAudioEncoder());
+        if (option.getAudioSamplingRate() > 0) {
+            sRecorder.setAudioSamplingRate(option.getAudioSamplingRate());
         }
-        if (bean.getBitRate() > 0) {
-            sRecorder.setAudioEncodingBitRate(bean.getBitRate());
+        if (option.getBitRate() > 0) {
+            sRecorder.setAudioEncodingBitRate(option.getBitRate());
         }
-        if (bean.getMaxDuration() > 0) {
-            sRecorder.setMaxDuration(bean.getMaxDuration());
+        if (option.getMaxDuration() > 0) {
+            sRecorder.setMaxDuration(option.getMaxDuration());
         }
-        if (bean.getMaxFileSize() > 0) {
-            sRecorder.setMaxFileSize(bean.getMaxFileSize());
+        if (option.getMaxFileSize() > 0) {
+            sRecorder.setMaxFileSize(option.getMaxFileSize());
         }
-        sRecorder.setOutputFile(bean.getFilePath());
+        sRecorder.setOutputFile(option.getFilePath());
         try {
             sRecorder.prepare();
             sRecorder.start();
@@ -104,7 +104,7 @@ public class RecorderHelper implements Recorderable {
      */
     @Override
     public boolean recordVideo(Camera camera, Surface surface, String path) {
-        return recordVideo(camera, surface, new RecorderBean.Builder().buildDefaultVideoBean(path));
+        return recordVideo(camera, surface, new RecorderOption.Builder().buildDefaultVideoBean(path));
     }
 
     /**
@@ -112,38 +112,40 @@ public class RecorderHelper implements Recorderable {
      *
      * @param camera  相机
      * @param surface 表面视图
-     * @param bean    存储录制信息的对象
+     * @param option  存储录制信息的对象
      * @return 返回是否成功开启视频录制，成功返回true，否则返回false
      */
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, RecorderBean bean) {
-        if (camera == null || surface == null || bean == null) {
+    public boolean recordVideo(Camera camera, Surface surface, RecorderOption option) {
+        if (camera == null || surface == null || option == null) {
             return false;
         }
         resetRecorder();
         sRecorder.setCamera(camera);
-        sRecorder.setAudioSource(bean.getAudioSource());
-        sRecorder.setVideoSource(bean.getVideoSource());
-        sRecorder.setOutputFormat(bean.getOutputFormat());
-        sRecorder.setAudioEncoder(bean.getAudioEncoder());
-        sRecorder.setVideoEncoder(bean.getVideoEncoder());
-        if (bean.getBitRate() > 0) {
-            sRecorder.setVideoEncodingBitRate(bean.getBitRate());
+        sRecorder.setAudioSource(option.getAudioSource());
+        sRecorder.setVideoSource(option.getVideoSource());
+        sRecorder.setOutputFormat(option.getOutputFormat());
+        sRecorder.setAudioEncoder(option.getAudioEncoder());
+        sRecorder.setVideoEncoder(option.getVideoEncoder());
+        if (option.getBitRate() > 0) {
+            sRecorder.setVideoEncodingBitRate(option.getBitRate());
         }
-        if (bean.getFrameRate() > 0) {
-            sRecorder.setVideoFrameRate(bean.getFrameRate());
+        if (option.getFrameRate() > 0) {
+            sRecorder.setVideoFrameRate(option.getFrameRate());
         }
-        if (bean.getVideoWidth() > 0 && bean.getVideoHeight() > 0) {
-            sRecorder.setVideoSize(bean.getVideoWidth(), bean.getVideoHeight());
+        if (option.getVideoWidth() > 0 && option.getVideoHeight() > 0) {
+            sRecorder.setVideoSize(option.getVideoWidth(), option.getVideoHeight());
         }
-        if (bean.getMaxDuration() > 0) {
-            sRecorder.setMaxDuration(bean.getMaxDuration());
+        //（目前录制视频时设置此属性有崩溃风险，留待解决）
+//        if (option.getMaxDuration() > 0) {
+//            sRecorder.setMaxDuration(option.getMaxDuration());
+//        }
+        if (option.getMaxFileSize() > 0) {
+            sRecorder.setMaxFileSize(option.getMaxFileSize());
         }
-        if (bean.getMaxFileSize() > 0) {
-            sRecorder.setMaxFileSize(bean.getMaxFileSize());
-        }
+        sRecorder.setOrientationHint(option.getOrientationHint());
         sRecorder.setPreviewDisplay(surface);
-        sRecorder.setOutputFile(bean.getFilePath());
+        sRecorder.setOutputFile(option.getFilePath());
         try {
             sRecorder.prepare();
             sRecorder.start();

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <SurfaceView
+        android:id="@+id/sv_record_video_screen"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_record_video_timing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:text="@string/fill_record_timing"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@id/cpb_record_video_record"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton
+        android:id="@+id/cpb_record_video_record"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cpb_idle_ring_color="@android:color/white"
+        app:cpb_idle_ring_width="@dimen/dp_3"
+        app:cpb_is_timer_mode="true"
+        app:cpb_max_progress="30"
+        app:cpb_pressed_ring_color="@android:color/white"
+        app:cpb_pressed_ring_width="@dimen/dp_3"
+        app:cpb_released_ring_color="@android:color/white"
+        app:cpb_released_ring_width="@dimen/dp_3"
+        app:cpb_ring_padding="@dimen/dp_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.85"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/iv_record_video_play"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/play"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/iv_record_video_cancel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/cancel"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/iv_record_video_confirm"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.85"
+        app:layout_constraintWidth_percent="0.16" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/iv_record_video_confirm"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/confirm"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintLeft_toRightOf="@id/iv_record_video_cancel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.85"
+        app:layout_constraintWidth_percent="0.16" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/iv_record_video_back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/pull_down"
+        app:layout_constraintBottom_toBottomOf="@id/cpb_record_video_record"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/cpb_record_video_record"
+        app:layout_constraintTop_toTopOf="@id/cpb_record_video_record"
+        app:layout_constraintWidth_percent="0.1" />
+</android.support.constraint.ConstraintLayout>

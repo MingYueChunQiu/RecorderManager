@@ -1,0 +1,107 @@
+package com.mingyuechunqiu.recordermanager.ui.fragment;
+
+import com.mingyuechunqiu.recordermanager.record.RecorderOption;
+
+/**
+ * <pre>
+ *     author : xyj
+ *     Github : https://github.com/MingYueChunQiu
+ *     e-mail : yujie.xi@ehailuo.com
+ *     time   : 2019/1/28
+ *     desc   : 录制视频配置信息类
+ *     version: 1.0
+ * </pre>
+ */
+public class RecordVideoOption {
+
+    private RecorderOption option;//录制配置信息
+    private int maxDuration;//最大录制时间
+    private OnRecordVideoListener listener;//录制视频监听器
+
+    public RecordVideoOption() {
+        maxDuration = 30;//默认30秒
+    }
+
+    public RecorderOption getRecorderOption() {
+        return option;
+    }
+
+    public void setRecorderOption(RecorderOption option) {
+        this.option = option;
+    }
+
+    public int getMaxDuration() {
+        return maxDuration;
+    }
+
+    public void setMaxDuration(int maxDuration) {
+        this.maxDuration = maxDuration;
+    }
+
+    public OnRecordVideoListener getOnRecordVideoListener() {
+        return listener;
+    }
+
+    public void setOnRecordVideoListener(OnRecordVideoListener listener) {
+        this.listener = listener;
+    }
+
+    /**
+     * 链式调用
+     */
+    public static class Builder {
+        RecordVideoOption mOption;
+
+        public Builder() {
+            mOption = new RecordVideoOption();
+        }
+
+        public RecordVideoOption build() {
+            return mOption;
+        }
+
+        public RecorderOption getRecorderOption() {
+            return mOption.option;
+        }
+
+        public Builder setRecorderOption(RecorderOption option) {
+            mOption.option = option;
+            return this;
+        }
+
+        public int getMaxDuration() {
+            return mOption.maxDuration;
+        }
+
+        public Builder setMaxDuration(int maxDuration) {
+            mOption.maxDuration = maxDuration;
+            return this;
+        }
+
+        public OnRecordVideoListener getOnRecordVideoListener() {
+            return mOption.listener;
+        }
+
+        public Builder setOnRecordVideoListener(OnRecordVideoListener listener) {
+            mOption.listener = listener;
+            return this;
+        }
+    }
+
+    /**
+     * 录制视频监听器
+     */
+    public interface OnRecordVideoListener {
+        /**
+         * 当完成视频录制时回调
+         *
+         * @param option 录制配置信息对象
+         */
+        void onCompleteRecordVideo(RecorderOption option);
+
+        /**
+         * 当点击返回按钮时回调
+         */
+        void onClickBack();
+    }
+}

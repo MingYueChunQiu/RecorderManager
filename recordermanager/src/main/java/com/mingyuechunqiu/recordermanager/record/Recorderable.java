@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager;
+package com.mingyuechunqiu.recordermanager.record;
 
 import android.hardware.Camera;
 import android.media.MediaRecorder;
@@ -17,11 +17,11 @@ public interface Recorderable {
 
     boolean recordAudio(String path);
 
-    boolean recordAudio(RecorderBean bean);
+    boolean recordAudio(RecorderOption bean);
 
     boolean recordVideo(Camera camera, Surface surface, String path);
 
-    boolean recordVideo(Camera camera, Surface surface, RecorderBean bean);
+    boolean recordVideo(Camera camera, Surface surface, RecorderOption bean);
 
     void release();
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,4 +15,15 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_main_system_record_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="打开系统视频录制" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_main_record_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="录制视频"/>
+</android.support.v7.widget.LinearLayoutCompat>
