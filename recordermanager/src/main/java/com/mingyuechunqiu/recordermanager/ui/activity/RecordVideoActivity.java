@@ -1,13 +1,12 @@
 package com.mingyuechunqiu.recordermanager.ui.activity;
 
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -16,6 +15,7 @@ import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.record.RecorderOption;
 import com.mingyuechunqiu.recordermanager.ui.fragment.RecordVideoFragment;
 import com.mingyuechunqiu.recordermanager.ui.fragment.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.File;
 
@@ -99,6 +99,63 @@ public class RecordVideoActivity extends AppCompatActivity {
         mRecordVideoFg = null;
     }
 
+    /**
+     * 获取计时控件
+     *
+     * @return 返回计时AppCompatTextView
+     */
+    protected AppCompatTextView getTimingView() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getTimingView();
+    }
+
+    /**
+     * 获取圆形进度按钮
+     *
+     * @return 返回进度CircleProgressButton
+     */
+    protected CircleProgressButton getCircleProgressButton() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getCircleProgressButton();
+    }
+
+    /**
+     * 获取播放控件
+     *
+     * @return 返回播放AppCompatImageView
+     */
+    protected AppCompatImageView getPlayView() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getPlayView();
+    }
+
+    /**
+     * 获取取消控件
+     *
+     * @return 返回取消AppCompatImageView
+     */
+    protected AppCompatImageView getCancelView() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getCancelView();
+    }
+
+    /**
+     * 获取确认控件
+     *
+     * @return 返回确认AppCompatImageView
+     */
+    protected AppCompatImageView getConfirmView() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getConfirmView();
+    }
+
+    /**
+     * 获取返回控件
+     *
+     * @return 返回返回AppCompatImageView
+     */
+    protected AppCompatImageView getBackView() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getBackView();
+    }
+
+    /**
+     * 销毁界面
+     */
     private void finishActivity() {
         finish();
         overridePendingTransition(R.anim.fix_stand, R.anim.slide_out_bottom);

@@ -5,9 +5,9 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -46,7 +46,7 @@ public class CircleProgressButton extends View {
     private int idleRingColor, pressedRingColor, releasedRingColor;
     private int idleRingWidth, pressedRingWidth, releasedRingWidth;
     private int ringPadding;//圆环距离内圆的边距
-    private boolean isIdleRingVisible, isPressedRingVisible, isReleasedRingVisible;
+    private boolean idleRingVisible, pressedRingVisible, releasedRingVisible;
     private int minProgress, maxProgress, currentProgress;
     private boolean isTimerMode;
     private int progressDuration;
@@ -157,6 +157,123 @@ public class CircleProgressButton extends View {
 
     public void setCurrentProgress(int currentProgress) {
         this.currentProgress = currentProgress;
+    }
+
+    public int getIdleCircleColor() {
+        return idleCircleColor;
+    }
+
+    public void setIdleCircleColor(@ColorInt int idleCircleColor) {
+        this.idleCircleColor = idleCircleColor;
+        invalidate();
+    }
+
+    public int getPressedCircleColor() {
+        return pressedCircleColor;
+    }
+
+    public void setPressedCircleColor(@ColorInt int pressedCircleColor) {
+        this.pressedCircleColor = pressedCircleColor;
+        invalidate();
+    }
+
+    public int getReleasedCircleColor() {
+        return releasedCircleColor;
+    }
+
+    public void setReleasedCircleColor(@ColorInt int releasedCircleColor) {
+        this.releasedCircleColor = releasedCircleColor;
+        invalidate();
+    }
+
+    public int getIdleRingColor() {
+        return idleRingColor;
+    }
+
+    public void setIdleRingColor(@ColorInt int idleRingColor) {
+        this.idleRingColor = idleRingColor;
+        invalidate();
+    }
+
+    public int getPressedRingColor() {
+        return pressedRingColor;
+    }
+
+    public void setPressedRingColor(@ColorInt int pressedRingColor) {
+        this.pressedRingColor = pressedRingColor;
+        invalidate();
+    }
+
+    public int getReleasedRingColor() {
+        return releasedRingColor;
+    }
+
+    public void setReleasedRingColor(@ColorInt int releasedRingColor) {
+        this.releasedRingColor = releasedRingColor;
+        invalidate();
+    }
+
+    public int getIdleRingWidth() {
+        return idleRingWidth;
+    }
+
+    public void setIdleRingWidth(int idleRingWidth) {
+        this.idleRingWidth = idleRingWidth;
+        invalidate();
+    }
+
+    public int getPressedRingWidth() {
+        return pressedRingWidth;
+    }
+
+    public void setPressedRingWidth(int pressedRingWidth) {
+        this.pressedRingWidth = pressedRingWidth;
+        invalidate();
+    }
+
+    public int getReleasedRingWidth() {
+        return releasedRingWidth;
+    }
+
+    public void setReleasedRingWidth(int releasedRingWidth) {
+        this.releasedRingWidth = releasedRingWidth;
+        invalidate();
+    }
+
+    public int getRingPadding() {
+        return ringPadding;
+    }
+
+    public void setRingPadding(int ringPadding) {
+        this.ringPadding = ringPadding;
+        invalidate();
+    }
+
+    public boolean isIdleRingVisible() {
+        return idleRingVisible;
+    }
+
+    public void setIdleRingVisible(boolean idleRingVisible) {
+        this.idleRingVisible = idleRingVisible;
+        invalidate();
+    }
+
+    public boolean isPressedRingVisible() {
+        return pressedRingVisible;
+    }
+
+    public void setPressedRingVisible(boolean pressedRingVisible) {
+        this.pressedRingVisible = pressedRingVisible;
+        invalidate();
+    }
+
+    public boolean isReleasedRingVisible() {
+        return releasedRingVisible;
+    }
+
+    public void setReleasedRingVisible(boolean releasedRingVisible) {
+        this.releasedRingVisible = releasedRingVisible;
+        invalidate();
     }
 
     public OnCircleProgressButtonListener getOnCircleProgressButtonListener() {
@@ -284,11 +401,11 @@ public class CircleProgressButton extends View {
             releasedRingWidth = a.getDimensionPixelSize(R.styleable.CircleProgressButton_cpb_pressed_ring_width,
                     DEFAULT_RELEASED_RING_WIDTH);
             ringPadding = a.getDimensionPixelSize(R.styleable.CircleProgressButton_cpb_ring_padding, 0);
-            isIdleRingVisible = a.getBoolean(R.styleable.CircleProgressButton_cpb_idle_ring_visible,
+            idleRingVisible = a.getBoolean(R.styleable.CircleProgressButton_cpb_idle_ring_visible,
                     true);
-            isPressedRingVisible = a.getBoolean(R.styleable.CircleProgressButton_cpb_pressed_ring_visible,
+            pressedRingVisible = a.getBoolean(R.styleable.CircleProgressButton_cpb_pressed_ring_visible,
                     true);
-            isReleasedRingVisible = a.getBoolean(R.styleable.CircleProgressButton_cpb_released_ring_visible,
+            releasedRingVisible = a.getBoolean(R.styleable.CircleProgressButton_cpb_released_ring_visible,
                     true);
             minProgress = a.getInt(R.styleable.CircleProgressButton_cpb_min_progress, 0);
             maxProgress = a.getInt(R.styleable.CircleProgressButton_cpb_max_progress, 100);
@@ -339,14 +456,14 @@ public class CircleProgressButton extends View {
         boolean isVisible;
         switch (mState) {
             case PRESSED:
-                isVisible = isPressedRingVisible;
+                isVisible = pressedRingVisible;
                 break;
             case RELEASED:
-                isVisible = isReleasedRingVisible;
+                isVisible = releasedRingVisible;
                 break;
             case IDLE:
             default:
-                isVisible = isIdleRingVisible;
+                isVisible = idleRingVisible;
                 break;
         }
         return isVisible;
