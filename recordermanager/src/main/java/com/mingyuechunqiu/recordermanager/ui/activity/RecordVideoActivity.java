@@ -7,9 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.record.RecorderOption;
@@ -18,6 +18,8 @@ import com.mingyuechunqiu.recordermanager.ui.fragment.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
 import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_MAX_DURATION;
@@ -34,9 +36,10 @@ import static com.mingyuechunqiu.recordermanager.constants.Constants.SUFFIX_MP4;
  *     version: 1.0
  * </pre>
  */
-public class RecordVideoActivity extends AppCompatActivity {
+public class RecordVideoActivity extends AppCompatActivity implements KeyBackCallback {
 
     private RecordVideoFragment mRecordVideoFg;
+    private List<OnKeyBackListener> mListeners;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,7 +74,6 @@ public class RecordVideoActivity extends AppCompatActivity {
                                 getIntent().putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, option.getFilePath());
                                 setResult(RESULT_OK, getIntent());
                             }
-                            Toast.makeText(getApplicationContext(), option.getFilePath(), Toast.LENGTH_SHORT).show();
                             finishActivity();
                         }
 
@@ -91,12 +93,45 @@ public class RecordVideoActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mListeners != null) {
+            mListeners.clear();
+            mListeners = null;
+        }
         if (getSupportFragmentManager() != null && mRecordVideoFg != null) {
             getSupportFragmentManager().beginTransaction()
                     .remove(mRecordVideoFg)
                     .commitAllowingStateLoss();
         }
         mRecordVideoFg = null;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && mListeners != null && mListeners.size() > 0) {
+            for (OnKeyBackListener listener : mListeners) {
+                if (listener != null) {
+                    listener.onClickKeyBack(event);
+                    return true;
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 添加点击返回事件监听器
+     *
+     * @param listener 监听器
+     */
+    @Override
+    public void addOnKeyBackListener(OnKeyBackListener listener) {
+        if (listener == null) {
+            return;
+        }
+        if (mListeners == null) {
+            mListeners = new ArrayList<>();
+        }
+        mListeners.add(listener);
     }
 
     /**

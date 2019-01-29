@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +17,8 @@ import android.view.ViewGroup;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.record.RecorderOption;
+import com.mingyuechunqiu.recordermanager.ui.activity.KeyBackCallback;
+import com.mingyuechunqiu.recordermanager.ui.activity.RecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.File;
@@ -104,6 +107,16 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         if (getContext() != null) {
             mDelegateable = new RecordVideoDelegate(getContext(), tvTiming, svVideo, cpbRecord,
                     ivPlay, ivCancel, ivConfirm, ivBack, mOption);
+        }
+        if (getActivity() instanceof KeyBackCallback) {
+            ((KeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
+                @Override
+                public void onClickKeyBack(KeyEvent event) {
+                    if (mDelegateable != null) {
+                        mDelegateable.onClickBack();
+                    }
+                }
+            });
         }
         checkHasPermissions();
         return view;

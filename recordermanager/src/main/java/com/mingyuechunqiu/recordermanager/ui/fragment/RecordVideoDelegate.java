@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -430,12 +429,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      */
     private void releaseRecorderManager() {
         if (!isReleaseRecord && mManager != null) {
-            try {
-                mManager.release();
-            } catch (RuntimeException stopException) {
-                //录制时间过短stop，会有崩溃异常，所以进行捕获
-                Log.d("RecordVideoDelegate", stopException.getMessage());
-            }
+            mManager.release();
             mManager.releaseCamera(mCamera);
             mCamera = null;
             isReleaseRecord = true;

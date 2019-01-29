@@ -3,14 +3,11 @@ package com.mingyuechunqiu.recordermanagerproject;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +20,8 @@ import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
@@ -58,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     EasyPermissions.requestPermissions(MainActivity.this, "请求拍摄", 1, permissions);
                     return;
                 }
-                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
+//                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
+                startActivityForResult(new Intent(MainActivity.this, RecordVideoActivity.class), 0);
             }
         });
     }
@@ -67,8 +67,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
-            Uri uri = data.getData();
-            Log.e("份", "onActivityResult: " + uri.toString());
+//            Uri uri = data.getData();
+            Log.e("份", "onActivityResult: " + " "
+                    + data.getStringExtra(EXTRA_RECORD_VIDEO_FILE_PATH));
         }
     }
 

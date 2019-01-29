@@ -2,6 +2,7 @@ package com.mingyuechunqiu.recordermanager.record;
 
 import android.hardware.Camera;
 import android.media.MediaRecorder;
+import android.util.Log;
 import android.view.Surface;
 
 import java.io.IOException;
@@ -26,10 +27,15 @@ public class RecorderHelper implements Recorderable {
     @Override
     public void release() {
         if (sRecorder != null) {
-            sRecorder.stop();
-            sRecorder.reset();
-            sRecorder.release();
-            sRecorder = null;
+            try {
+                sRecorder.stop();
+                sRecorder.reset();
+                sRecorder.release();
+                sRecorder = null;
+            } catch (RuntimeException stopException) {
+                //录制时间过短stop，会有崩溃异常，所以进行捕获
+                Log.d("RecordVideoDelegate", stopException.getMessage());
+            }
         }
     }
 
