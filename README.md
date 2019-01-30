@@ -19,7 +19,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.1'
 	}
 ```
 ## 三.使用
@@ -48,10 +48,10 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
 通过在Intent中传入下列参数来设置路径和最长时间
 
 ```
- 	//录制视频文件路径
-    public static final String EXTRA_RECORD_VIDEO_FILE_PATH = PREFIX_EXTRA + "record_video_file_path";
-    //录制视频最大时长
-    public static final String EXTRA_RECORD_VIDEO_MAX_DURATION = PREFIX_EXTRA + "record_video_max_duration";
+				//设置视频录制的最长时间
+                intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 20);
+                //设置视频录制的画质
+                intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
 ```
 RecordVideoActivity里已经配置好了默认参数，可以直接使用，然后在onActivityResult里拿到视频路径的返回值
 
@@ -60,7 +60,8 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
-            Log.e("onActivityResult", "onActivityResult: " + " " + data.getStringExtra(EXTRA_RECORD_VIDEO_FILE_PATH));
+            Log.e("onActivityResult", "onActivityResult: " + " " + data.getStringExtra(EXTRA_RECORD_VIDEO_FILE_PATH) + " " +
+                    data.getIntExtra(EXTRA_RECORD_VIDEO_DURATION, -1));
         }
     }
 ```
@@ -133,8 +134,20 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
      * @return 返回RecordVideoFragment
      */
     public static RecordVideoFragment newInstance(String filePath) {
+        return newInstance(filePath, 30);
+    }
+
+    /**
+     * 获取录制视频Fragment实例（使用默认配置项）
+     *
+     * @param filePath    存储文件路径
+     * @param maxDuration 最大时长（秒数）
+     * @return 返回RecordVideoFragment
+     */
+    public static RecordVideoFragment newInstance(String filePath, int maxDuration) {
         return newInstance(new RecordVideoOption.Builder()
                 .setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(filePath))
+                .setMaxDuration(maxDuration)
                 .build());
     }
 
@@ -174,12 +187,13 @@ public class RecordVideoOption：
      * 录制视频监听器
      */
     public interface OnRecordVideoListener {
-        /**
+ /**
          * 当完成视频录制时回调
          *
-         * @param option 录制配置信息对象
+         * @param filePath      视频文件路径
+         * @param videoDuration 视频时长（毫秒）
          */
-        void onCompleteRecordVideo(RecorderOption option);
+        void onCompleteRecordVideo(String filePath, int videoDuration);
 
         /**
          * 当点击返回按钮时回调
