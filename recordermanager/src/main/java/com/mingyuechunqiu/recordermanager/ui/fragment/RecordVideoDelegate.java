@@ -56,6 +56,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private MediaPlayer mMediaPlayer;
     private Handler mHandler;
     private boolean hasHandledReleaseRecord;//标记是否处理了录制释放事件
+    private int mVideoDuration;//录制视频时长(毫秒)
 
     RecordVideoDelegate(@NonNull Context context, @NonNull AppCompatTextView tvTiming,
                         @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
@@ -248,7 +249,8 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mMediaPlayer.start();
+                    mp.start();
+                    mVideoDuration = mp.getDuration();
                 }
             });
             mMediaPlayer.prepare();
@@ -378,7 +380,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     @Override
     public void onCompleteRecordVideo() {
         if (mOption.getOnRecordVideoListener() != null) {
-            mOption.getOnRecordVideoListener().onCompleteRecordVideo(mOption.getRecorderOption());
+            mOption.getOnRecordVideoListener().onCompleteRecordVideo(mOption.getRecorderOption().getFilePath(), mVideoDuration);
         }
     }
 
@@ -402,6 +404,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         isRecording = false;
         isReleaseRecord = false;
         mTiming = 0;
+        mVideoDuration = 0;
         releaseMediaPlayer();
         mManager = null;
         mOption = null;

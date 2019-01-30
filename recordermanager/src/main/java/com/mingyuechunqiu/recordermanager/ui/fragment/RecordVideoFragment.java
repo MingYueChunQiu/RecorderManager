@@ -213,8 +213,20 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
      * @return 返回RecordVideoFragment
      */
     public static RecordVideoFragment newInstance(String filePath) {
+        return newInstance(filePath, 30);
+    }
+
+    /**
+     * 获取录制视频Fragment实例（使用默认配置项）
+     *
+     * @param filePath    存储文件路径
+     * @param maxDuration 最大时长（秒数）
+     * @return 返回RecordVideoFragment
+     */
+    public static RecordVideoFragment newInstance(String filePath, int maxDuration) {
         return newInstance(new RecordVideoOption.Builder()
                 .setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(filePath))
+                .setMaxDuration(maxDuration)
                 .build());
     }
 

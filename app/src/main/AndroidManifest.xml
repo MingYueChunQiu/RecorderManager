@@ -24,7 +24,6 @@
         </activity>
         <activity android:name=".TestActivity" />
 
-        <activity android:name="com.mingyuechunqiu.recordermanager.ui.activity.RecordVideoActivity" />
     </application>
 
 </manifest>

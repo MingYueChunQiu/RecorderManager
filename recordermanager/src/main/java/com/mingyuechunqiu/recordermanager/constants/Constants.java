@@ -18,6 +18,8 @@ public class Constants {
     public static final String EXTRA_RECORD_VIDEO_FILE_PATH = PREFIX_EXTRA + "record_video_file_path";
     //录制视频最大时长
     public static final String EXTRA_RECORD_VIDEO_MAX_DURATION = PREFIX_EXTRA + "record_video_max_duration";
+    //录制视频时长
+    public static final String EXTRA_RECORD_VIDEO_DURATION = PREFIX_EXTRA + "record_video_duration";
 
     public static final String SUFFIX_MP4 = ".mp4";//MP4视频格式后缀
 }

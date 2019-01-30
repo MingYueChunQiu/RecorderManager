@@ -21,6 +21,7 @@ import java.util.List;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_DURATION;
 import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
@@ -68,8 +69,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
 //            Uri uri = data.getData();
-            Log.e("份", "onActivityResult: " + " "
-                    + data.getStringExtra(EXTRA_RECORD_VIDEO_FILE_PATH));
+            Log.e("MainActivity", "onActivityResult: " + " "
+                    + data.getStringExtra(EXTRA_RECORD_VIDEO_FILE_PATH) + " " +
+                    data.getIntExtra(EXTRA_RECORD_VIDEO_DURATION, -1));
         }
     }
 

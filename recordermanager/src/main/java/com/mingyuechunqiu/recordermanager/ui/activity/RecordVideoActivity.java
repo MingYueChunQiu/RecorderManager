@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_DURATION;
 import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
 import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_MAX_DURATION;
 import static com.mingyuechunqiu.recordermanager.constants.Constants.SUFFIX_MP4;
@@ -68,10 +69,12 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
                             .buildDefaultVideoBean(filePath))
                     .setMaxDuration(maxDuration)
                     .setOnRecordVideoListener(new RecordVideoOption.OnRecordVideoListener() {
+
                         @Override
-                        public void onCompleteRecordVideo(RecorderOption option) {
+                        public void onCompleteRecordVideo(String filePath, int videoDuration) {
                             if (getIntent() != null) {
-                                getIntent().putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, option.getFilePath());
+                                getIntent().putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, filePath);
+                                getIntent().putExtra(EXTRA_RECORD_VIDEO_DURATION, videoDuration);
                                 setResult(RESULT_OK, getIntent());
                             }
                             finishActivity();

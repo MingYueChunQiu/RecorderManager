@@ -92,12 +92,14 @@ public class RecordVideoOption {
      * 录制视频监听器
      */
     public interface OnRecordVideoListener {
+
         /**
          * 当完成视频录制时回调
          *
-         * @param option 录制配置信息对象
+         * @param filePath      视频文件路径
+         * @param videoDuration 视频时长（毫秒）
          */
-        void onCompleteRecordVideo(RecorderOption option);
+        void onCompleteRecordVideo(String filePath, int videoDuration);
 
         /**
          * 当点击返回按钮时回调
