@@ -19,7 +19,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.1'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.3'
 	}
 ```
 ## 三.使用
@@ -123,6 +123,15 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
         return mRecordVideoFg == null ? null : mRecordVideoFg.getBackView();
     }
 ```
+想要替换图标资源的话，提供下列名称图片
+
+```
+record_video_cancel.png
+record_video_confirm.png
+record_video_play.png
+record_video_pull_down.png
+```
+
 #### (3).同时提供了对应的RecordVideoFragment，实现与RecordVideoActivity同样的功能，实际RecordVideoActivity就是包裹了一个RecordVideoFragment
 1.创建RecordVideoFragment
 
