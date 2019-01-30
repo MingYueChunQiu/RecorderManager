@@ -15,7 +15,7 @@ import com.mingyuechunqiu.recordermanager.record.RecorderOption;
 public class RecordVideoOption {
 
     private RecorderOption option;//录制配置信息
-    private int maxDuration;//最大录制时间
+    private int maxDuration;//最大录制时间（秒数）
     private OnRecordVideoListener listener;//录制视频监听器
 
     public RecordVideoOption() {

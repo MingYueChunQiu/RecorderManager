@@ -56,7 +56,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private MediaPlayer mMediaPlayer;
     private Handler mHandler;
     private boolean hasHandledReleaseRecord;//标记是否处理了录制释放事件
-    private int mVideoDuration;//录制视频时长(毫秒)
+    private int mVideoDuration;//录制视频时长（毫秒）
 
     RecordVideoDelegate(@NonNull Context context, @NonNull AppCompatTextView tvTiming,
                         @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
