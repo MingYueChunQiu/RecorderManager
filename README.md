@@ -2,8 +2,8 @@
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 ## 一.效果展示
 仿微信界面视频录制
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190129161436569.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NsMjAxOGdvZA==,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190129161453953.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NsMjAxOGdvZA==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/1/29/1689916e86fa8177?w=1080&h=2280&f=jpeg&s=1116131)
+![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/1/29/1689916e86ee15a3?w=1080&h=2280&f=jpeg&s=819744)
 2.音频录制界面比较简单，就不放图了
 ## 二.引用
 1.Add it in your root build.gradle at the end of repositories
@@ -48,10 +48,10 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
 通过在Intent中传入下列参数来设置路径和最长时间
 
 ```
-				//设置视频录制的最长时间
-                intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 20);
-                //设置视频录制的画质
-                intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+		//设置保存视频录制的文件路径
+                intent.putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, "路径名");
+                //设置视频录制的最大时长
+                intent.putExtra(EXTRA_RECORD_VIDEO_MAX_DURATION, 10);
 ```
 RecordVideoActivity里已经配置好了默认参数，可以直接使用，然后在onActivityResult里拿到视频路径的返回值
 
