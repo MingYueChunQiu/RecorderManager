@@ -15,15 +15,58 @@ import android.view.Surface;
  */
 public interface Recorderable {
 
+    /**
+     * 录制音频
+     *
+     * @param path 文件存储路径
+     * @return 返回是否成功开启录制，成功返回true，否则返回false
+     */
     boolean recordAudio(String path);
 
-    boolean recordAudio(RecorderOption bean);
+    /**
+     * 录制音频
+     *
+     * @param option 存储录制信息的对象
+     * @return 返回是否成功开启录制，成功返回true，否则返回false
+     */
+    boolean recordAudio(RecorderOption option);
 
+    /**
+     * 录制视频
+     *
+     * @param camera  相机
+     * @param surface 表面视图
+     * @param path    文件存储路径
+     * @return 返回是否成功开启录制，成功返回true，否则返回false
+     */
     boolean recordVideo(Camera camera, Surface surface, String path);
 
-    boolean recordVideo(Camera camera, Surface surface, RecorderOption bean);
+    /**
+     * 录制视频
+     *
+     * @param camera  相机
+     * @param surface 表面视图
+     * @param option  存储录制信息的对象
+     * @return 返回是否成功开启视频录制，成功返回true，否则返回false
+     */
+    boolean recordVideo(Camera camera, Surface surface, RecorderOption option);
 
+    /**
+     * 释放资源
+     */
     void release();
 
+    /**
+     * 获取录制器
+     *
+     * @return 返回实例对象
+     */
     MediaRecorder getMediaRecorder();
+
+    /**
+     * 获取配置信息对象
+     *
+     * @return 返回实例对象
+     */
+    RecorderOption getRecorderOption();
 }

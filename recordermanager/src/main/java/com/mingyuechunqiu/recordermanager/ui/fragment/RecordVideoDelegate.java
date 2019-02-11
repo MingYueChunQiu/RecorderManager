@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.mingyuechunqiu.recordermanager.R;
+import com.mingyuechunqiu.recordermanager.constants.Constants;
 import com.mingyuechunqiu.recordermanager.record.RecorderManager;
 import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
@@ -25,6 +26,9 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+
+import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_FRONT;
+import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_NOT_SET;
 
 /**
  * <pre>
@@ -42,7 +46,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private WeakReference<SurfaceView> svVideoRef;
     private WeakReference<AppCompatTextView> tvTimingRef;
     private WeakReference<CircleProgressButton> cpbRecordRef;
-    private WeakReference<AppCompatImageView> ivPlayRef, ivCancelRef, ivConfirmRef, ivBackRef;
+    private WeakReference<AppCompatImageView> ivFlipCameraRef, ivPlayRef, ivCancelRef, ivConfirmRef, ivBackRef;
     private WeakReference<Context> mContextRef;
 
     private RecorderManagerable mManager;
@@ -57,9 +61,11 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private Handler mHandler;
     private boolean hasHandledReleaseRecord;//标记是否处理了录制释放事件
     private int mVideoDuration;//录制视频时长（毫秒）
+    private Constants.CameraType mCameraType;//摄像头类型
 
     RecordVideoDelegate(@NonNull Context context, @NonNull AppCompatTextView tvTiming,
                         @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
+                        @NonNull AppCompatImageView ivFlipCamera,
                         @NonNull AppCompatImageView ivPlay, @NonNull AppCompatImageView ivCancel,
                         @NonNull AppCompatImageView ivConfirm, @NonNull AppCompatImageView ivBack,
                         @NonNull RecordVideoOption option) {
@@ -67,6 +73,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         tvTimingRef = new WeakReference<>(tvTiming);
         svVideoRef = new WeakReference<>(svVideo);
         cpbRecordRef = new WeakReference<>(cpbRecord);
+        ivFlipCameraRef = new WeakReference<>(ivFlipCamera);
         ivPlayRef = new WeakReference<>(ivPlay);
         ivCancelRef = new WeakReference<>(ivCancel);
         ivConfirmRef = new WeakReference<>(ivConfirm);
@@ -84,14 +91,8 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         }
         checkOrCreateRecorderManagerable();
         if (mCamera == null) {
-            mCamera = mManager.initCamera();
-        }
-        try {
-            mCamera.setPreviewDisplay(svVideoRef.get().getHolder());
-            mCamera.startPreview();
-            mCamera.unlock();
-        } catch (IOException e) {
-            e.printStackTrace();
+            mCamera = mManager.initCamera(svVideoRef.get().getHolder());
+            mCameraType = mManager.getCameraType();
         }
     }
 
@@ -110,6 +111,9 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
             return false;
         }
         hasHandledReleaseRecord = false;
+        if (ivFlipCameraRef.get() != null) {
+            ivFlipCameraRef.get().setVisibility(View.GONE);
+        }
         if (ivBackRef.get() != null) {
             ivBackRef.get().setVisibility(View.GONE);
         }
@@ -177,6 +181,16 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         }, finalDelayMillis);
     }
 
+    @Override
+    public void flipCamera() {
+        if (svVideoRef.get() == null) {
+            return;
+        }
+        checkOrCreateRecorderManagerable();
+        mCamera = mManager.flipCamera(svVideoRef.get().getHolder());
+        mCameraType = mManager.getCameraType();
+    }
+
     /**
      * 开始录制视频
      */
@@ -184,6 +198,15 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     public void startRecordVideo() {
         if (svVideoRef.get() == null) {
             return;
+        }
+        checkOrCreateRecorderManagerable();
+        if (mCamera == null) {
+            mCamera = mManager.initCamera(mCameraType, svVideoRef.get().getHolder());
+        }
+        if (mCameraType == CAMERA_FRONT) {
+            mOption.getRecorderOption().setOrientationHint(270);
+        } else {
+            mOption.getRecorderOption().setOrientationHint(90);
         }
         isRecording = mManager.recordVideo(mCamera, svVideoRef.get().getHolder().getSurface(), mOption.getRecorderOption());
     }
@@ -317,7 +340,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         if (mManager == null) {
             return;
         }
-        mManager.releaseCamera(mCamera);
+        mManager.releaseCamera();
         mCamera = null;
     }
 
@@ -350,6 +373,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
             playViewsVisibility = View.GONE;
             recordViewsVisibility = View.VISIBLE;
             tvTimingRef.get().setText(mContextRef.get().getString(R.string.fill_record_timing, "00"));
+            ivFlipCameraRef.get().setVisibility(recordViewsVisibility);
             ivPlayRef.get().setVisibility(playViewsVisibility);
         }
         ivCancelRef.get().setVisibility(playViewsVisibility);
@@ -412,10 +436,12 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         svVideoRef = null;
         tvTimingRef = null;
         cpbRecordRef = null;
+        ivFlipCameraRef = null;
         ivPlayRef = null;
         ivCancelRef = null;
         ivConfirmRef = null;
         ivBackRef = null;
+        mCameraType = CAMERA_NOT_SET;
     }
 
     /**
@@ -433,7 +459,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private void releaseRecorderManager() {
         if (!isReleaseRecord && mManager != null) {
             mManager.release();
-            mManager.releaseCamera(mCamera);
+            mManager = null;
             mCamera = null;
             isReleaseRecord = true;
         }

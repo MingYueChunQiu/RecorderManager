@@ -13,10 +13,8 @@ import android.widget.Toast;
 
 import com.mingyuechunqiu.recordermanager.record.RecorderManager;
 import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
-import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * <pre>
@@ -82,20 +80,13 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        mManager.releaseCamera(mCamera);
+        mManager.releaseCamera();
         mCamera = null;
     }
 
     private void startPreview() {
         if (mCamera == null) {
-            mCamera = mManager.initCamera();
-        }
-        try {
-            mCamera.setPreviewDisplay(svVideo.getHolder());
-            mCamera.startPreview();
-            mCamera.unlock();
-        } catch (IOException e) {
-            e.printStackTrace();
+            mCamera = mManager.initCamera(svVideo.getHolder());
         }
     }
 
@@ -110,7 +101,6 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         if (isRecording && mManager != null) {
             Toast.makeText(this, "录制结束", Toast.LENGTH_SHORT).show();
             mManager.release();
-            mManager.releaseCamera(mCamera);
             mCamera = null;
         }
     }

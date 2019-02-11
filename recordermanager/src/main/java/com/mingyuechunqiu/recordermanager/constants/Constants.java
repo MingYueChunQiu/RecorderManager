@@ -22,4 +22,11 @@ public class Constants {
     public static final String EXTRA_RECORD_VIDEO_DURATION = PREFIX_EXTRA + "record_video_duration";
 
     public static final String SUFFIX_MP4 = ".mp4";//MP4视频格式后缀
+
+    /**
+     * 摄像头类型
+     */
+    public enum CameraType{
+        CAMERA_NOT_SET, CAMERA_FRONT, CAMERA_BACK
+    }
 }

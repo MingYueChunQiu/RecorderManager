@@ -156,6 +156,15 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
     }
 
     /**
+     * 获取翻转摄像头控件
+     *
+     * @return 返回翻转摄像头AppCompatImageView
+     */
+    public AppCompatImageView getFlipCameraView() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getFlipCameraView();
+    }
+
+    /**
      * 获取播放控件
      *
      * @return 返回播放AppCompatImageView

@@ -49,10 +49,11 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
 
     private AppCompatTextView tvTiming;
     private CircleProgressButton cpbRecord;
-    private AppCompatImageView ivPlay, ivCancel, ivConfirm, ivBack;
+    private AppCompatImageView ivFlipCamera, ivPlay, ivCancel, ivConfirm, ivBack;
 
     private RecordVideoOption mOption;
     private RecordVideoDelegateable mDelegateable;
+    private boolean isSurfaceHolderDestroyed;//标记SurfaceHolder是否被销毁了
 
     @Nullable
     @Override
@@ -61,6 +62,7 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         SurfaceView svVideo = view.findViewById(R.id.sv_record_video_screen);
         tvTiming = view.findViewById(R.id.tv_record_video_timing);
         cpbRecord = view.findViewById(R.id.cpb_record_video_record);
+        ivFlipCamera = view.findViewById(R.id.iv_record_video_flip_camera);
         ivPlay = view.findViewById(R.id.iv_record_video_play);
         ivCancel = view.findViewById(R.id.iv_record_video_cancel);
         ivConfirm = view.findViewById(R.id.iv_record_video_confirm);
@@ -100,13 +102,14 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
                 return false;
             }
         });
+        ivFlipCamera.setOnClickListener(this);
         ivPlay.setOnClickListener(this);
         ivCancel.setOnClickListener(this);
         ivConfirm.setOnClickListener(this);
         ivBack.setOnClickListener(this);
         if (getContext() != null) {
             mDelegateable = new RecordVideoDelegate(getContext(), tvTiming, svVideo, cpbRecord,
-                    ivPlay, ivCancel, ivConfirm, ivBack, mOption);
+                    ivFlipCamera, ivPlay, ivCancel, ivConfirm, ivBack, mOption);
         }
         if (getActivity() instanceof KeyBackCallback) {
             ((KeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
@@ -120,6 +123,15 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         }
         checkHasPermissions();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //在红米Note5A上，锁屏没有调用surfaceDestroyed方法，所以要加以判断
+        if (!isSurfaceHolderDestroyed && mDelegateable != null) {
+            mDelegateable.resumePlayVideo(false);
+        }
     }
 
     @Override
@@ -138,6 +150,7 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
             mDelegateable = null;
         }
         mOption = null;
+        isSurfaceHolderDestroyed = false;
     }
 
     @Override
@@ -146,6 +159,10 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         if (id == R.id.sv_record_video_screen) {
             if (mDelegateable != null) {
                 mDelegateable.controlPlayOrPauseVideo();
+            }
+        } else if (id == R.id.iv_record_video_flip_camera) {
+            if (mDelegateable != null) {
+                mDelegateable.flipCamera();
             }
         } else if (id == R.id.iv_record_video_play) {
             if (mDelegateable != null) {
@@ -171,6 +188,7 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         if (mDelegateable != null) {
             mDelegateable.onSurfaceCreated(holder);
         }
+        isSurfaceHolderDestroyed = false;
     }
 
     @Override
@@ -183,6 +201,7 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         if (mDelegateable != null) {
             mDelegateable.releaseCamera();
         }
+        isSurfaceHolderDestroyed = true;
     }
 
     @Override
@@ -269,6 +288,15 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
      */
     public CircleProgressButton getCircleProgressButton() {
         return cpbRecord;
+    }
+
+    /**
+     * 获取翻转摄像头控件
+     *
+     * @return 返回翻转摄像头AppCompatImageView
+     */
+    public AppCompatImageView getFlipCameraView() {
+        return ivFlipCamera;
     }
 
     /**

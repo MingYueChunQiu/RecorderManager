@@ -19,19 +19,20 @@ import java.io.IOException;
  */
 public class RecorderHelper implements Recorderable {
 
-    private static MediaRecorder sRecorder;
+    private RecorderOption mOption;
+    private MediaRecorder mRecorder;
 
     /**
      * 释放资源
      */
     @Override
     public void release() {
-        if (sRecorder != null) {
+        if (mRecorder != null) {
             try {
-                sRecorder.stop();
-                sRecorder.reset();
-                sRecorder.release();
-                sRecorder = null;
+                mRecorder.stop();
+                mRecorder.reset();
+                mRecorder.release();
+                mRecorder = null;
             } catch (RuntimeException stopException) {
                 //录制时间过短stop，会有崩溃异常，所以进行捕获
                 Log.d("RecordVideoDelegate", stopException.getMessage());
@@ -41,14 +42,15 @@ public class RecorderHelper implements Recorderable {
 
     @Override
     public MediaRecorder getMediaRecorder() {
-        if (sRecorder == null) {
-            synchronized (RecorderHelper.class) {
-                if (sRecorder == null) {
-                    sRecorder = new MediaRecorder();
-                }
-            }
+        if (mRecorder == null) {
+            mRecorder = new MediaRecorder();
         }
-        return sRecorder;
+        return mRecorder;
+    }
+
+    @Override
+    public RecorderOption getRecorderOption() {
+        return mOption;
     }
 
     /**
@@ -74,25 +76,26 @@ public class RecorderHelper implements Recorderable {
             return false;
         }
         resetRecorder();
-        sRecorder.setAudioSource(option.getAudioSource());
-        sRecorder.setOutputFormat(option.getOutputFormat());
-        sRecorder.setAudioEncoder(option.getAudioEncoder());
-        if (option.getAudioSamplingRate() > 0) {
-            sRecorder.setAudioSamplingRate(option.getAudioSamplingRate());
+        mOption = option;
+        mRecorder.setAudioSource(mOption.getAudioSource());
+        mRecorder.setOutputFormat(mOption.getOutputFormat());
+        mRecorder.setAudioEncoder(mOption.getAudioEncoder());
+        if (mOption.getAudioSamplingRate() > 0) {
+            mRecorder.setAudioSamplingRate(mOption.getAudioSamplingRate());
         }
-        if (option.getBitRate() > 0) {
-            sRecorder.setAudioEncodingBitRate(option.getBitRate());
+        if (mOption.getBitRate() > 0) {
+            mRecorder.setAudioEncodingBitRate(mOption.getBitRate());
         }
-        if (option.getMaxDuration() > 0) {
-            sRecorder.setMaxDuration(option.getMaxDuration());
+        if (mOption.getMaxDuration() > 0) {
+            mRecorder.setMaxDuration(mOption.getMaxDuration());
         }
-        if (option.getMaxFileSize() > 0) {
-            sRecorder.setMaxFileSize(option.getMaxFileSize());
+        if (mOption.getMaxFileSize() > 0) {
+            mRecorder.setMaxFileSize(mOption.getMaxFileSize());
         }
-        sRecorder.setOutputFile(option.getFilePath());
+        mRecorder.setOutputFile(mOption.getFilePath());
         try {
-            sRecorder.prepare();
-            sRecorder.start();
+            mRecorder.prepare();
+            mRecorder.start();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,34 +130,35 @@ public class RecorderHelper implements Recorderable {
             return false;
         }
         resetRecorder();
-        sRecorder.setCamera(camera);
-        sRecorder.setAudioSource(option.getAudioSource());
-        sRecorder.setVideoSource(option.getVideoSource());
-        sRecorder.setOutputFormat(option.getOutputFormat());
-        sRecorder.setAudioEncoder(option.getAudioEncoder());
-        sRecorder.setVideoEncoder(option.getVideoEncoder());
-        if (option.getBitRate() > 0) {
-            sRecorder.setVideoEncodingBitRate(option.getBitRate());
+        mOption = option;
+        mRecorder.setCamera(camera);
+        mRecorder.setAudioSource(mOption.getAudioSource());
+        mRecorder.setVideoSource(mOption.getVideoSource());
+        mRecorder.setOutputFormat(mOption.getOutputFormat());
+        mRecorder.setAudioEncoder(mOption.getAudioEncoder());
+        mRecorder.setVideoEncoder(mOption.getVideoEncoder());
+        if (mOption.getBitRate() > 0) {
+            mRecorder.setVideoEncodingBitRate(mOption.getBitRate());
         }
-        if (option.getFrameRate() > 0) {
-            sRecorder.setVideoFrameRate(option.getFrameRate());
+        if (mOption.getFrameRate() > 0) {
+            mRecorder.setVideoFrameRate(mOption.getFrameRate());
         }
-        if (option.getVideoWidth() > 0 && option.getVideoHeight() > 0) {
-            sRecorder.setVideoSize(option.getVideoWidth(), option.getVideoHeight());
+        if (mOption.getVideoWidth() > 0 && mOption.getVideoHeight() > 0) {
+            mRecorder.setVideoSize(mOption.getVideoWidth(), mOption.getVideoHeight());
         }
         //（目前录制视频时设置此属性有崩溃风险，留待解决）
 //        if (option.getMaxDuration() > 0) {
 //            sRecorder.setMaxDuration(option.getMaxDuration());
 //        }
-        if (option.getMaxFileSize() > 0) {
-            sRecorder.setMaxFileSize(option.getMaxFileSize());
+        if (mOption.getMaxFileSize() > 0) {
+            mRecorder.setMaxFileSize(mOption.getMaxFileSize());
         }
-        sRecorder.setOrientationHint(option.getOrientationHint());
-        sRecorder.setPreviewDisplay(surface);
-        sRecorder.setOutputFile(option.getFilePath());
+        mRecorder.setOrientationHint(mOption.getOrientationHint());
+        mRecorder.setPreviewDisplay(surface);
+        mRecorder.setOutputFile(mOption.getFilePath());
         try {
-            sRecorder.prepare();
-            sRecorder.start();
+            mRecorder.prepare();
+            mRecorder.start();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -166,10 +170,10 @@ public class RecorderHelper implements Recorderable {
      * 重置多媒体录制器
      */
     private void resetRecorder() {
-        if (sRecorder == null) {
-            sRecorder = getMediaRecorder();
+        if (mRecorder == null) {
+            mRecorder = getMediaRecorder();
         } else {
-            sRecorder.reset();
+            mRecorder.reset();
         }
     }
 }

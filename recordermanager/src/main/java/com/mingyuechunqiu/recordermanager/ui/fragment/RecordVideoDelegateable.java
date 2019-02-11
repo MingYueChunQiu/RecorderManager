@@ -35,6 +35,11 @@ interface RecordVideoDelegateable {
     void releaseToStopRecordVideo(boolean isCancel);
 
     /**
+     * 翻转摄像头
+     */
+    void flipCamera();
+
+    /**
      * 开始录制视频
      */
     void startRecordVideo();

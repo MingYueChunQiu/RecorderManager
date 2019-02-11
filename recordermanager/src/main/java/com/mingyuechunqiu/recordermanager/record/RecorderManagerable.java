@@ -1,6 +1,9 @@
 package com.mingyuechunqiu.recordermanager.record;
 
 import android.hardware.Camera;
+import android.view.SurfaceHolder;
+
+import com.mingyuechunqiu.recordermanager.constants.Constants;
 
 /**
  * <pre>
@@ -18,14 +21,46 @@ public interface RecorderManagerable extends Recorderable {
     /**
      * 初始化相机对象
      *
-     * @return 返回设置好参数的相机
+     * @param holder Surface持有者
+     * @return 返回初始化好的相机对象
      */
-    Camera initCamera();
+    Camera initCamera(SurfaceHolder holder);
+
+    /**
+     * 初始化相机对象
+     *
+     * @param cameraType 指定的摄像头类型
+     * @param holder     Surface持有者
+     * @return 返回初始化好的相机对象
+     */
+    Camera initCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+
+    /**
+     * 翻转摄像头
+     *
+     * @param holder Surface持有者
+     * @return 返回翻转并初始化好的相机对象
+     */
+    Camera flipCamera(SurfaceHolder holder);
+
+    /**
+     * 翻转到指定类型摄像头
+     *
+     * @param cameraType 摄像头类型
+     * @param holder     Surface持有者
+     * @return 返回翻转并初始化好的相机对象
+     */
+    Camera flipCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+
+    /**
+     * 获取当前摄像头类型
+     *
+     * @return 返回摄像头类型
+     */
+    Constants.CameraType getCameraType();
 
     /**
      * 释放相机资源
-     *
-     * @param camera 相机
      */
-    void releaseCamera(Camera camera);
+    void releaseCamera();
 }
