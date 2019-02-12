@@ -140,6 +140,7 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
 想要替换图标资源的话，提供下列名称图片
 
 ```
+record_video_flip_camera.png
 record_video_cancel.png
 record_video_confirm.png
 record_video_play.png
