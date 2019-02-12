@@ -79,6 +79,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         ivConfirmRef = new WeakReference<>(ivConfirm);
         ivBackRef = new WeakReference<>(ivBack);
         mOption = option;
+        mCameraType = CAMERA_NOT_SET;
     }
 
     /**
@@ -91,7 +92,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         }
         checkOrCreateRecorderManagerable();
         if (mCamera == null) {
-            mCamera = mManager.initCamera(svVideoRef.get().getHolder());
+            mCamera = mManager.initCamera(mCameraType, svVideoRef.get().getHolder());
             mCameraType = mManager.getCameraType();
         }
     }

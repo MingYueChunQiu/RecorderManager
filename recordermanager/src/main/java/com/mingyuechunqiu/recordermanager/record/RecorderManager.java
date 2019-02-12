@@ -130,7 +130,8 @@ public class RecorderManager implements RecorderManagerable {
                 mCameraType = CAMERA_FRONT;
                 initCameraParameters(holder);
                 return mCamera;
-            } else if ((cameraType == CAMERA_NOT_SET || cameraType == CAMERA_BACK) &&
+            } else if ((cameraType == null || cameraType == CAMERA_NOT_SET ||
+                    cameraType == CAMERA_BACK) &&
                     cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
                 releaseCamera();
                 mCamera = Camera.open(i);
