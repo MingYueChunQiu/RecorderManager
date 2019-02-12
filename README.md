@@ -1,8 +1,13 @@
 # RecorderManager
+
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
+最新更新：
+1.添加前后摄像头切换功能
+2.重构部分代码
+3.解决相关bug
 ## 一.效果展示
 仿微信界面视频录制
-![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/1/29/1689916e86fa8177?w=1080&h=2280&f=jpeg&s=1116131)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190212103646486.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NsMjAxOGdvZA==,size_16,color_FFFFFF,t_70)
 ![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/1/29/1689916e86ee15a3?w=1080&h=2280&f=jpeg&s=819744)
 2.音频录制界面比较简单，就不放图了
 ## 二.引用
@@ -19,7 +24,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.3'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.4'
 	}
 ```
 ## 三.使用
@@ -48,7 +53,7 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
 通过在Intent中传入下列参数来设置路径和最长时间
 
 ```
-		//设置保存视频录制的文件路径
+				//设置保存视频录制的文件路径
                 intent.putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, "路径名");
                 //设置视频录制的最大时长
                 intent.putExtra(EXTRA_RECORD_VIDEO_MAX_DURATION, 10);
@@ -85,6 +90,15 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
      */
     protected CircleProgressButton getCircleProgressButton() {
         return mRecordVideoFg == null ? null : mRecordVideoFg.getCircleProgressButton();
+    }
+
+	/**
+     * 获取翻转摄像头控件
+     *
+     * @return 返回翻转摄像头AppCompatImageView
+     */
+    public AppCompatImageView getFlipCameraView() {
+        return mRecordVideoFg == null ? null : mRecordVideoFg.getFlipCameraView();
     }
 
     /**
@@ -236,36 +250,124 @@ public class RecorderManager implements RecorderManagerable
 ```
 它们返回的都是RecorderManagerable 接口类型，RecorderManager 是默认的实现类，RecorderManager 内持有一个真正进行操作的Recorderable。
 
+```
+public interface RecorderManagerable extends Recorderable {
+
+    /**
+     * 初始化相机对象
+     *
+     * @param holder Surface持有者
+     * @return 返回初始化好的相机对象
+     */
+    Camera initCamera(SurfaceHolder holder);
+
+    /**
+     * 初始化相机对象
+     *
+     * @param cameraType 指定的摄像头类型
+     * @param holder     Surface持有者
+     * @return 返回初始化好的相机对象
+     */
+    Camera initCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+
+    /**
+     * 翻转摄像头
+     *
+     * @param holder Surface持有者
+     * @return 返回翻转并初始化好的相机对象
+     */
+    Camera flipCamera(SurfaceHolder holder);
+
+    /**
+     * 翻转到指定类型摄像头
+     *
+     * @param cameraType 摄像头类型
+     * @param holder     Surface持有者
+     * @return 返回翻转并初始化好的相机对象
+     */
+    Camera flipCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+
+    /**
+     * 获取当前摄像头类型
+     *
+     * @return 返回摄像头类型
+     */
+    Constants.CameraType getCameraType();
+
+    /**
+     * 释放相机资源
+     */
+    void releaseCamera();
+}
+```
+
 Recorderable是一个接口类型，由实现Recorderable的子类来进行录制操作，默认提供的是RecorderHelper，RecorderHelper实现了Recorderable。
 
 ```
 public interface Recorderable {
 
+/**
+     * 录制音频
+     *
+     * @param path 文件存储路径
+     * @return 返回是否成功开启录制，成功返回true，否则返回false
+     */
     boolean recordAudio(String path);
 
-    boolean recordAudio(RecorderOption bean);
+    /**
+     * 录制音频
+     *
+     * @param option 存储录制信息的对象
+     * @return 返回是否成功开启录制，成功返回true，否则返回false
+     */
+    boolean recordAudio(RecorderOption option);
 
+    /**
+     * 录制视频
+     *
+     * @param camera  相机
+     * @param surface 表面视图
+     * @param path    文件存储路径
+     * @return 返回是否成功开启录制，成功返回true，否则返回false
+     */
     boolean recordVideo(Camera camera, Surface surface, String path);
 
-    boolean recordVideo(Camera camera, Surface surface, RecorderOption bean);
+    /**
+     * 录制视频
+     *
+     * @param camera  相机
+     * @param surface 表面视图
+     * @param option  存储录制信息的对象
+     * @return 返回是否成功开启视频录制，成功返回true，否则返回false
+     */
+    boolean recordVideo(Camera camera, Surface surface, RecorderOption option);
 
+    /**
+     * 释放资源
+     */
     void release();
 
+    /**
+     * 获取录制器
+     *
+     * @return 返回实例对象
+     */
     MediaRecorder getMediaRecorder();
+
+    /**
+     * 获取配置信息对象
+     *
+     * @return 返回实例对象
+     */
+    RecorderOption getRecorderOption();
 }
 ```
 2.拿到后创建相机对象
 
 ```
-if (mCamera == null) {
-            mCamera = mManager.initCamera();
-        }
-        try {
-            mCamera.setPreviewDisplay(svVideoRef.get().getHolder());
-            mCamera.startPreview();
-            mCamera.unlock();
-        } catch (IOException e) {
-            e.printStackTrace();
+		if (mCamera == null) {
+            mCamera = mManager.initCamera(mCameraType, svVideoRef.get().getHolder());
+            mCameraType = mManager.getCameraType();
         }
 ```
 3.录制
@@ -277,7 +379,7 @@ isRecording = mManager.recordVideo(mCamera, svVideoRef.get().getHolder().getSurf
 
 ```
 			mManager.release();
-            mManager.releaseCamera(mCamera);
+            mManager = null;
             mCamera = null;
 ```
 ## 四.总结
