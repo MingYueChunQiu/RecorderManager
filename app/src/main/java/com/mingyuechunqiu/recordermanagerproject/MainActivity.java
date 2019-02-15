@@ -42,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         btnVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!EasyPermissions.hasPermissions(MainActivity.this, permissions)) {
+                    EasyPermissions.requestPermissions(MainActivity.this, "请求拍摄", 1, permissions);
+                    return;
+                }
                 Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                 //设置视频录制的最长时间
                 intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 20);
@@ -54,10 +58,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!EasyPermissions.hasPermissions(MainActivity.this, permissions)) {
-                    EasyPermissions.requestPermissions(MainActivity.this, "请求拍摄", 1, permissions);
-                    return;
-                }
+//                if (!EasyPermissions.hasPermissions(MainActivity.this, permissions)) {
+//                    EasyPermissions.requestPermissions(MainActivity.this, "请求拍摄", 1, permissions);
+//                    return;
+//                }
 //                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
                 startActivityForResult(new Intent(MainActivity.this, RecordVideoActivity.class), 0);
             }
