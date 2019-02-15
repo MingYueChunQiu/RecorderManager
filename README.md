@@ -1,10 +1,11 @@
 # RecorderManager
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
+
 最新更新：
-1.添加前后摄像头切换功能
-2.重构部分代码
-3.解决相关bug
+1.优化动态权限申请和界面样式
+2.提高容错性，升级依赖
+
 ## 一.效果展示
 仿微信界面视频录制
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190212103646486.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NsMjAxOGdvZA==,size_16,color_FFFFFF,t_70)
@@ -24,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.4'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.5'
 	}
 ```
 ## 三.使用
