@@ -1,14 +1,15 @@
 # RecorderManager
 
+
+
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新更新：
-1.优化动态权限申请和界面样式
-2.提高容错性，升级依赖
+最新0.2.6版本更新：
+1.优化框架逻辑，使用工厂模式解耦
 
 ## 一.效果展示
 仿微信界面视频录制
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190212103646486.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NsMjAxOGdvZA==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/2/12/168df9c38e4d10d3?w=1080&h=2280&f=jpeg&s=1065098)
 ![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/1/29/1689916e86ee15a3?w=1080&h=2280&f=jpeg&s=819744)
 2.音频录制界面比较简单，就不放图了
 ## 二.引用
@@ -25,7 +26,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.5'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.6'
 	}
 ```
 ## 三.使用
@@ -226,12 +227,12 @@ public class RecordVideoOption：
         void onClickBack();
     }
 ```
-#### (4).如果想自定义自己的界面，可以直接使用RecorderManager类
-1.创建RecorderManager实例
+#### (4).如果想自定义自己的界面，可以直接使用RecorderManagerable类
+1.通过RecorderManagerFactory获取RecorderManagerable
 ```
-public class RecorderManager implements RecorderManagerable
+public class RecorderManagerFactory {
 
-/**
+    /**
      * 创建录制管理类实例（使用默认录制类）
      *
      * @return 返回录制管理类实例
@@ -249,11 +250,27 @@ public class RecorderManager implements RecorderManagerable
     public static RecorderManagerable newInstance(Recorderable recorderable) {
         return new RecorderManager(recorderable);
     }
+
+}
 ```
 它们返回的都是RecorderManagerable 接口类型，RecorderManager 是默认的实现类，RecorderManager 内持有一个真正进行操作的Recorderable。
 
 ```
 public interface RecorderManagerable extends Recorderable {
+
+/**
+     * 设置录制对象
+     *
+     * @param recorderable 录制对象实例
+     */
+    void setRecorderable(Recorderable recorderable);
+
+    /**
+     * 获取录制对象
+     *
+     * @return 返回录制对象实例
+     */
+    Recorderable getRecorderable();
 
     /**
      * 初始化相机对象
@@ -385,4 +402,4 @@ isRecording = mManager.recordVideo(mCamera, svVideoRef.get().getHolder().getSurf
             mCamera = null;
 ```
 ## 四.总结
-目前来说，大体流程就是这样，更详细的信息请到Github上查看， 后期将添加摄像头切换、闪光灯等更多功能，敬请关注，github地址为 https://github.com/MingYueChunQiu/RecorderManager ，码云地址为 https://gitee.com/MingYueChunQiu/RecorderManager ，如果它能对你有所帮助，请帮忙点个star，有什么建议或意见欢迎反馈。
+目前来说，大体流程就是这样，更详细的信息请到Github上查看， 后期将添加闪光灯等更多功能，敬请关注，github地址为 https://github.com/MingYueChunQiu/RecorderManager ，码云地址为 https://gitee.com/MingYueChunQiu/RecorderManager ，如果它能对你有所帮助，请帮忙点个star，有什么建议或意见欢迎反馈。
