@@ -11,7 +11,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mingyuechunqiu.recordermanager.record.RecorderManager;
+import com.mingyuechunqiu.recordermanager.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
 
 import java.io.File;
@@ -68,7 +68,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (mManager == null) {
-            mManager = RecorderManager.newInstance();
+            mManager = RecorderManagerFactory.newInstance();
         }
         startPreview();
     }

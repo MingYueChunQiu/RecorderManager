@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.constants.Constants;
-import com.mingyuechunqiu.recordermanager.record.RecorderManager;
+import com.mingyuechunqiu.recordermanager.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
@@ -450,7 +450,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      */
     private void checkOrCreateRecorderManagerable() {
         if (mManager == null) {
-            mManager = RecorderManager.newInstance();
+            mManager = RecorderManagerFactory.newInstance();
         }
     }
 

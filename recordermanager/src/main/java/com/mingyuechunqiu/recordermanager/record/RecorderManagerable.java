@@ -19,6 +19,20 @@ import com.mingyuechunqiu.recordermanager.constants.Constants;
 public interface RecorderManagerable extends Recorderable {
 
     /**
+     * 设置录制对象
+     *
+     * @param recorderable 录制对象实例
+     */
+    void setRecorderable(Recorderable recorderable);
+
+    /**
+     * 获取录制对象
+     *
+     * @return 返回录制对象实例
+     */
+    Recorderable getRecorderable();
+
+    /**
      * 初始化相机对象
      *
      * @param holder Surface持有者
@@ -63,4 +77,5 @@ public interface RecorderManagerable extends Recorderable {
      * 释放相机资源
      */
     void releaseCamera();
+
 }

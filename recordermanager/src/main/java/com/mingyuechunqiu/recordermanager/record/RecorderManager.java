@@ -20,52 +20,22 @@ import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.
  *     e-mail : xiyujieit@163.com
  *     time   : 2018/10/31
  *     desc   : 录制管理类，用于调用具体的录制实现类，并提供公共方法
- *              实现Recorderable
+ *              实现RecorderManagerable
  *     version: 1.0
  * </pre>
  */
-public class RecorderManager implements RecorderManagerable {
+class RecorderManager implements RecorderManagerable {
 
     private Recorderable mRecorderable;
     private Camera mCamera;
     private Constants.CameraType mCameraType;
 
-    private RecorderManager(Recorderable recorderable) {
+    RecorderManager(Recorderable recorderable) {
         mRecorderable = recorderable;
         if (mRecorderable == null) {
             mRecorderable = new RecorderHelper();
         }
         mCameraType = CAMERA_NOT_SET;
-    }
-
-    /**
-     * 创建录制管理类实例（使用默认录制类）
-     *
-     * @return 返回录制管理类实例
-     */
-    public static RecorderManagerable newInstance() {
-        return new RecorderManager(new RecorderHelper());
-    }
-
-    /**
-     * 创建录制管理类实例
-     *
-     * @param recorderable 实际录制类
-     * @return 返回录制管理类实例
-     */
-    public static RecorderManagerable newInstance(Recorderable recorderable) {
-        return new RecorderManager(recorderable);
-    }
-
-    public Recorderable getRecorderable() {
-        return mRecorderable;
-    }
-
-    public void setRecorderable(Recorderable recorderable) {
-        if (recorderable == null) {
-            return;
-        }
-        mRecorderable = recorderable;
     }
 
     @Override
@@ -104,6 +74,19 @@ public class RecorderManager implements RecorderManagerable {
     @Override
     public RecorderOption getRecorderOption() {
         return mRecorderable.getRecorderOption();
+    }
+
+    @Override
+    public void setRecorderable(Recorderable recorderable) {
+        if (recorderable == null) {
+            return;
+        }
+        mRecorderable = recorderable;
+    }
+
+    @Override
+    public Recorderable getRecorderable() {
+        return mRecorderable;
     }
 
     /**
