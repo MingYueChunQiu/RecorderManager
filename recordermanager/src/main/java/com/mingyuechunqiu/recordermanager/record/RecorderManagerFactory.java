@@ -18,7 +18,7 @@ public class RecorderManagerFactory {
      * @return 返回录制管理类实例
      */
     public static RecorderManagerable newInstance() {
-        return new RecorderManager(new RecorderHelper());
+        return newInstance(new RecorderHelper());
     }
 
     /**

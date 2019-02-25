@@ -169,7 +169,13 @@ class RecorderManager implements RecorderManagerable {
         isSmoothZoomSupported()返回为false，则不支持变焦，设置zoom出错
         isZoomSupported()返回为true，isSmoothZoomSupported()返回为false，
         可能手机自带的摄像应用支持zoom变焦，只是我们自己的应用就不行了*/
-        if (parameters.isSmoothZoomSupported()) {
+        boolean isCanAutoFocus = false;
+        if ((mCameraType == CAMERA_FRONT && parameters.isSmoothZoomSupported()) ||
+                (mCameraType == CAMERA_BACK &&
+                        (parameters.isSmoothZoomSupported() || parameters.isZoomSupported()))) {
+            isCanAutoFocus = true;
+        }
+        if (isCanAutoFocus) {
             //设置对焦模式
             if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
                 parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
