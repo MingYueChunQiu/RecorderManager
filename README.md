@@ -1,11 +1,10 @@
 # RecorderManager
 
-
-
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.6版本更新：
-1.优化框架逻辑，使用工厂模式解耦
+最新0.2.7版本更新：
+1.优化RecorderManagerFactory
+2.改善自动对焦判断效果
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -26,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.6'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.7'
 	}
 ```
 ## 三.使用
@@ -232,13 +231,13 @@ public class RecordVideoOption：
 ```
 public class RecorderManagerFactory {
 
-    /**
+/**
      * 创建录制管理类实例（使用默认录制类）
      *
      * @return 返回录制管理类实例
      */
     public static RecorderManagerable newInstance() {
-        return new RecorderManager(new RecorderHelper());
+        return newInstance(new RecorderHelper());
     }
 
     /**
