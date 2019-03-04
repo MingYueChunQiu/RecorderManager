@@ -32,47 +32,53 @@ class RecorderManager implements RecorderManagerable {
 
     RecorderManager(Recorderable recorderable) {
         mRecorderable = recorderable;
-        if (mRecorderable == null) {
-            mRecorderable = new RecorderHelper();
-        }
+        checkOrCreateDefaultRecorderable();
         mCameraType = CAMERA_NOT_SET;
     }
 
     @Override
     public boolean recordAudio(String path) {
+        checkOrCreateDefaultRecorderable();
         return mRecorderable.recordAudio(path);
     }
 
     @Override
     public boolean recordAudio(RecorderOption option) {
+        checkOrCreateDefaultRecorderable();
         return mRecorderable.recordAudio(option);
     }
 
     @Override
     public boolean recordVideo(Camera camera, Surface surface, String path) {
+        checkOrCreateDefaultRecorderable();
         return mRecorderable.recordVideo(camera, surface, path);
     }
 
     @Override
     public boolean recordVideo(Camera camera, Surface surface, RecorderOption option) {
+        checkOrCreateDefaultRecorderable();
         return mRecorderable.recordVideo(camera, surface, option);
     }
 
     @Override
     public void release() {
-        mRecorderable.release();
-        mRecorderable = null;
+        if (mRecorderable != null) {
+            mRecorderable.release();
+            mRecorderable = null;
+        }
         releaseCamera();
         mCameraType = CAMERA_NOT_SET;
     }
 
     @Override
     public MediaRecorder getMediaRecorder() {
+        checkOrCreateDefaultRecorderable();
         return mRecorderable.getMediaRecorder();
     }
 
     @Override
     public RecorderOption getRecorderOption() {
+        checkOrCreateDefaultRecorderable();
         return mRecorderable.getRecorderOption();
     }
 
@@ -86,6 +92,7 @@ class RecorderManager implements RecorderManagerable {
 
     @Override
     public Recorderable getRecorderable() {
+        checkOrCreateDefaultRecorderable();
         return mRecorderable;
     }
 
@@ -202,6 +209,15 @@ class RecorderManager implements RecorderManagerable {
             mCamera.unlock();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 检查或者创建默认的录制对象
+     */
+    private void checkOrCreateDefaultRecorderable() {
+        if (mRecorderable == null) {
+            mRecorderable = new RecorderHelper();
         }
     }
 }
