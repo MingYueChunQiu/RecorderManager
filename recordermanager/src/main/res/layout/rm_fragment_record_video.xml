@@ -35,7 +35,7 @@
         android:layout_marginBottom="@dimen/dp_10"
         android:text="@string/fill_record_timing"
         android:textColor="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@id/cpb_record_video_record"
+        app:layout_constraintBottom_toTopOf="@+id/cpb_record_video_record"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
@@ -82,7 +82,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/iv_record_video_confirm"
+        app:layout_constraintRight_toLeftOf="@+id/iv_record_video_confirm"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.85"
         app:layout_constraintWidth_percent="0.16" />
@@ -95,7 +95,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintLeft_toRightOf="@id/iv_record_video_cancel"
+        app:layout_constraintLeft_toRightOf="@+id/iv_record_video_cancel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.85"
@@ -106,10 +106,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:src="@drawable/record_video_pull_down"
-        app:layout_constraintBottom_toBottomOf="@id/cpb_record_video_record"
+        app:layout_constraintBottom_toBottomOf="@+id/cpb_record_video_record"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/cpb_record_video_record"
-        app:layout_constraintTop_toTopOf="@id/cpb_record_video_record"
+        app:layout_constraintRight_toLeftOf="@+id/cpb_record_video_record"
+        app:layout_constraintTop_toTopOf="@+id/cpb_record_video_record"
         app:layout_constraintWidth_percent="0.1" />
 </android.support.constraint.ConstraintLayout>

@@ -53,10 +53,11 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_record_video);
+        setContentView(R.layout.rm_activity_record_video);
         if (!EasyPermissions.hasPermissions(this, permissions)) {
             EasyPermissions.requestPermissions(this, getString(R.string.warn_allow_record_video_permissions), 1, permissions);
             finishActivity();
+            return;
         }
         if (getSupportFragmentManager() != null) {
             String filePath = getFilesDir().getAbsolutePath() + File.separator +
@@ -235,6 +236,6 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
      */
     private void finishActivity() {
         finish();
-        overridePendingTransition(R.anim.fix_stand, R.anim.slide_out_bottom);
+        overridePendingTransition(R.anim.rm_fix_stand, R.anim.rm_slide_out_bottom);
     }
 }
