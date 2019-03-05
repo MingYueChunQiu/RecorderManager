@@ -2,8 +2,8 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.8版本更新：
-1.优化RecorderManager，提高容错性
+最新0.2.9版本更新：
+1.优化布局文件命名，避免冲突
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -24,7 +24,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.8'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.9'
 	}
 ```
 ## 三.使用
@@ -48,7 +48,7 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
 ### 2.视频录制
 #### (1).可以直接使用RecordVideoActivity，实现了仿微信风格的录制界面
 ```
-                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
+                startActivityForResult(new Intent(MainActivity.this, RecordVideoActivity.class));
 ```
 通过在Intent中传入下列参数来设置路径和最长时间
 
