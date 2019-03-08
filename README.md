@@ -1,9 +1,12 @@
 # RecorderManager
 
+
+
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.9版本更新：
-1.优化布局文件命名，避免冲突
+最新0.2.10版本更新： 
+1.优化相机参数设置逻辑
+2.增加RecorderManagerIntercept
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -24,7 +27,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.9'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.10'
 	}
 ```
 ## 三.使用
@@ -43,19 +46,19 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
                     .setAudioSamplingRate(44100)
                     .setBitRate(96000)
                     .setFilePath(path)
-                    .build();
+                    .build());
 ```
 ### 2.视频录制
 #### (1).可以直接使用RecordVideoActivity，实现了仿微信风格的录制界面
 ```
-                startActivityForResult(new Intent(MainActivity.this, RecordVideoActivity.class));
+                startActivityForResult(new Intent(MainActivity.this, RecordVideoActivity.class),0);
 ```
 通过在Intent中传入下列参数来设置路径和最长时间
 
 ```
 				//设置保存视频录制的文件路径
                 intent.putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, "路径名");
-                //设置视频录制的最大时长
+                //设置视频录制的最大时长（默认30秒）
                 intent.putExtra(EXTRA_RECORD_VIDEO_MAX_DURATION, 10);
 ```
 RecordVideoActivity里已经配置好了默认参数，可以直接使用，然后在onActivityResult里拿到视频路径的返回值
@@ -240,13 +243,34 @@ public class RecorderManagerFactory {
     }
 
     /**
+     * 创建录制管理类实例（使用默认录制类）
+     *
+     * @param intercept 录制管理器拦截器
+     * @return 返回录制管理类实例
+     */
+    public static RecorderManagerable newInstance(RecorderManagerInterceptable intercept) {
+        return newInstance(new RecorderHelper(), intercept);
+    }
+
+    /**
      * 创建录制管理类实例
      *
      * @param recorderable 实际录制类
      * @return 返回录制管理类实例
      */
     public static RecorderManagerable newInstance(Recorderable recorderable) {
-        return new RecorderManager(recorderable);
+        return newInstance(recorderable, null);
+    }
+
+    /**
+     * 创建录制管理类实例
+     *
+     * @param recorderable 实际录制类
+     * @param intercept    录制管理器拦截器
+     * @return 返回录制管理类实例
+     */
+    public static RecorderManagerable newInstance(Recorderable recorderable, RecorderManagerInterceptable intercept) {
+        return new RecorderManager(recorderable, intercept);
     }
 
 }
@@ -317,7 +341,12 @@ public interface RecorderManagerable extends Recorderable {
     void releaseCamera();
 }
 ```
+RecorderManagerIntercept实现RecorderManagerInterceptable接口
 
+```
+public interface RecorderManagerInterceptable extends RecorderManagerable, CameraInterceptable {
+}
+```
 Recorderable是一个接口类型，由实现Recorderable的子类来进行录制操作，默认提供的是RecorderHelper，RecorderHelper实现了Recorderable。
 
 ```
