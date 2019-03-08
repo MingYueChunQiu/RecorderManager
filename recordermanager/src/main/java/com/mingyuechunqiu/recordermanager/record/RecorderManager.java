@@ -3,7 +3,6 @@ package com.mingyuechunqiu.recordermanager.record;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.support.v4.util.Pair;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -221,7 +220,6 @@ class RecorderManager implements RecorderManagerable {
         }
         //设置使用机器本身所支持的宽高
         if (!mIntercept.interceptSettingPreviewSize(parameters.getSupportedPreviewSizes())) {
-            Log.d("份", "在");
             Pair<Integer, Integer> mPreviewSize = CameraParamsUtils.getInstance().getSupportSize(
                     parameters.getSupportedPreviewSizes(), 0, 0);
             if (mPreviewSize != null && mPreviewSize.first != null && mPreviewSize.second != null) {
@@ -229,7 +227,6 @@ class RecorderManager implements RecorderManagerable {
             }
         }
         if (!mIntercept.interceptSettingPictureSize(parameters.getSupportedPictureSizes())) {
-            Log.d("份2", "在");
             Pair<Integer, Integer> mPictureSize = CameraParamsUtils.getInstance().getSupportSize(
                     parameters.getSupportedPictureSizes(), 0, 0);
             if (mPictureSize != null && mPictureSize.first != null && mPictureSize.second != null) {

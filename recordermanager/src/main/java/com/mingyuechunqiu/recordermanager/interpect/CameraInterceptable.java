@@ -10,7 +10,7 @@ import java.util.List;
  *     Github : https://github.com/MingYueChunQiu
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/3/8
- *     desc   :
+ *     desc   : 相机相关拦截器接口
  *     version: 1.0
  * </pre>
  */
