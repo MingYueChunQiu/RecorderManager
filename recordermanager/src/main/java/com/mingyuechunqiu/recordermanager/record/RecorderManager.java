@@ -2,13 +2,16 @@ package com.mingyuechunqiu.recordermanager.record;
 
 import android.hardware.Camera;
 import android.media.MediaRecorder;
+import android.support.v4.util.Pair;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.mingyuechunqiu.recordermanager.constants.Constants;
+import com.mingyuechunqiu.recordermanager.interpect.RecorderManagerIntercept;
+import com.mingyuechunqiu.recordermanager.utils.CameraParamsUtils;
 
 import java.io.IOException;
-import java.util.List;
 
 import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_BACK;
 import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_FRONT;
@@ -29,61 +32,79 @@ class RecorderManager implements RecorderManagerable {
     private Recorderable mRecorderable;
     private Camera mCamera;
     private Constants.CameraType mCameraType;
+    private RecorderManagerIntercept mIntercept;
 
     RecorderManager(Recorderable recorderable) {
+        this(recorderable, null);
+    }
+
+    RecorderManager(Recorderable recorderable, RecorderManagerIntercept intercept) {
         mRecorderable = recorderable;
         checkOrCreateDefaultRecorderable();
         mCameraType = CAMERA_NOT_SET;
+        mIntercept = intercept;
+        if (mIntercept == null) {
+            mIntercept = new RecorderManagerIntercept();
+        }
     }
 
     @Override
     public boolean recordAudio(String path) {
         checkOrCreateDefaultRecorderable();
+        mIntercept.recordAudio(path);
         return mRecorderable.recordAudio(path);
     }
 
     @Override
     public boolean recordAudio(RecorderOption option) {
         checkOrCreateDefaultRecorderable();
+        mIntercept.recordAudio(option);
         return mRecorderable.recordAudio(option);
     }
 
     @Override
     public boolean recordVideo(Camera camera, Surface surface, String path) {
         checkOrCreateDefaultRecorderable();
+        mIntercept.recordVideo(camera, surface, path);
         return mRecorderable.recordVideo(camera, surface, path);
     }
 
     @Override
     public boolean recordVideo(Camera camera, Surface surface, RecorderOption option) {
         checkOrCreateDefaultRecorderable();
+        mIntercept.recordVideo(camera, surface, option);
         return mRecorderable.recordVideo(camera, surface, option);
     }
 
     @Override
     public void release() {
+        mIntercept.release();
         if (mRecorderable != null) {
             mRecorderable.release();
             mRecorderable = null;
         }
         releaseCamera();
         mCameraType = CAMERA_NOT_SET;
+        mIntercept = null;
     }
 
     @Override
     public MediaRecorder getMediaRecorder() {
         checkOrCreateDefaultRecorderable();
+        mIntercept.getMediaRecorder();
         return mRecorderable.getMediaRecorder();
     }
 
     @Override
     public RecorderOption getRecorderOption() {
         checkOrCreateDefaultRecorderable();
+        mIntercept.getRecorderOption();
         return mRecorderable.getRecorderOption();
     }
 
     @Override
     public void setRecorderable(Recorderable recorderable) {
+        mIntercept.setRecorderable(recorderable);
         if (recorderable == null) {
             return;
         }
@@ -93,6 +114,7 @@ class RecorderManager implements RecorderManagerable {
     @Override
     public Recorderable getRecorderable() {
         checkOrCreateDefaultRecorderable();
+        mIntercept.getRecorderable();
         return mRecorderable;
     }
 
@@ -103,11 +125,13 @@ class RecorderManager implements RecorderManagerable {
      */
     @Override
     public Camera initCamera(SurfaceHolder holder) {
+        mIntercept.initCamera(holder);
         return initCamera(CAMERA_BACK, holder);
     }
 
     @Override
     public Camera initCamera(Constants.CameraType cameraType, SurfaceHolder holder) {
+        mIntercept.initCamera(cameraType, holder);
         int numberOfCameras = Camera.getNumberOfCameras();
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
         for (int i = 0; i < numberOfCameras; i++) {
@@ -135,11 +159,13 @@ class RecorderManager implements RecorderManagerable {
 
     @Override
     public Camera flipCamera(SurfaceHolder holder) {
+        mIntercept.flipCamera(holder);
         return flipCamera(mCameraType == CAMERA_BACK ? CAMERA_FRONT : CAMERA_BACK, holder);
     }
 
     @Override
     public Camera flipCamera(Constants.CameraType cameraType, SurfaceHolder holder) {
+        mIntercept.flipCamera(cameraType, holder);
         if (mCameraType == cameraType) {
             return null;
         }
@@ -148,6 +174,7 @@ class RecorderManager implements RecorderManagerable {
 
     @Override
     public Constants.CameraType getCameraType() {
+        mIntercept.getCameraType();
         return mCameraType;
     }
 
@@ -156,6 +183,7 @@ class RecorderManager implements RecorderManagerable {
      */
     @Override
     public void releaseCamera() {
+        mIntercept.releaseCamera();
         if (mCamera == null) {
             return;
         }
@@ -163,6 +191,7 @@ class RecorderManager implements RecorderManagerable {
         mCamera.lock();
         mCamera.release();
         mCamera = null;
+        CameraParamsUtils.getInstance().release();
     }
 
     /**
@@ -191,16 +220,22 @@ class RecorderManager implements RecorderManagerable {
             }
         }
         //设置使用机器本身所支持的宽高
-        int previewWidth = 0, previewHeight = 0;
-        List<Camera.Size> previewSizes = parameters.getSupportedPreviewSizes();
-        for (Camera.Size size : previewSizes) {
-            if (size.width > previewWidth && size.height > previewHeight) {
-                previewWidth = size.width;
-                previewHeight = size.height;
+        if (!mIntercept.interceptSettingPreviewSize(parameters.getSupportedPreviewSizes())) {
+            Log.d("份", "在");
+            Pair<Integer, Integer> mPreviewSize = CameraParamsUtils.getInstance().getSupportSize(
+                    parameters.getSupportedPreviewSizes(), 0, 0);
+            if (mPreviewSize != null && mPreviewSize.first != null && mPreviewSize.second != null) {
+                parameters.setPreviewSize(mPreviewSize.first, mPreviewSize.second);
             }
         }
-        parameters.setPreviewSize(previewWidth, previewHeight);
-        parameters.setPictureSize(previewWidth, previewHeight);
+        if (!mIntercept.interceptSettingPictureSize(parameters.getSupportedPictureSizes())) {
+            Log.d("份2", "在");
+            Pair<Integer, Integer> mPictureSize = CameraParamsUtils.getInstance().getSupportSize(
+                    parameters.getSupportedPictureSizes(), 0, 0);
+            if (mPictureSize != null && mPictureSize.first != null && mPictureSize.second != null) {
+                parameters.setPictureSize(mPictureSize.first, mPictureSize.second);
+            }
+        }
         mCamera.setParameters(parameters);
         mCamera.setDisplayOrientation(90);
         try {
