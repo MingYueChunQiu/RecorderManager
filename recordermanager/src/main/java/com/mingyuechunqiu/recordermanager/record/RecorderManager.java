@@ -8,6 +8,7 @@ import android.view.SurfaceHolder;
 
 import com.mingyuechunqiu.recordermanager.constants.Constants;
 import com.mingyuechunqiu.recordermanager.interpect.RecorderManagerIntercept;
+import com.mingyuechunqiu.recordermanager.interpect.RecorderManagerInterceptable;
 import com.mingyuechunqiu.recordermanager.utils.CameraParamsUtils;
 
 import java.io.IOException;
@@ -31,13 +32,13 @@ class RecorderManager implements RecorderManagerable {
     private Recorderable mRecorderable;
     private Camera mCamera;
     private Constants.CameraType mCameraType;
-    private RecorderManagerIntercept mIntercept;
+    private RecorderManagerInterceptable mIntercept;
 
     RecorderManager(Recorderable recorderable) {
         this(recorderable, null);
     }
 
-    RecorderManager(Recorderable recorderable, RecorderManagerIntercept intercept) {
+    RecorderManager(Recorderable recorderable, RecorderManagerInterceptable intercept) {
         mRecorderable = recorderable;
         checkOrCreateDefaultRecorderable();
         mCameraType = CAMERA_NOT_SET;

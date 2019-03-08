@@ -6,7 +6,6 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.mingyuechunqiu.recordermanager.constants.Constants;
-import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
 import com.mingyuechunqiu.recordermanager.record.RecorderOption;
 import com.mingyuechunqiu.recordermanager.record.Recorderable;
 
@@ -19,10 +18,11 @@ import java.util.List;
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/3/8
  *     desc   : 录制管理器拦截类
+ *              实现RecorderManagerInterceptable
  *     version: 1.0
  * </pre>
  */
-public class RecorderManagerIntercept implements RecorderManagerable, CameraInterceptable {
+public class RecorderManagerIntercept implements RecorderManagerInterceptable {
 
     @Override
     public void setRecorderable(Recorderable recorderable) {

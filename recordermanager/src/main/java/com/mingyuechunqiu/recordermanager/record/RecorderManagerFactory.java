@@ -1,6 +1,6 @@
 package com.mingyuechunqiu.recordermanager.record;
 
-import com.mingyuechunqiu.recordermanager.interpect.RecorderManagerIntercept;
+import com.mingyuechunqiu.recordermanager.interpect.RecorderManagerInterceptable;
 
 /**
  * <pre>
@@ -29,7 +29,7 @@ public class RecorderManagerFactory {
      * @param intercept 录制管理器拦截器
      * @return 返回录制管理类实例
      */
-    public static RecorderManagerable newInstance(RecorderManagerIntercept intercept) {
+    public static RecorderManagerable newInstance(RecorderManagerInterceptable intercept) {
         return newInstance(new RecorderHelper(), intercept);
     }
 
@@ -50,7 +50,7 @@ public class RecorderManagerFactory {
      * @param intercept    录制管理器拦截器
      * @return 返回录制管理类实例
      */
-    public static RecorderManagerable newInstance(Recorderable recorderable, RecorderManagerIntercept intercept) {
+    public static RecorderManagerable newInstance(Recorderable recorderable, RecorderManagerInterceptable intercept) {
         return new RecorderManager(recorderable, intercept);
     }
 }
