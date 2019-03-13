@@ -265,6 +265,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         }
         if (mMediaPlayer == null) {
             mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setScreenOnWhilePlaying(true);
         }
         try {
             mMediaPlayer.setDataSource(mOption.getRecorderOption().getFilePath());
@@ -288,7 +289,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     public void pausePlayVideo(boolean controlViews) {
         if (isInPlayingState && mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
-            if (controlViews && ivPlayRef.get() != null) {
+            if (ivPlayRef.get() != null) {
                 ivPlayRef.get().setVisibility(View.VISIBLE);
             }
         }
@@ -302,7 +303,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         if (isInPlayingState && mMediaPlayer != null && svVideoRef.get() != null) {
             mMediaPlayer.setDisplay(svVideoRef.get().getHolder());
             mMediaPlayer.start();
-            if (controlViews && ivPlayRef.get() != null) {
+            if (ivPlayRef.get() != null) {
                 ivPlayRef.get().setVisibility(View.GONE);
             }
         }
@@ -391,6 +392,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      */
     @Override
     public void onSurfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
+        surfaceHolder.setKeepScreenOn(true);
         if (!isInPlayingState) {
             startPreview();
             return;

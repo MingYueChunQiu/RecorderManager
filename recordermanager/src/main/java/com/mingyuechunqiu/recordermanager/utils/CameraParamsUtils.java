@@ -20,19 +20,19 @@ import java.util.List;
  */
 public class CameraParamsUtils {
 
-    private static volatile CameraParamsUtils mUtils;
+    private static volatile CameraParamsUtils sUtils;
 
     private SizeComparator mSizeComparator;
 
     public static CameraParamsUtils getInstance() {
-        if (mUtils == null) {
+        if (sUtils == null) {
             synchronized (CameraParamsUtils.class) {
-                if (mUtils == null) {
-                    mUtils = new CameraParamsUtils();
+                if (sUtils == null) {
+                    sUtils = new CameraParamsUtils();
                 }
             }
         }
-        return mUtils;
+        return sUtils;
     }
 
     private CameraParamsUtils() {
@@ -64,7 +64,7 @@ public class CameraParamsUtils {
 
     public void release() {
         mSizeComparator = null;
-        mUtils = null;
+        sUtils = null;
     }
 
     /**

@@ -193,7 +193,7 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        holder.setKeepScreenOn(true);
     }
 
     @Override
