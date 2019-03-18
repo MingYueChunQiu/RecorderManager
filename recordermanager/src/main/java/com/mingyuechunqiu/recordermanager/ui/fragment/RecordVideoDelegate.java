@@ -4,6 +4,7 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -43,6 +44,8 @@ import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.
  */
 class RecordVideoDelegate implements RecordVideoDelegateable {
 
+    private static final int MSG_STOP_RECORD = 0x00;
+
     private WeakReference<SurfaceView> svVideoRef;
     private WeakReference<AppCompatTextView> tvTimingRef;
     private WeakReference<CircleProgressButton> cpbRecordRef;
@@ -55,6 +58,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private boolean isRecording;//标记是否正在录制中
     private boolean isReleaseRecord;//标记是否已经释放了资源
     private long mTiming;//计时数值
+    private boolean needStopDelayed;//标记是否需要延迟停止
     private Disposable mTimingDisposable;//用于计时
     private boolean isInPlayingState;//标记是否处于播放视频状态
     private MediaPlayer mMediaPlayer;
@@ -151,35 +155,20 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
             return;
         }
         hasHandledReleaseRecord = true;
-        if (mHandler == null) {
-            mHandler = new Handler();
-        }
         //防止用户按下就抬起，导致MediaRecorder初始化还没完成就release导致报错
-        int delayMillis = 0;
-        if (mTiming < 1) {
-            delayMillis = 1000;
+
+        if (mHandler == null) {
+            mHandler = new MyHandler(this);
+        } else {
+            mHandler.removeMessages(MSG_STOP_RECORD);
         }
-        final int finalDelayMillis = delayMillis;
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (finalDelayMillis == 1000) {
-                    //小于规定时长，不进入播放环节，重置资源
-                    if (mContextRef.get() != null) {
-                        Toast.makeText(mContextRef.get(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
-                    }
-                    releaseRecorderManager();
-                    releaseTiming();
-                    isRecording = false;
-                    resetResource();
-                } else {
-                    if (stopRecordVideo() && !isCancel) {
-                        playVideo();
-                        controlRecordOrPlayVisibility(true);
-                    }
-                }
-            }
-        }, finalDelayMillis);
+        if (mTiming < 1) {
+            needStopDelayed = true;
+        }
+        Message message = mHandler.obtainMessage();
+        message.what = MSG_STOP_RECORD;
+        message.arg1 = isCancel ? 1 : 0;
+        mHandler.sendMessageDelayed(message, needStopDelayed ? 1200 : 0);
     }
 
     @Override
@@ -430,6 +419,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         stopRecordVideo();
         isRecording = false;
         isReleaseRecord = false;
+        needStopDelayed = false;
         mTiming = 0;
         mVideoDuration = 0;
         releaseMediaPlayer();
@@ -465,6 +455,37 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
             mManager = null;
             mCamera = null;
             isReleaseRecord = true;
+        }
+    }
+
+    private static class MyHandler extends Handler {
+
+        private RecordVideoDelegate mDelegate;
+
+        MyHandler(RecordVideoDelegate delegate) {
+            mDelegate = delegate;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == MSG_STOP_RECORD) {
+                if (mDelegate.needStopDelayed) {
+                    mDelegate.needStopDelayed = false;
+                    //小于规定时长，不进入播放环节，重置资源
+                    if (mDelegate.mContextRef.get() != null) {
+                        Toast.makeText(mDelegate.mContextRef.get(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
+                    }
+                    mDelegate.releaseRecorderManager();
+                    mDelegate.releaseTiming();
+                    mDelegate.isRecording = false;
+                    mDelegate.resetResource();
+                } else {
+                    if (mDelegate.stopRecordVideo() && msg.arg1 == 0) {
+                        mDelegate.playVideo();
+                        mDelegate.controlRecordOrPlayVisibility(true);
+                    }
+                }
+            }
         }
     }
 }

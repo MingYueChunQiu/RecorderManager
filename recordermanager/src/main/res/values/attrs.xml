@@ -12,7 +12,9 @@
         <attr name="cpb_idle_ring_width" format="dimension" />
         <attr name="cpb_pressed_ring_width" format="dimension" />
         <attr name="cpb_released_ring_width" format="dimension" />
-        <attr name="cpb_ring_padding" format="dimension" />
+        <attr name="cpb_idle_inner_padding" format="dimension" />
+        <attr name="cpb_pressed_inner_padding" format="dimension" />
+        <attr name="cpb_released_inner_padding" format="dimension" />
         <attr name="cpb_idle_ring_visible" format="boolean" />
         <attr name="cpb_pressed_ring_visible" format="boolean" />
         <attr name="cpb_released_ring_visible" format="boolean" />
