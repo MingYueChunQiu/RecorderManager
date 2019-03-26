@@ -115,7 +115,7 @@ interface RecordVideoDelegateable {
     void onCompleteRecordVideo();
 
     /**
-     * 进入点击返回键时间
+     * 进入点击返回键事件
      */
     void onClickBack();
 
