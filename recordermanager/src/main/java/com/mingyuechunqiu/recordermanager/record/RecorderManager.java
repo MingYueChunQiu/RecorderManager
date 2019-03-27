@@ -218,7 +218,11 @@ class RecorderManager implements RecorderManagerable {
             return;
         }
         mCamera.stopPreview();
-        mCamera.lock();
+        try {
+            mCamera.reconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         mCamera.release();
         mCamera = null;
         CameraParamsUtils.getInstance().release();
