@@ -325,6 +325,8 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
 
     /**
      * 释放相机资源
+     *
+     * @param giveUpCamera 是否放弃相机
      */
     @Override
     public void releaseCamera(boolean giveUpCamera) {

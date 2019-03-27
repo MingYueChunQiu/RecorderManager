@@ -207,7 +207,9 @@ class RecorderManager implements RecorderManagerable {
     }
 
     /**
-     * 释放相机
+     * 释放相机资源
+     *
+     * @param giveUpCamera 是否放弃相机
      */
     @Override
     public void releaseCamera(boolean giveUpCamera) {
