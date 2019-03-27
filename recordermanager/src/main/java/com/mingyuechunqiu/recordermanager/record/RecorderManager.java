@@ -218,6 +218,7 @@ class RecorderManager implements RecorderManagerable {
             return;
         }
         mCamera.stopPreview();
+        //没有这句翻转前后摄像头时会崩溃，不能打开相机服务
         try {
             mCamera.reconnect();
         } catch (IOException e) {
