@@ -59,7 +59,7 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
     }
 
     @Override
-    public void releaseCamera(boolean giveUpCamera) {
+    public void releaseCamera() {
     }
 
     @Override

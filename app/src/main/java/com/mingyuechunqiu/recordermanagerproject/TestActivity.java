@@ -80,7 +80,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        mManager.releaseCamera(false);
+        mManager.releaseCamera();
         mCamera = null;
     }
 

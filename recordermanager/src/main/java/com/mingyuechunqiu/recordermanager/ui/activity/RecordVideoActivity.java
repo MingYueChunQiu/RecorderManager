@@ -87,19 +87,11 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
                                 getIntent().putExtra(EXTRA_RECORD_VIDEO_DURATION, videoDuration);
                                 setResult(RESULT_OK, getIntent());
                             }
-                            //关键，必须有，否则在自己项目中应用库时从管理台清掉应用再进相机无法打开呈现白屏
-                            if (mRecordVideoFg != null) {
-                                mRecordVideoFg.unLockCamera(true);
-                            }
                             finishActivity();
                         }
 
                         @Override
                         public void onClickBack() {
-                            //关键，必须有，否则在自己项目中应用库时从管理台清掉应用再进相机无法打开呈现白屏
-                            if (mRecordVideoFg != null) {
-                                mRecordVideoFg.unLockCamera(true);
-                            }
                             finishActivity();
                         }
                     }).build();

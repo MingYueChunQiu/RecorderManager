@@ -54,7 +54,6 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
     private RecordVideoOption mOption;
     private RecordVideoDelegateable mDelegateable;
     private boolean isSurfaceHolderDestroyed;//标记SurfaceHolder是否被销毁了
-    private boolean giveUpCamera;//标记是否放弃相机资源
 
     @Nullable
     @Override
@@ -152,7 +151,6 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         }
         mOption = null;
         isSurfaceHolderDestroyed = false;
-        giveUpCamera = false;
     }
 
     @Override
@@ -201,7 +199,7 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (mDelegateable != null) {
-            mDelegateable.releaseCamera(giveUpCamera);
+            mDelegateable.releaseCamera();
         }
         isSurfaceHolderDestroyed = true;
     }
@@ -272,10 +270,6 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
             }
         }
         return fragment;
-    }
-
-    public void unLockCamera(boolean unLock) {
-        giveUpCamera = unLock;
     }
 
     /**
