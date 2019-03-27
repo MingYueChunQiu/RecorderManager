@@ -327,11 +327,11 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 释放相机资源
      */
     @Override
-    public void releaseCamera() {
+    public void releaseCamera(boolean giveUpCamera) {
         if (mManager == null) {
             return;
         }
-        mManager.releaseCamera();
+        mManager.releaseCamera(giveUpCamera);
         mCamera = null;
     }
 

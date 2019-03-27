@@ -94,7 +94,7 @@ class RecorderManager implements RecorderManagerable {
             mRecorderable.release();
             mRecorderable = null;
         }
-        releaseCamera();
+        releaseCamera(true);
         mCameraType = CAMERA_NOT_SET;
     }
 
@@ -161,7 +161,7 @@ class RecorderManager implements RecorderManagerable {
             //如果是指定前置摄像头，翻转至前置，否则全部指定为后置摄像头
             if (cameraType == CAMERA_FRONT &&
                     cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                releaseCamera();
+                releaseCamera(false);
                 mCamera = Camera.open(i);
                 mCameraType = CAMERA_FRONT;
                 initCameraParameters(holder);
@@ -169,7 +169,7 @@ class RecorderManager implements RecorderManagerable {
             } else if ((cameraType == null || cameraType == CAMERA_NOT_SET ||
                     cameraType == CAMERA_BACK) &&
                     cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                releaseCamera();
+                releaseCamera(false);
                 mCamera = Camera.open(i);
                 mCameraType = CAMERA_BACK;
                 initCameraParameters(holder);
@@ -210,19 +210,21 @@ class RecorderManager implements RecorderManagerable {
      * 释放相机
      */
     @Override
-    public void releaseCamera() {
+    public void releaseCamera(boolean giveUpCamera) {
         if (mIntercept != null) {
-            mIntercept.releaseCamera();
+            mIntercept.releaseCamera(giveUpCamera);
         }
         if (mCamera == null) {
             return;
         }
         mCamera.stopPreview();
-        //没有这句翻转前后摄像头时会崩溃，不能打开相机服务
-        try {
-            mCamera.reconnect();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!giveUpCamera) {
+            //没有这句翻转前后摄像头时会崩溃，不能打开相机服务
+            try {
+                mCamera.reconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         mCamera.release();
         mCamera = null;

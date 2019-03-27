@@ -87,6 +87,9 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
                                 getIntent().putExtra(EXTRA_RECORD_VIDEO_DURATION, videoDuration);
                                 setResult(RESULT_OK, getIntent());
                             }
+                            if (mRecordVideoFg != null) {
+                                mRecordVideoFg.unLockCamera(true);
+                            }
                             finishActivity();
                         }
 

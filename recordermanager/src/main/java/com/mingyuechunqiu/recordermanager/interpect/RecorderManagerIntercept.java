@@ -26,7 +26,6 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
 
     @Override
     public void setRecorderable(Recorderable recorderable) {
-
     }
 
     @Override
@@ -60,8 +59,7 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
     }
 
     @Override
-    public void releaseCamera() {
-
+    public void releaseCamera(boolean giveUpCamera) {
     }
 
     @Override
@@ -86,7 +84,6 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
 
     @Override
     public void release() {
-
     }
 
     @Override

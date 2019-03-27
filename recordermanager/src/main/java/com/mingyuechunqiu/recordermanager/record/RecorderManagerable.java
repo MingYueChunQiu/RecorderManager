@@ -75,7 +75,9 @@ public interface RecorderManagerable extends Recorderable {
 
     /**
      * 释放相机资源
+     *
+     * @param giveUpCamera 是否放弃相机
      */
-    void releaseCamera();
+    void releaseCamera(boolean giveUpCamera);
 
 }

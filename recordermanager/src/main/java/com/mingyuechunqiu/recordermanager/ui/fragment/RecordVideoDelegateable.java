@@ -87,8 +87,10 @@ interface RecordVideoDelegateable {
 
     /**
      * 释放相机资源
+     *
+     * @param giveUpCamera 是否放弃相机
      */
-    void releaseCamera();
+    void releaseCamera(boolean giveUpCamera);
 
     /**
      * 重置资源进行下次拍摄
