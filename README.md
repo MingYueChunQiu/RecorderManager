@@ -1,10 +1,12 @@
 # RecorderManager
 
 
+
+
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.16版本更新： 
-1.优化相机调用
+最新0.2.17版本更新： 
+1.重构项目框架，PBF分包，MVP模式
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -25,7 +27,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.16'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.17'
 	}
 ```
 ## 三.使用
