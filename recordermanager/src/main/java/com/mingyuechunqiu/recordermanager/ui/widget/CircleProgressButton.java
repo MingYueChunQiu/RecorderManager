@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.mingyuechunqiu.recordermanager.R;
-import com.mingyuechunqiu.recordermanager.utils.ScreenUtils;
+import com.mingyuechunqiu.recordermanager.util.ScreenUtils;
 
 /**
  * <pre>

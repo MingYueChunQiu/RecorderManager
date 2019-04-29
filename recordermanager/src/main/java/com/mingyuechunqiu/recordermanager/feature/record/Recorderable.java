@@ -4,6 +4,8 @@ import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.view.Surface;
 
+import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
+
 /**
  * <pre>
  *     author : 明月春秋

@@ -5,6 +5,8 @@ import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
 
+import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
+
 import java.io.IOException;
 
 /**

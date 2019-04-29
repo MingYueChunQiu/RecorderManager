@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.ui.activity;
+package com.mingyuechunqiu.recordermanager.feature.main.container;
 
 import android.Manifest;
 import android.os.Bundle;
@@ -10,9 +10,10 @@ import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 
 import com.mingyuechunqiu.recordermanager.R;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderOption;
-import com.mingyuechunqiu.recordermanager.ui.fragment.RecordVideoFragment;
-import com.mingyuechunqiu.recordermanager.ui.fragment.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
+import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.ui.activity.BaseRecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.File;
@@ -21,10 +22,10 @@ import java.util.List;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_DURATION;
-import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
-import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_MAX_DURATION;
-import static com.mingyuechunqiu.recordermanager.constants.Constants.SUFFIX_MP4;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_DURATION;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_MAX_DURATION;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX_MP4;
 
 /**
  * <pre>

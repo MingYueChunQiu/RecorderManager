@@ -1,11 +1,11 @@
-package com.mingyuechunqiu.recordermanager.ui.fragment;
+package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.KeyEvent;
@@ -16,9 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mingyuechunqiu.recordermanager.R;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderOption;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
-import com.mingyuechunqiu.recordermanager.ui.activity.RecordVideoActivity;
+import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
+import com.mingyuechunqiu.recordermanager.ui.fragment.BasePresenterFragment;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.File;
@@ -38,7 +40,8 @@ import pub.devrel.easypermissions.EasyPermissions;
  *     version: 1.0
  * </pre>
  */
-public class RecordVideoFragment extends Fragment implements View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
+public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View<RecordVideoContract.Presenter>, RecordVideoContract.Presenter>
+        implements RecordVideoContract.View<RecordVideoContract.Presenter>, View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
 
     private static final int REQUEST_RECORD_VIDEO = 1;
 
@@ -48,18 +51,18 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
     };
 
     private AppCompatTextView tvTiming;
+    private SurfaceView svVideo;
     private CircleProgressButton cpbRecord;
     private AppCompatImageView ivFlipCamera, ivPlay, ivCancel, ivConfirm, ivBack;
 
     private RecordVideoOption mOption;
-    private RecordVideoDelegateable mDelegateable;
     private boolean isSurfaceHolderDestroyed;//标记SurfaceHolder是否被销毁了
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.rm_fragment_record_video, container, false);
-        SurfaceView svVideo = view.findViewById(R.id.sv_record_video_screen);
+        svVideo = view.findViewById(R.id.sv_record_video_screen);
         tvTiming = view.findViewById(R.id.tv_record_video_timing);
         cpbRecord = view.findViewById(R.id.cpb_record_video_record);
         ivFlipCamera = view.findViewById(R.id.iv_record_video_flip_camera);
@@ -75,10 +78,10 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
             @Override
             public boolean onPreProgress(CircleProgressButton v) {
-                if (!checkHasPermissions() || mDelegateable == null) {
+                if (!checkHasPermissions() || mPresenter == null) {
                     return false;
                 }
-                return mDelegateable.pressToStartRecordVideo();
+                return mPresenter.pressToStartRecordVideo();
             }
 
             @Override
@@ -88,16 +91,16 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
 
             @Override
             public int onReleaseProgress(CircleProgressButton v) {
-                if (mDelegateable != null) {
-                    mDelegateable.releaseToStopRecordVideo(false);
+                if (mPresenter != null) {
+                    mPresenter.releaseToStopRecordVideo(false);
                 }
                 return 360;
             }
 
             @Override
             public boolean onCancelProgress(CircleProgressButton v) {
-                if (mDelegateable != null) {
-                    mDelegateable.releaseToStopRecordVideo(true);
+                if (mPresenter != null) {
+                    mPresenter.releaseToStopRecordVideo(true);
                 }
                 return false;
             }
@@ -107,16 +110,12 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         ivCancel.setOnClickListener(this);
         ivConfirm.setOnClickListener(this);
         ivBack.setOnClickListener(this);
-        if (getContext() != null) {
-            mDelegateable = new RecordVideoDelegate(getContext(), tvTiming, svVideo, cpbRecord,
-                    ivFlipCamera, ivPlay, ivCancel, ivConfirm, ivBack, mOption);
-        }
         if (getActivity() instanceof KeyBackCallback) {
             ((KeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
                 @Override
                 public boolean onClickKeyBack(KeyEvent event) {
-                    if (mDelegateable != null) {
-                        mDelegateable.onClickBack();
+                    if (mPresenter != null) {
+                        mPresenter.onClickBack();
                         return true;
                     }
                     return false;
@@ -124,6 +123,8 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
             });
         }
         checkHasPermissions();
+        mPresenter.initView(tvTiming, svVideo, cpbRecord, ivFlipCamera, ivPlay,
+                ivCancel, ivConfirm, ivBack, mOption);
         return view;
     }
 
@@ -131,64 +132,75 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
         //在红米Note5A上，锁屏没有调用surfaceDestroyed方法，所以要加以判断
-        if (!isSurfaceHolderDestroyed && mDelegateable != null) {
-            mDelegateable.resumePlayVideo(false);
+        if (!isSurfaceHolderDestroyed && mPresenter != null) {
+            mPresenter.resumePlayVideo(false);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mDelegateable != null) {
-            mDelegateable.pausePlayVideo(false);
+        if (mPresenter != null) {
+            mPresenter.pausePlayVideo(false);
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mDelegateable != null) {
-            mDelegateable.release();
-            mDelegateable = null;
-        }
         mOption = null;
         isSurfaceHolderDestroyed = false;
+    }
+
+    @Override
+    protected RecordVideoContract.Presenter initPresenter() {
+        return new RecordVideoPresenter();
+    }
+
+    @Override
+    protected void releaseOnDestroyView() {
+
+    }
+
+    @Override
+    protected void releaseOnDestroy() {
+
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.sv_record_video_screen) {
-            if (mDelegateable != null) {
-                mDelegateable.controlPlayOrPauseVideo();
+            if (mPresenter != null) {
+                mPresenter.controlPlayOrPauseVideo();
             }
         } else if (id == R.id.iv_record_video_flip_camera) {
-            if (mDelegateable != null) {
-                mDelegateable.flipCamera();
+            if (mPresenter != null) {
+                mPresenter.flipCamera();
             }
         } else if (id == R.id.iv_record_video_play) {
-            if (mDelegateable != null) {
-                mDelegateable.resumePlayVideo(true);
+            if (mPresenter != null) {
+                mPresenter.resumePlayVideo(true);
             }
         } else if (id == R.id.iv_record_video_cancel) {
-            if (mDelegateable != null) {
-                mDelegateable.resetResource();
+            if (mPresenter != null) {
+                mPresenter.resetResource();
             }
         } else if (id == R.id.iv_record_video_confirm) {
-            if (mDelegateable != null) {
-                mDelegateable.onCompleteRecordVideo();
+            if (mPresenter != null) {
+                mPresenter.onCompleteRecordVideo();
             }
         } else if (id == R.id.iv_record_video_back) {
-            if (mDelegateable != null) {
-                mDelegateable.onClickBack();
+            if (mPresenter != null) {
+                mPresenter.onClickBack();
             }
         }
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (mDelegateable != null) {
-            mDelegateable.onSurfaceCreated(holder);
+        if (mPresenter != null) {
+            mPresenter.onSurfaceCreated(holder);
         }
         isSurfaceHolderDestroyed = false;
     }
@@ -200,8 +212,8 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        if (mDelegateable != null) {
-            mDelegateable.releaseCamera();
+        if (mPresenter != null) {
+            mPresenter.releaseCamera();
         }
         isSurfaceHolderDestroyed = true;
     }
@@ -225,6 +237,16 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
                 .setPositiveButton(R.string.confirm)
                 .setNegativeButton(R.string.cancel)
                 .build();
+    }
+
+    @Override
+    public Context getCurrentContext() {
+        return getContext();
+    }
+
+    @Override
+    public void setPresenter(@NonNull RecordVideoContract.Presenter presenter) {
+        mPresenter = presenter;
     }
 
     /**

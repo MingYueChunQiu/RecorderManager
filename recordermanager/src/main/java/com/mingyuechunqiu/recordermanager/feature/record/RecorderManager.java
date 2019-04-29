@@ -6,16 +6,17 @@ import android.support.v4.util.Pair;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
-import com.mingyuechunqiu.recordermanager.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
+import com.mingyuechunqiu.recordermanager.data.constants.Constants;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerIntercept;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
-import com.mingyuechunqiu.recordermanager.utils.CameraParamsUtils;
+import com.mingyuechunqiu.recordermanager.util.CameraParamsUtils;
 
 import java.io.IOException;
 
-import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_BACK;
-import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_FRONT;
-import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_NOT_SET;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_BACK;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_FRONT;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_NOT_SET;
 
 /**
  * <pre>

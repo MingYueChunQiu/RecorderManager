@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.feature.record;
+package com.mingyuechunqiu.recordermanager.data.bean;
 
 import android.media.MediaRecorder;
 

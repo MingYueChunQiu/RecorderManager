@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.utils;
+package com.mingyuechunqiu.recordermanager.util;
 
 import android.app.Activity;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.utils;
+package com.mingyuechunqiu.recordermanager.util;
 
 import android.hardware.Camera;
 import android.support.annotation.Nullable;

@@ -3,7 +3,7 @@ package com.mingyuechunqiu.recordermanager.feature.record;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
-import com.mingyuechunqiu.recordermanager.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.constants.Constants;
 
 /**
  * <pre>

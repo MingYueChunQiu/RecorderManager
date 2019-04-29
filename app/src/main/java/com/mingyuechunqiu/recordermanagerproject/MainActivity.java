@@ -14,15 +14,15 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.mingyuechunqiu.recordermanager.ui.activity.RecordVideoActivity;
+import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
 
 import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_DURATION;
-import static com.mingyuechunqiu.recordermanager.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_DURATION;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 

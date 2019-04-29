@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.constants;
+package com.mingyuechunqiu.recordermanager.data.constants;
 
 /**
  * <pre>
@@ -26,7 +26,7 @@ public class Constants {
     /**
      * 摄像头类型
      */
-    public enum CameraType{
+    public enum CameraType {
         CAMERA_NOT_SET, CAMERA_FRONT, CAMERA_BACK
     }
 }

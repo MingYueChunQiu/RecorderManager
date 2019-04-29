@@ -1,6 +1,5 @@
-package com.mingyuechunqiu.recordermanager.ui.fragment;
+package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
-import android.content.Context;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -14,7 +13,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.mingyuechunqiu.recordermanager.R;
-import com.mingyuechunqiu.recordermanager.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.data.constants.Constants;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
@@ -28,21 +28,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_FRONT;
-import static com.mingyuechunqiu.recordermanager.constants.Constants.CameraType.CAMERA_NOT_SET;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_FRONT;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_NOT_SET;
 
 /**
  * <pre>
  *     author : xyj
  *     Github : https://github.com/MingYueChunQiu
- *     e-mail : yujie.xi@ehailuo.com
- *     time   : 2019/1/29
- *     desc   : 录制视频代理类
- *              实现RecordVideoDelegateable
+ *     e-mail : xiyujieit@163.com
+ *     time   : 2019/4/29
+ *     desc   : 录制视频MVP中P层
+ *              继承自RecordVideoContract.Presenter
  *     version: 1.0
  * </pre>
  */
-class RecordVideoDelegate implements RecordVideoDelegateable {
+class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoContract.View> {
 
     private static final int MSG_STOP_RECORD = 0x00;
 
@@ -50,7 +50,6 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private WeakReference<AppCompatTextView> tvTimingRef;
     private WeakReference<CircleProgressButton> cpbRecordRef;
     private WeakReference<AppCompatImageView> ivFlipCameraRef, ivPlayRef, ivCancelRef, ivConfirmRef, ivBackRef;
-    private WeakReference<Context> mContextRef;
 
     private RecorderManagerable mManager;
     private RecordVideoOption mOption;
@@ -67,13 +66,8 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     private int mVideoDuration;//录制视频时长（毫秒）
     private Constants.CameraType mCameraType;//摄像头类型
 
-    RecordVideoDelegate(@NonNull Context context, @NonNull AppCompatTextView tvTiming,
-                        @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
-                        @NonNull AppCompatImageView ivFlipCamera,
-                        @NonNull AppCompatImageView ivPlay, @NonNull AppCompatImageView ivCancel,
-                        @NonNull AppCompatImageView ivConfirm, @NonNull AppCompatImageView ivBack,
-                        @NonNull RecordVideoOption option) {
-        mContextRef = new WeakReference<>(context);
+    @Override
+    void initView(@NonNull AppCompatTextView tvTiming, @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord, @NonNull AppCompatImageView ivFlipCamera, @NonNull AppCompatImageView ivPlay, @NonNull AppCompatImageView ivCancel, @NonNull AppCompatImageView ivConfirm, @NonNull AppCompatImageView ivBack, @NonNull RecordVideoOption option) {
         tvTimingRef = new WeakReference<>(tvTiming);
         svVideoRef = new WeakReference<>(svVideo);
         cpbRecordRef = new WeakReference<>(cpbRecord);
@@ -90,7 +84,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 开始图像预览
      */
     @Override
-    public void startPreview() {
+    void startPreview() {
         if (svVideoRef.get() == null) {
             return;
         }
@@ -107,7 +101,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * @return 如果成功开始录制返回true，否则返回false
      */
     @Override
-    public boolean pressToStartRecordVideo() {
+    boolean pressToStartRecordVideo() {
         checkOrCreateRecorderManagerable();
         if (mCamera == null) {
             startPreview();
@@ -135,8 +129,9 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
                         if (mTiming < 10) {
                             sbTiming.insert(0, "0");
                         }
-                        if (mContextRef.get() != null && tvTimingRef.get() != null) {
-                            tvTimingRef.get().setText(mContextRef.get().getString(
+                        if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null &&
+                                tvTimingRef.get() != null) {
+                            tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(
                                     R.string.fill_record_timing, sbTiming.toString()));
                         }
                     }
@@ -149,7 +144,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 释放按钮停止录制视频
      */
     @Override
-    public void releaseToStopRecordVideo(final boolean isCancel) {
+    void releaseToStopRecordVideo(final boolean isCancel) {
         //释放方法会执行两次，进行过滤
         if (hasHandledReleaseRecord) {
             return;
@@ -158,7 +153,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         //防止用户按下就抬起，导致MediaRecorder初始化还没完成就release导致报错
 
         if (mHandler == null) {
-            mHandler = new MyHandler(this);
+            mHandler = new RecordVideoPresenter.MyHandler(this);
         } else {
             mHandler.removeMessages(MSG_STOP_RECORD);
         }
@@ -172,7 +167,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     }
 
     @Override
-    public void flipCamera() {
+    void flipCamera() {
         if (svVideoRef.get() == null) {
             return;
         }
@@ -185,7 +180,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 开始录制视频
      */
     @Override
-    public void startRecordVideo() {
+    void startRecordVideo() {
         if (svVideoRef.get() == null) {
             return;
         }
@@ -207,15 +202,15 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * @return 录制成功返回true，否则返回false
      */
     @Override
-    public boolean stopRecordVideo() {
+    boolean stopRecordVideo() {
         if (!isRecording) {
             return false;
         }
         releaseRecorderManager();
         boolean isRecordSuccessful = true;//标记记录录音是否成功
         if (mTiming < 1) {
-            if (mContextRef.get() != null) {
-                Toast.makeText(mContextRef.get(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
+            if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null) {
+                Toast.makeText(mViewRef.get().getCurrentContext(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
             }
             isRecordSuccessful = false;
         }
@@ -236,7 +231,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 释放计时资源
      */
     @Override
-    public void releaseTiming() {
+    void releaseTiming() {
         if (mTimingDisposable != null && !mTimingDisposable.isDisposed()) {
             mTimingDisposable.dispose();
             mTimingDisposable = null;
@@ -248,7 +243,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 播放录制好的视频
      */
     @Override
-    public void playVideo() {
+    void playVideo() {
         if (svVideoRef.get() == null) {
             return;
         }
@@ -275,7 +270,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     }
 
     @Override
-    public void pausePlayVideo(boolean controlViews) {
+    void pausePlayVideo(boolean controlViews) {
         if (isInPlayingState && mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
             if (ivPlayRef.get() != null) {
@@ -288,7 +283,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 恢复播放视频
      */
     @Override
-    public void resumePlayVideo(boolean controlViews) {
+    void resumePlayVideo(boolean controlViews) {
         if (isInPlayingState && mMediaPlayer != null && svVideoRef.get() != null) {
             mMediaPlayer.setDisplay(svVideoRef.get().getHolder());
             mMediaPlayer.start();
@@ -299,7 +294,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
     }
 
     @Override
-    public void controlPlayOrPauseVideo() {
+    void controlPlayOrPauseVideo() {
         if (isInPlayingState && mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
                 pausePlayVideo(true);
@@ -313,7 +308,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 释放播放资源
      */
     @Override
-    public void releaseMediaPlayer() {
+    void releaseMediaPlayer() {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.reset();
@@ -327,7 +322,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 释放相机资源
      */
     @Override
-    public void releaseCamera() {
+    void releaseCamera() {
         if (mManager == null) {
             return;
         }
@@ -339,7 +334,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 重置资源进行下次拍摄
      */
     @Override
-    public void resetResource() {
+    void resetResource() {
         releaseMediaPlayer();
         startPreview();
         controlRecordOrPlayVisibility(false);
@@ -351,8 +346,9 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * @param isInPlayingState 是否正在播放
      */
     @Override
-    public void controlRecordOrPlayVisibility(boolean isInPlayingState) {
-        if (mContextRef.get() == null || tvTimingRef.get() == null || cpbRecordRef.get() == null ||
+    void controlRecordOrPlayVisibility(boolean isInPlayingState) {
+        if (checkViewRefIsNull() || mViewRef.get().getCurrentContext() == null ||
+                tvTimingRef.get() == null || cpbRecordRef.get() == null ||
                 ivPlayRef.get() == null || ivCancelRef.get() == null || ivConfirmRef.get() == null) {
             return;
         }
@@ -363,7 +359,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         } else {
             playViewsVisibility = View.GONE;
             recordViewsVisibility = View.VISIBLE;
-            tvTimingRef.get().setText(mContextRef.get().getString(R.string.fill_record_timing, "00"));
+            tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(R.string.fill_record_timing, "00"));
             ivFlipCameraRef.get().setVisibility(recordViewsVisibility);
             ivPlayRef.get().setVisibility(playViewsVisibility);
         }
@@ -380,7 +376,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * @param surfaceHolder 图层控制
      */
     @Override
-    public void onSurfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
+    void onSurfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
         surfaceHolder.setKeepScreenOn(true);
         if (!isInPlayingState) {
             startPreview();
@@ -394,7 +390,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 进入完成录制视频事件
      */
     @Override
-    public void onCompleteRecordVideo() {
+    void onCompleteRecordVideo() {
         if (mOption.getOnRecordVideoListener() != null) {
             mOption.getOnRecordVideoListener().onCompleteRecordVideo(mOption.getRecorderOption().getFilePath(), mVideoDuration);
         }
@@ -404,7 +400,7 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
      * 进入点击返回键时间
      */
     @Override
-    public void onClickBack() {
+    void onClickBack() {
         if (mOption.getOnRecordVideoListener() != null) {
             mOption.getOnRecordVideoListener().onClickBack();
         }
@@ -425,7 +421,6 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
         releaseMediaPlayer();
         mManager = null;
         mOption = null;
-        mContextRef = null;
         svVideoRef = null;
         tvTimingRef = null;
         cpbRecordRef = null;
@@ -460,29 +455,30 @@ class RecordVideoDelegate implements RecordVideoDelegateable {
 
     private static class MyHandler extends Handler {
 
-        private RecordVideoDelegate mDelegate;
+        private RecordVideoPresenter mPresenter;
 
-        MyHandler(RecordVideoDelegate delegate) {
-            mDelegate = delegate;
+        MyHandler(RecordVideoPresenter presenter) {
+            mPresenter = presenter;
         }
 
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == MSG_STOP_RECORD) {
-                if (mDelegate.needStopDelayed) {
-                    mDelegate.needStopDelayed = false;
+                if (mPresenter.needStopDelayed) {
+                    mPresenter.needStopDelayed = false;
                     //小于规定时长，不进入播放环节，重置资源
-                    if (mDelegate.mContextRef.get() != null) {
-                        Toast.makeText(mDelegate.mContextRef.get(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
+                    if (!mPresenter.checkViewRefIsNull() &&
+                            mPresenter.mViewRef.get().getCurrentContext() != null) {
+                        Toast.makeText(mPresenter.mViewRef.get().getCurrentContext(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
                     }
-                    mDelegate.releaseRecorderManager();
-                    mDelegate.releaseTiming();
-                    mDelegate.isRecording = false;
-                    mDelegate.resetResource();
+                    mPresenter.releaseRecorderManager();
+                    mPresenter.releaseTiming();
+                    mPresenter.isRecording = false;
+                    mPresenter.resetResource();
                 } else {
-                    if (mDelegate.stopRecordVideo() && msg.arg1 == 0) {
-                        mDelegate.playVideo();
-                        mDelegate.controlRecordOrPlayVisibility(true);
+                    if (mPresenter.stopRecordVideo() && msg.arg1 == 0) {
+                        mPresenter.playVideo();
+                        mPresenter.controlRecordOrPlayVisibility(true);
                     }
                 }
             }

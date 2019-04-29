@@ -5,8 +5,8 @@ import android.media.MediaRecorder;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
-import com.mingyuechunqiu.recordermanager.constants.Constants;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderOption;
+import com.mingyuechunqiu.recordermanager.data.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.record.Recorderable;
 
 import java.util.List;
