@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.ui.activity;
+package com.mingyuechunqiu.recordermanager.framework;
 
 import android.view.KeyEvent;
 
@@ -25,7 +25,8 @@ public interface KeyBackCallback {
          * 当点击返回按键时回调
          *
          * @param event 按键对象
+         * @return 如果拦截返回键处理返回true，否则返回false
          */
-        void onClickKeyBack(KeyEvent event);
+        boolean onClickKeyBack(KeyEvent event);
     }
 }

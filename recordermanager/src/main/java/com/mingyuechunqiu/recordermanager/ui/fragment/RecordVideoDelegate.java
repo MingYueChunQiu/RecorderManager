@@ -15,8 +15,8 @@ import android.widget.Toast;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.constants.Constants;
-import com.mingyuechunqiu.recordermanager.record.RecorderManagerFactory;
-import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.IOException;

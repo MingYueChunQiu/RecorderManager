@@ -1,6 +1,6 @@
-package com.mingyuechunqiu.recordermanager.interpect;
+package com.mingyuechunqiu.recordermanager.feature.interpect;
 
-import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
 
 /**
  * <pre>

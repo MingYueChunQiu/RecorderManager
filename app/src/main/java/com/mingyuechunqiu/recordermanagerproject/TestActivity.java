@@ -11,8 +11,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mingyuechunqiu.recordermanager.record.RecorderManagerFactory;
-import com.mingyuechunqiu.recordermanager.record.RecorderManagerable;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
 
 import java.io.File;
 

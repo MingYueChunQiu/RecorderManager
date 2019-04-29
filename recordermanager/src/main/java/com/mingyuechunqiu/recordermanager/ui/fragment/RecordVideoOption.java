@@ -1,6 +1,6 @@
 package com.mingyuechunqiu.recordermanager.ui.fragment;
 
-import com.mingyuechunqiu.recordermanager.record.RecorderOption;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderOption;
 
 /**
  * <pre>

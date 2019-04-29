@@ -16,8 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mingyuechunqiu.recordermanager.R;
-import com.mingyuechunqiu.recordermanager.record.RecorderOption;
-import com.mingyuechunqiu.recordermanager.ui.activity.KeyBackCallback;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderOption;
+import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
 import com.mingyuechunqiu.recordermanager.ui.activity.RecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
@@ -114,10 +114,12 @@ public class RecordVideoFragment extends Fragment implements View.OnClickListene
         if (getActivity() instanceof KeyBackCallback) {
             ((KeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
                 @Override
-                public void onClickKeyBack(KeyEvent event) {
+                public boolean onClickKeyBack(KeyEvent event) {
                     if (mDelegateable != null) {
                         mDelegateable.onClickBack();
+                        return true;
                     }
+                    return false;
                 }
             });
         }

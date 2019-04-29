@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.interpect;
+package com.mingyuechunqiu.recordermanager.feature.interpect;
 
 import android.hardware.Camera;
 import android.media.MediaRecorder;
@@ -6,8 +6,8 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import com.mingyuechunqiu.recordermanager.constants.Constants;
-import com.mingyuechunqiu.recordermanager.record.RecorderOption;
-import com.mingyuechunqiu.recordermanager.record.Recorderable;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderOption;
+import com.mingyuechunqiu.recordermanager.feature.record.Recorderable;
 
 import java.util.List;
 

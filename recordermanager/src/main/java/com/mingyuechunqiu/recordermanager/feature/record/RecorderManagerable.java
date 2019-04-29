@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.record;
+package com.mingyuechunqiu.recordermanager.feature.record;
 
 import android.hardware.Camera;
 import android.view.SurfaceHolder;

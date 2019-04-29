@@ -5,20 +5,17 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 
 import com.mingyuechunqiu.recordermanager.R;
-import com.mingyuechunqiu.recordermanager.record.RecorderOption;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderOption;
 import com.mingyuechunqiu.recordermanager.ui.fragment.RecordVideoFragment;
 import com.mingyuechunqiu.recordermanager.ui.fragment.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -40,7 +37,7 @@ import static com.mingyuechunqiu.recordermanager.constants.Constants.SUFFIX_MP4;
  *     version: 1.0
  * </pre>
  */
-public class RecordVideoActivity extends AppCompatActivity implements KeyBackCallback, EasyPermissions.PermissionCallbacks {
+public class RecordVideoActivity extends BaseRecordVideoActivity implements EasyPermissions.PermissionCallbacks {
 
     private static final String[] permissions = new String[]{
             Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO,
@@ -48,7 +45,6 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
     };
 
     private RecordVideoFragment mRecordVideoFg;
-    private List<OnKeyBackListener> mListeners;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,29 +102,12 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mListeners != null) {
-            mListeners.clear();
-            mListeners = null;
-        }
         if (getSupportFragmentManager() != null && mRecordVideoFg != null) {
             getSupportFragmentManager().beginTransaction()
                     .remove(mRecordVideoFg)
                     .commitAllowingStateLoss();
         }
         mRecordVideoFg = null;
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && mListeners != null && mListeners.size() > 0) {
-            for (OnKeyBackListener listener : mListeners) {
-                if (listener != null) {
-                    listener.onClickKeyBack(event);
-                    return true;
-                }
-            }
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -150,22 +129,6 @@ public class RecordVideoActivity extends AppCompatActivity implements KeyBackCal
                 .setPositiveButton(R.string.set)
                 .setNegativeButton(R.string.cancel)
                 .build().show();
-    }
-
-    /**
-     * 添加点击返回事件监听器
-     *
-     * @param listener 监听器
-     */
-    @Override
-    public void addOnKeyBackListener(OnKeyBackListener listener) {
-        if (listener == null) {
-            return;
-        }
-        if (mListeners == null) {
-            mListeners = new ArrayList<>();
-        }
-        mListeners.add(listener);
     }
 
     /**

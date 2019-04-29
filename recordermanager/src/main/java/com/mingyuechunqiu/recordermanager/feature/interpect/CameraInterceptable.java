@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.interpect;
+package com.mingyuechunqiu.recordermanager.feature.interpect;
 
 import android.hardware.Camera;
 
