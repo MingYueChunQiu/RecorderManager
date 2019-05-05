@@ -1,6 +1,5 @@
 package com.mingyuechunqiu.recordermanager.feature.main.container;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -10,21 +9,22 @@ import android.support.v7.widget.AppCompatTextView;
 import android.text.TextUtils;
 
 import com.mingyuechunqiu.recordermanager.R;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
-import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.ui.activity.BaseRecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
+import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
 import java.io.File;
 import java.util.List;
 
-import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_DURATION;
 import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
 import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_MAX_DURATION;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX_MP4;
 
 /**
@@ -40,19 +40,13 @@ import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX
  */
 public class RecordVideoActivity extends BaseRecordVideoActivity implements EasyPermissions.PermissionCallbacks {
 
-    private static final String[] permissions = new String[]{
-            Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-
     private RecordVideoFragment mRecordVideoFg;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rm_activity_record_video);
-        if (!EasyPermissions.hasPermissions(this, permissions)) {
-            EasyPermissions.requestPermissions(this, getString(R.string.warn_allow_record_video_permissions), 1, permissions);
+        if (!RecordPermissionUtils.checkRecordPermissions(this)) {
             finishActivity();
             return;
         }
@@ -80,8 +74,10 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
                         @Override
                         public void onCompleteRecordVideo(String filePath, int videoDuration) {
                             if (getIntent() != null) {
-                                getIntent().putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, filePath);
-                                getIntent().putExtra(EXTRA_RECORD_VIDEO_DURATION, videoDuration);
+                                getIntent().putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
+                                        .setDuration(videoDuration)
+                                        .setFilePath(filePath)
+                                        .build());
                                 setResult(RESULT_OK, getIntent());
                             }
                             finishActivity();
@@ -124,12 +120,7 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        new AppSettingsDialog.Builder(this)
-                .setTitle(R.string.set_permission)
-                .setRationale(R.string.warn_allow_record_video_permissions)
-                .setPositiveButton(R.string.set)
-                .setNegativeButton(R.string.cancel)
-                .build().show();
+        RecordPermissionUtils.handleOnPermissionDenied(this);
     }
 
     /**

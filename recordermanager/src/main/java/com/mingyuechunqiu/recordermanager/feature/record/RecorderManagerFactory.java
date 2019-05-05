@@ -1,5 +1,7 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
+import android.support.annotation.NonNull;
+
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
 
 /**
@@ -19,6 +21,7 @@ public class RecorderManagerFactory {
      *
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance() {
         return newInstance(new RecorderHelper());
     }
@@ -29,6 +32,7 @@ public class RecorderManagerFactory {
      * @param intercept 录制管理器拦截器
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance(RecorderManagerInterceptable intercept) {
         return newInstance(new RecorderHelper(), intercept);
     }
@@ -39,6 +43,7 @@ public class RecorderManagerFactory {
      * @param recorderable 实际录制类
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance(Recorderable recorderable) {
         return newInstance(recorderable, null);
     }
@@ -50,7 +55,13 @@ public class RecorderManagerFactory {
      * @param intercept    录制管理器拦截器
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance(Recorderable recorderable, RecorderManagerInterceptable intercept) {
         return new RecorderManager(recorderable, intercept);
+    }
+
+    @NonNull
+    public static RequestRecordVideoPageable getRecordVideoRequest() {
+        return new RecordVideoPageRequest();
     }
 }

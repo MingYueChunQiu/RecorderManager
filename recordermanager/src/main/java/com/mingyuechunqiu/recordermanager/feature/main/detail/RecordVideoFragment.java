@@ -1,6 +1,5 @@
 package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
@@ -18,16 +17,18 @@ import android.view.ViewGroup;
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
-import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
 import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
+import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
 import com.mingyuechunqiu.recordermanager.ui.fragment.BasePresenterFragment;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
+import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
 import java.io.File;
 import java.util.List;
 
-import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX_MP4;
 
 /**
  * <pre>
@@ -43,15 +44,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View<RecordVideoContract.Presenter>, RecordVideoContract.Presenter>
         implements RecordVideoContract.View<RecordVideoContract.Presenter>, View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
 
-    private static final int REQUEST_RECORD_VIDEO = 1;
-
-    private static final String[] permissions = new String[]{
-            Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-
     private AppCompatTextView tvTiming;
-    private SurfaceView svVideo;
     private CircleProgressButton cpbRecord;
     private AppCompatImageView ivFlipCamera, ivPlay, ivCancel, ivConfirm, ivBack;
 
@@ -62,7 +55,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.rm_fragment_record_video, container, false);
-        svVideo = view.findViewById(R.id.sv_record_video_screen);
+        SurfaceView svVideo = view.findViewById(R.id.sv_record_video_screen);
         tvTiming = view.findViewById(R.id.tv_record_video_timing);
         cpbRecord = view.findViewById(R.id.cpb_record_video_record);
         ivFlipCamera = view.findViewById(R.id.iv_record_video_flip_camera);
@@ -231,12 +224,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        new AppSettingsDialog.Builder(this)
-                .setTitle(R.string.request_record_video)
-                .setRationale("")
-                .setPositiveButton(R.string.confirm)
-                .setNegativeButton(R.string.cancel)
-                .build();
+        RecordPermissionUtils.handleOnPermissionDenied(this);
     }
 
     @Override
@@ -290,7 +278,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             if (file != null) {
                 fragment.mOption.setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(
                         file.getAbsolutePath() +
-                                File.separator + System.currentTimeMillis() + ".mp4"));
+                                File.separator + System.currentTimeMillis() + SUFFIX_MP4));
             }
         }
         return fragment;
@@ -365,14 +353,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @return 如果获取到权限返回true，否则返回false
      */
     private boolean checkHasPermissions() {
-        if (getContext() == null) {
-            return false;
-        }
-        if (!EasyPermissions.hasPermissions(getContext(), permissions)) {
-            EasyPermissions.requestPermissions(RecordVideoFragment.this,
-                    getString(R.string.request_record_video_rationale), REQUEST_RECORD_VIDEO, permissions);
-            return false;
-        }
-        return true;
+        return RecordPermissionUtils.checkRecordPermissions(this);
     }
 }
