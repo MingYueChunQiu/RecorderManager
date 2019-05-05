@@ -271,7 +271,11 @@ class RecorderManager implements RecorderManagerable {
             }
         }
         mCamera.setParameters(parameters);
-        mCamera.setDisplayOrientation(90);
+        int degrees = 90;//默认竖屏旋转
+        if (mIntercept != null) {
+            degrees = mIntercept.interceptCameraDisplayOrientation(degrees);
+        }
+        mCamera.setDisplayOrientation(degrees);
         try {
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();

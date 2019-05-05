@@ -105,4 +105,9 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
     public boolean interceptSettingPictureSize(List<Camera.Size> list) {
         return false;
     }
+
+    @Override
+    public int interceptCameraDisplayOrientation(int degrees) {
+        return degrees;
+    }
 }
