@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
@@ -22,8 +23,7 @@ import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_FILE_PATH;
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_MAX_DURATION;
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_REQUEST_OPTION;
 import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX_MP4;
 
@@ -55,8 +55,9 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
                     System.currentTimeMillis() + SUFFIX_MP4;
             int maxDuration = 30;
             if (getIntent() != null) {
-                filePath = getIntent().getStringExtra(EXTRA_RECORD_VIDEO_FILE_PATH);
-                maxDuration = getIntent().getIntExtra(EXTRA_RECORD_VIDEO_MAX_DURATION, 30);
+                RecordVideoRequestOption option = getIntent().getParcelableExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION);
+                maxDuration = option == null ? 30 : option.getMaxDuration();
+                filePath = option == null ? null : option.getFilePath();
             }
             if (TextUtils.isEmpty(filePath)) {
                 File file = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
@@ -73,6 +74,10 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
 
                         @Override
                         public void onCompleteRecordVideo(String filePath, int videoDuration) {
+                        }
+
+                        @Override
+                        public void onClickConfirm(String filePath, int videoDuration) {
                             if (getIntent() != null) {
                                 getIntent().putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
                                         .setDuration(videoDuration)
@@ -81,6 +86,10 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
                                 setResult(RESULT_OK, getIntent());
                             }
                             finishActivity();
+                        }
+
+                        @Override
+                        public void onClickCancel() {
                         }
 
                         @Override

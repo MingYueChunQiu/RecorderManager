@@ -207,7 +207,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
             return false;
         }
         releaseRecorderManager();
-        boolean isRecordSuccessful = true;//标记记录录音是否成功
+        boolean isRecordSuccessful = true;//标记记录录制是否成功
         if (mTiming < 1) {
             if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null) {
                 Toast.makeText(mViewRef.get().getCurrentContext(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
@@ -260,6 +260,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
                     mVideoDuration = mp.getDuration();
+                    onCompleteRecordVideo();
                 }
             });
             mMediaPlayer.prepare();
@@ -387,17 +388,27 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     }
 
     /**
-     * 进入完成录制视频事件
+     * 点击确认录制视频事件
      */
     @Override
-    void onCompleteRecordVideo() {
+    void onClickConfirm() {
         if (mOption.getOnRecordVideoListener() != null) {
-            mOption.getOnRecordVideoListener().onCompleteRecordVideo(mOption.getRecorderOption().getFilePath(), mVideoDuration);
+            mOption.getOnRecordVideoListener().onClickConfirm(mOption.getRecorderOption().getFilePath(), mVideoDuration);
         }
     }
 
     /**
-     * 进入点击返回键时间
+     * 点击取消按钮事件
+     */
+    @Override
+    void onClickCancel() {
+        if (mOption.getOnRecordVideoListener() != null) {
+            mOption.getOnRecordVideoListener().onClickCancel();
+        }
+    }
+
+    /**
+     * 点击返回键事件
      */
     @Override
     void onClickBack() {
@@ -453,6 +464,15 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         }
     }
 
+    /**
+     * 当完成一次录制时回调
+     */
+    private void onCompleteRecordVideo() {
+        if (mOption.getOnRecordVideoListener() != null) {
+            mOption.getOnRecordVideoListener().onCompleteRecordVideo(mOption.getRecorderOption().getFilePath(), mVideoDuration);
+        }
+    }
+
     private static class MyHandler extends Handler {
 
         private RecordVideoPresenter mPresenter;
@@ -463,6 +483,9 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
 
         @Override
         public void handleMessage(Message msg) {
+            if (mPresenter == null) {
+                return;
+            }
             if (msg.what == MSG_STOP_RECORD) {
                 if (mPresenter.needStopDelayed) {
                     mPresenter.needStopDelayed = false;

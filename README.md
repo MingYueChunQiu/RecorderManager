@@ -220,7 +220,7 @@ public class RecordVideoOption：
          * @param filePath      视频文件路径
          * @param videoDuration 视频时长（毫秒）
          */
-        void onCompleteRecordVideo(String filePath, int videoDuration);
+        void onClickConfirm(String filePath, int videoDuration);
 
         /**
          * 当点击返回按钮时回调

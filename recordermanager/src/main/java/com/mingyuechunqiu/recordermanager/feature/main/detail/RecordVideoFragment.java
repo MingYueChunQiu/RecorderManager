@@ -178,10 +178,11 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         } else if (id == R.id.iv_record_video_cancel) {
             if (mPresenter != null) {
                 mPresenter.resetResource();
+                mPresenter.onClickCancel();
             }
         } else if (id == R.id.iv_record_video_confirm) {
             if (mPresenter != null) {
-                mPresenter.onCompleteRecordVideo();
+                mPresenter.onClickConfirm();
             }
         } else if (id == R.id.iv_record_video_back) {
             if (mPresenter != null) {

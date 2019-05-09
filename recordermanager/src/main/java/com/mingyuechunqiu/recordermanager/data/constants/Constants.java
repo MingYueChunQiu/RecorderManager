@@ -14,10 +14,8 @@ public class Constants {
 
     public static final String PREFIX_EXTRA = "EXTRA_";//Intent数据前缀
 
-    //录制视频文件路径
-    public static final String EXTRA_RECORD_VIDEO_FILE_PATH = PREFIX_EXTRA + "record_video_file_path";
-    //录制视频最大时长
-    public static final String EXTRA_RECORD_VIDEO_MAX_DURATION = PREFIX_EXTRA + "record_video_max_duration";
+    //录制视频请求配置信息
+    public static final String EXTRA_RECORD_VIDEO_REQUEST_OPTION = PREFIX_EXTRA + "record_video_request_option";
     //录制视频结果
     public static final String EXTRA_RECORD_VIDEO_RESULT_INFO = PREFIX_EXTRA + "record_video_result_info";
 

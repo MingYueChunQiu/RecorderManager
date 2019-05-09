@@ -3,6 +3,8 @@ package com.mingyuechunqiu.recordermanager.feature.record;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
+
 /**
  * <pre>
  *     author : xyj
@@ -36,18 +38,16 @@ public interface RequestRecordVideoPageable {
      *
      * @param activity    Activity
      * @param requestCode 请求码
-     * @param maxDuration 最大时长
-     * @param filePath    保存文件路径
+     * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(Activity activity, int requestCode, int maxDuration, String filePath);
+    void startRecordVideo(Activity activity, int requestCode, RecordVideoRequestOption option);
 
     /**
      * 打开录制视频界面
      *
      * @param fragment    Fragment
      * @param requestCode 请求码
-     * @param maxDuration 最大时长
-     * @param filePath    保存文件路径
+     * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(Fragment fragment, int requestCode, int maxDuration, String filePath);
+    void startRecordVideo(Fragment fragment, int requestCode, RecordVideoRequestOption option);
 }

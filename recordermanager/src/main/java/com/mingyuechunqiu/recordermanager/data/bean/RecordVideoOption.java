@@ -92,12 +92,25 @@ public class RecordVideoOption {
     public interface OnRecordVideoListener {
 
         /**
-         * 当完成视频录制时回调
+         * 当完成一次录制时回调
          *
          * @param filePath      视频文件路径
          * @param videoDuration 视频时长（毫秒）
          */
         void onCompleteRecordVideo(String filePath, int videoDuration);
+
+        /**
+         * 当点击确认录制结果按钮时回调
+         *
+         * @param filePath      视频文件路径
+         * @param videoDuration 视频时长（毫秒）
+         */
+        void onClickConfirm(String filePath, int videoDuration);
+
+        /**
+         * 当点击取消按钮时回调
+         */
+        void onClickCancel();
 
         /**
          * 当点击返回按钮时回调

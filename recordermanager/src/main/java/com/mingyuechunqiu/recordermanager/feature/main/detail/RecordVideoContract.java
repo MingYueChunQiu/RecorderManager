@@ -133,12 +133,17 @@ interface RecordVideoContract {
         abstract void onSurfaceCreated(@NonNull SurfaceHolder surfaceHolder);
 
         /**
-         * 进入完成录制视频事件
+         * 点击确认录制视频事件
          */
-        abstract void onCompleteRecordVideo();
+        abstract void onClickConfirm();
 
         /**
-         * 进入点击返回键事件
+         * 点击取消按钮事件
+         */
+        abstract void onClickCancel();
+
+        /**
+         * 点击返回键事件
          */
         abstract void onClickBack();
     }
