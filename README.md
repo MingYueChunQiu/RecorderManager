@@ -2,11 +2,11 @@
 
 
 
-
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.17版本更新： 
-1.重构项目框架，PBF分包，MVP模式
+最新0.2.18版本更新： 
+1.优化整合视频录制界面的调用入口，更改录制结果返回值
+2.增加相机预览方向角度拦截功能
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -27,7 +27,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.17'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.18'
 	}
 ```
 ## 三.使用
@@ -50,6 +50,7 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
 ```
 ### 2.视频录制
 #### (1).可以直接使用RecordVideoActivity，实现了仿微信风格的录制界面
+原来版本
 ```
                 startActivityForResult(new Intent(MainActivity.this, RecordVideoActivity.class),0);
 ```
@@ -61,15 +62,61 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
                 //设置视频录制的最大时长（默认30秒）
                 intent.putExtra(EXTRA_RECORD_VIDEO_MAX_DURATION, 10);
 ```
-RecordVideoActivity里已经配置好了默认参数，可以直接使用，然后在onActivityResult里拿到视频路径的返回值
+从0.2.18开始改为类似
 
+```
+RecorderManagerFactory.getRecordVideoRequest().startRecordVideo(MainActivity.this, 0);
+```
+RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestRecordVideoPageable接口中
+
+```
+/**
+     * 以默认配置打开录制视频界面
+     *
+     * @param activity    Activity
+     * @param requestCode 请求码
+     */
+    void startRecordVideo(Activity activity, int requestCode);
+
+    /**
+     * 以默认配置打开录制视频界面
+     *
+     * @param fragment    Fragment
+     * @param requestCode 请求码
+     */
+    void startRecordVideo(Fragment fragment, int requestCode);
+
+    /**
+     * 打开录制视频界面
+     *
+     * @param activity    Activity
+     * @param requestCode 请求码
+     * @param maxDuration 最大时长
+     * @param filePath    保存文件路径
+     */
+    void startRecordVideo(Activity activity, int requestCode, int maxDuration, String filePath);
+
+    /**
+     * 打开录制视频界面
+     *
+     * @param fragment    Fragment
+     * @param requestCode 请求码
+     * @param maxDuration 最大时长
+     * @param filePath    保存文件路径
+     */
+    void startRecordVideo(Fragment fragment, int requestCode, int maxDuration, String filePath);
+```
+
+RecordVideoActivity里已经配置好了默认参数，可以直接使用，然后在onActivityResult里拿到视频路径的返回值
+返回值为RecordVideoResultInfo
 ```
 @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
-            Log.e("onActivityResult", "onActivityResult: " + " " + data.getStringExtra(EXTRA_RECORD_VIDEO_FILE_PATH) + " " +
-                    data.getIntExtra(EXTRA_RECORD_VIDEO_DURATION, -1));
+          RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
+            Log.e("MainActivity", "onActivityResult: " + " "
+                    + info.getDuration() + " " + info.getFilePath());
         }
     }
 ```
@@ -195,7 +242,7 @@ record_video_pull_down.png
             if (file != null) {
                 fragment.mOption.setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(
                         file.getAbsolutePath() +
-                                File.separator + System.currentTimeMillis() + ".mp4"));
+                                File.separator + System.currentTimeMillis() + SUFFIX_MP4));
             }
         }
         return fragment;
@@ -238,6 +285,7 @@ public class RecorderManagerFactory {
      *
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance() {
         return newInstance(new RecorderHelper());
     }
@@ -248,6 +296,7 @@ public class RecorderManagerFactory {
      * @param intercept 录制管理器拦截器
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance(RecorderManagerInterceptable intercept) {
         return newInstance(new RecorderHelper(), intercept);
     }
@@ -258,6 +307,7 @@ public class RecorderManagerFactory {
      * @param recorderable 实际录制类
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance(Recorderable recorderable) {
         return newInstance(recorderable, null);
     }
@@ -269,8 +319,14 @@ public class RecorderManagerFactory {
      * @param intercept    录制管理器拦截器
      * @return 返回录制管理类实例
      */
+    @NonNull
     public static RecorderManagerable newInstance(Recorderable recorderable, RecorderManagerInterceptable intercept) {
         return new RecorderManager(recorderable, intercept);
+    }
+
+    @NonNull
+    public static RequestRecordVideoPageable getRecordVideoRequest() {
+        return new RecordVideoPageRequest();
     }
 
 }
@@ -341,7 +397,7 @@ public interface RecorderManagerable extends Recorderable {
     void releaseCamera();
 }
 ```
-RecorderManagerIntercept实现RecorderManagerInterceptable接口
+RecorderManagerIntercept实现RecorderManagerInterceptable接口，用户可以直接继承RecorderManagerIntercept，它里面所有方法都是空实现，可以自己改写需要的方法
 
 ```
 public interface RecorderManagerInterceptable extends RecorderManagerable, CameraInterceptable {
