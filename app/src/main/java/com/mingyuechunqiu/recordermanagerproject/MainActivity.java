@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 //                    return;
 //                }
 //                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
+                Log.d("份dewv ", getResources().getDisplayMetrics().widthPixels + " " +
+                        getResources().getDisplayMetrics().heightPixels + " "
+                        + (getResources().getDisplayMetrics().widthPixels * 1.0f / getResources().getDisplayMetrics().heightPixels));
                 RecorderManagerFactory.getRecordVideoRequest().startRecordVideo(MainActivity.this, 0);
             }
         });

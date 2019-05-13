@@ -42,6 +42,37 @@ public class CameraParamsUtils {
     /**
      * 获取支持的合适大小
      *
+     * @param list  相机大小集合
+     * @param ratio 视频宽高比例
+     * @return 如果获取成功返回宽高对，否则返回null
+     */
+    @Nullable
+    public Pair<Integer, Integer> getSupportSize(List<Camera.Size> list, float ratio) {
+        if (list == null || list.size() == 0) {
+            return null;
+        }
+        //进行降序排序
+        Collections.sort(list, mSizeComparator);
+        int selectedIndex = 0;//选中分辨率索引位置
+        float ratioDelta = 0;//选中的分辨率比例与视频比例之间的差值
+        for (int i = 0, count = list.size(); i < count; i++) {
+            Camera.Size size = list.get(i);
+            float currentRatioDelta = Math.abs(size.width * 1.0f / size.height - ratio);
+            //如果是起始位置或者当前比例差值小于前面比例差值，更新选中项
+            if (i == 0 || (currentRatioDelta < ratioDelta)) {
+                ratioDelta = currentRatioDelta;
+                selectedIndex = i;
+            }
+        }
+        if (ratio <= 0) {
+            selectedIndex = 0;
+        }
+        return new Pair<>(list.get(selectedIndex).width, list.get(selectedIndex).height);
+    }
+
+    /**
+     * 获取支持的合适大小
+     *
      * @param list      相机大小集合
      * @param minWidth  最小宽度
      * @param minHeight 最小高度

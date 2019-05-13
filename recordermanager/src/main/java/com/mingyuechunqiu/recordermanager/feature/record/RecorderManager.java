@@ -1,6 +1,7 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.support.v4.util.Pair;
 import android.view.Surface;
@@ -165,7 +166,7 @@ class RecorderManager implements RecorderManagerable {
                 releaseCamera();
                 mCamera = Camera.open(i);
                 mCameraType = CAMERA_FRONT;
-                initCameraParameters(holder);
+                initCameraParameters(holder, i);
                 return mCamera;
             } else if ((cameraType == null || cameraType == CAMERA_NOT_SET ||
                     cameraType == CAMERA_BACK) &&
@@ -173,7 +174,7 @@ class RecorderManager implements RecorderManagerable {
                 releaseCamera();
                 mCamera = Camera.open(i);
                 mCameraType = CAMERA_BACK;
-                initCameraParameters(holder);
+                initCameraParameters(holder, i);
                 return mCamera;
             }
         }
@@ -235,7 +236,7 @@ class RecorderManager implements RecorderManagerable {
      *
      * @param holder Surface持有者
      */
-    private void initCameraParameters(SurfaceHolder holder) {
+    private void initCameraParameters(SurfaceHolder holder, int cameraId) {
         Camera.Parameters parameters = mCamera.getParameters();
         /*有的手机前置摄像头可能不支持变焦，设置对焦模式会崩溃
         isSmoothZoomSupported()返回为false，则不支持变焦，设置zoom出错
@@ -255,10 +256,17 @@ class RecorderManager implements RecorderManagerable {
                 parameters.setFocusMode(Camera.Parameters.FLASH_MODE_AUTO);
             }
         }
+        float videoRatio = -1;//视频宽高比
+        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_HIGH)) {
+            CamcorderProfile profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH);
+            if (profile != null) {
+                videoRatio = profile.videoFrameWidth * 1.0f / profile.videoFrameHeight;
+            }
+        }
         //设置使用机器本身所支持的宽高
         if (mIntercept == null || !mIntercept.interceptSettingPreviewSize(parameters.getSupportedPreviewSizes())) {
             Pair<Integer, Integer> mPreviewSize = CameraParamsUtils.getInstance().getSupportSize(
-                    parameters.getSupportedPreviewSizes(), 0, 0);
+                    parameters.getSupportedPreviewSizes(), videoRatio);
             if (mPreviewSize != null && mPreviewSize.first != null && mPreviewSize.second != null) {
                 parameters.setPreviewSize(mPreviewSize.first, mPreviewSize.second);
             }
