@@ -1,12 +1,10 @@
 # RecorderManager
 
-
-
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.18版本更新： 
-1.优化整合视频录制界面的调用入口，更改录制结果返回值
-2.增加相机预览方向角度拦截功能
+最新0.2.19版本更新： 
+1.优化视频录制接界面参数调用
+2.完善视频录制回调监听
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -27,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.18'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.19'
 	}
 ```
 ## 三.使用
@@ -50,18 +48,6 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
 ```
 ### 2.视频录制
 #### (1).可以直接使用RecordVideoActivity，实现了仿微信风格的录制界面
-原来版本
-```
-                startActivityForResult(new Intent(MainActivity.this, RecordVideoActivity.class),0);
-```
-通过在Intent中传入下列参数来设置路径和最长时间
-
-```
-				//设置保存视频录制的文件路径
-                intent.putExtra(EXTRA_RECORD_VIDEO_FILE_PATH, "路径名");
-                //设置视频录制的最大时长（默认30秒）
-                intent.putExtra(EXTRA_RECORD_VIDEO_MAX_DURATION, 10);
-```
 从0.2.18开始改为类似
 
 ```
@@ -91,20 +77,28 @@ RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestReco
      *
      * @param activity    Activity
      * @param requestCode 请求码
-     * @param maxDuration 最大时长
-     * @param filePath    保存文件路径
+     * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(Activity activity, int requestCode, int maxDuration, String filePath);
+    void startRecordVideo(Activity activity, int requestCode, RecordVideoRequestOption option);
 
     /**
      * 打开录制视频界面
      *
      * @param fragment    Fragment
      * @param requestCode 请求码
-     * @param maxDuration 最大时长
-     * @param filePath    保存文件路径
+     * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(Fragment fragment, int requestCode, int maxDuration, String filePath);
+    void startRecordVideo(Fragment fragment, int requestCode, RecordVideoRequestOption option);
+```
+RecordVideoRequestOption可配置最大时长（秒）和文件保存路径
+
+```
+public class RecordVideoRequestOption implements Parcelable {
+
+    private int maxDuration;//最大录制时长
+
+    private String filePath;//文件保存路径
+}
 ```
 
 RecordVideoActivity里已经配置好了默认参数，可以直接使用，然后在onActivityResult里拿到视频路径的返回值
@@ -261,13 +255,26 @@ public class RecordVideoOption：
      * 录制视频监听器
      */
     public interface OnRecordVideoListener {
- /**
-         * 当完成视频录制时回调
+		/**
+         * 当完成一次录制时回调
+         *
+         * @param filePath      视频文件路径
+         * @param videoDuration 视频时长（毫秒）
+         */
+        void onCompleteRecordVideo(String filePath, int videoDuration);
+
+        /**
+         * 当点击确认录制结果按钮时回调
          *
          * @param filePath      视频文件路径
          * @param videoDuration 视频时长（毫秒）
          */
         void onClickConfirm(String filePath, int videoDuration);
+
+        /**
+         * 当点击取消按钮时回调
+         */
+        void onClickCancel();
 
         /**
          * 当点击返回按钮时回调
