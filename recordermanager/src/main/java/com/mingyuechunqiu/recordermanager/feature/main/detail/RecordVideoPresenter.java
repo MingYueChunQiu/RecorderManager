@@ -413,7 +413,12 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     @Override
     void onClickBack() {
         if (mOption.getOnRecordVideoListener() != null) {
-            mOption.getOnRecordVideoListener().onClickBack();
+            if (isInPlayingState) {
+                resetResource();
+                mOption.getOnRecordVideoListener().onClickCancel();
+            } else {
+                mOption.getOnRecordVideoListener().onClickBack();
+            }
         }
     }
 
