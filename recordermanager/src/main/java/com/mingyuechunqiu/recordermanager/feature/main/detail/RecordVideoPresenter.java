@@ -403,7 +403,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     @Override
     void onClickCancel() {
         if (mOption.getOnRecordVideoListener() != null) {
-            mOption.getOnRecordVideoListener().onClickCancel();
+            mOption.getOnRecordVideoListener().onClickCancel(mOption.getRecorderOption().getFilePath(), mVideoDuration);
         }
     }
 
@@ -415,7 +415,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         if (mOption.getOnRecordVideoListener() != null) {
             if (isInPlayingState) {
                 resetResource();
-                mOption.getOnRecordVideoListener().onClickCancel();
+                mOption.getOnRecordVideoListener().onClickCancel(mOption.getRecorderOption().getFilePath(), mVideoDuration);
             } else {
                 mOption.getOnRecordVideoListener().onClickBack();
             }

@@ -109,8 +109,11 @@ public class RecordVideoOption {
 
         /**
          * 当点击取消按钮时回调
+         *
+         * @param filePath      视频文件路径
+         * @param videoDuration 视频时长（毫秒）
          */
-        void onClickCancel();
+        void onClickCancel(String filePath, int videoDuration);
 
         /**
          * 当点击返回按钮时回调

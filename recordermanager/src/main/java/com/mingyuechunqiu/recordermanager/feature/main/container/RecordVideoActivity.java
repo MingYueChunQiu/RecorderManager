@@ -89,7 +89,7 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
                         }
 
                         @Override
-                        public void onClickCancel() {
+                        public void onClickCancel(String filePath, int videoDuration) {
                         }
 
                         @Override
