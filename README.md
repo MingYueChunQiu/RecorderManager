@@ -1,9 +1,11 @@
 # RecorderManager
 
+
+
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.21版本更新： 
-1.优化返回键处理效果
+最新0.2.22版本更新： 
+1.优化视频录制监听
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -24,7 +26,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.21'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.22'
 	}
 ```
 ## 三.使用
@@ -270,10 +272,13 @@ public class RecordVideoOption：
          */
         void onClickConfirm(String filePath, int videoDuration);
 
-        /**
+  /**
          * 当点击取消按钮时回调
+         *
+         * @param filePath      视频文件路径
+         * @param videoDuration 视频时长（毫秒）
          */
-        void onClickCancel();
+        void onClickCancel(String filePath, int videoDuration);
 
         /**
          * 当点击返回按钮时回调
