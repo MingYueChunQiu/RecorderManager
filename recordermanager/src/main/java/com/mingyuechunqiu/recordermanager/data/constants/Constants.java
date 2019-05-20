@@ -6,7 +6,7 @@ package com.mingyuechunqiu.recordermanager.data.constants;
  *     Github : https://github.com/MingYueChunQiu
  *     e-mail : yujie.xi@ehailuo.com
  *     time   : 2019/1/28
- *     desc   :
+ *     desc   : 常量类
  *     version: 1.0
  * </pre>
  */
