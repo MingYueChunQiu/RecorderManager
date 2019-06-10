@@ -1,15 +1,11 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
-import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
-import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
-
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_REQUEST_OPTION;
+import com.mingyuechunqiu.recordermanager.feature.main.container.RequestPermissionFragment;
 
 /**
  * <pre>
@@ -25,41 +21,39 @@ import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_
 class RecordVideoPageRequest implements RequestRecordVideoPageable {
 
     @Override
-    public void startRecordVideo(Activity activity, int requestCode) {
+    public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode) {
         startRecordVideo(activity, requestCode, null);
     }
 
     @Override
-    public void startRecordVideo(Fragment fragment, int requestCode) {
+    public void startRecordVideo(@NonNull Fragment fragment, int requestCode) {
         startRecordVideo(fragment, requestCode, null);
     }
 
     @Override
-    public void startRecordVideo(Activity activity, int requestCode, RecordVideoRequestOption option) {
-        if (!RecordPermissionUtils.checkRecordPermissions(activity)) {
-            return;
-        }
-        activity.startActivityForResult(getRecordVideoIntent(activity, option), requestCode);
+    public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, RecordVideoRequestOption option) {
+        RequestPermissionFragment permissionFragment = RequestPermissionFragment.newInstance(option);
+        addRequestPermissionPage(activity, permissionFragment);
     }
 
     @Override
-    public void startRecordVideo(Fragment fragment, int requestCode, RecordVideoRequestOption option) {
-        if (!RecordPermissionUtils.checkRecordPermissions(fragment) || fragment.getContext() == null) {
-            return;
+    public void startRecordVideo(@NonNull Fragment fragment, int requestCode, RecordVideoRequestOption option) {
+        RequestPermissionFragment permissionFragment = RequestPermissionFragment.newInstance(option);
+        if (fragment.getActivity() != null) {
+            addRequestPermissionPage(fragment.getActivity(), permissionFragment);
         }
-        fragment.startActivityForResult(getRecordVideoIntent(fragment.getContext(), option), requestCode);
     }
 
     /**
-     * 获取打开录制视频界面Intent
+     * 添加申请权限界面到主界面中
      *
-     * @param context 上下文
-     * @param option  视频录制请求配置信息类
-     * @return 返回启动启动意图
+     * @param activity           界面
+     * @param permissionFragment 申请权限界面
      */
-    private Intent getRecordVideoIntent(Context context, RecordVideoRequestOption option) {
-        Intent intent = new Intent(context, RecordVideoActivity.class);
-        intent.putExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION, option);
-        return intent;
+    private void addRequestPermissionPage(@NonNull FragmentActivity activity, RequestPermissionFragment permissionFragment) {
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .add(permissionFragment, RequestPermissionFragment.class.getSimpleName())
+                .commitAllowingStateLoss();
     }
 }

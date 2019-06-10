@@ -1,7 +1,7 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
-import android.app.Activity;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 
@@ -23,7 +23,7 @@ public interface RequestRecordVideoPageable {
      * @param activity    Activity
      * @param requestCode 请求码
      */
-    void startRecordVideo(Activity activity, int requestCode);
+    void startRecordVideo(FragmentActivity activity, int requestCode);
 
     /**
      * 以默认配置打开录制视频界面
@@ -40,7 +40,7 @@ public interface RequestRecordVideoPageable {
      * @param requestCode 请求码
      * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(Activity activity, int requestCode, RecordVideoRequestOption option);
+    void startRecordVideo(FragmentActivity activity, int requestCode, RecordVideoRequestOption option);
 
     /**
      * 打开录制视频界面
