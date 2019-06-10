@@ -32,15 +32,13 @@ class RecordVideoPageRequest implements RequestRecordVideoPageable {
 
     @Override
     public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, RecordVideoRequestOption option) {
-        RequestPermissionFragment permissionFragment = RequestPermissionFragment.newInstance(option);
-        addRequestPermissionPage(activity, permissionFragment);
+        addRequestPermissionPage(activity, RequestPermissionFragment.newInstance(option));
     }
 
     @Override
     public void startRecordVideo(@NonNull Fragment fragment, int requestCode, RecordVideoRequestOption option) {
-        RequestPermissionFragment permissionFragment = RequestPermissionFragment.newInstance(option);
         if (fragment.getActivity() != null) {
-            addRequestPermissionPage(fragment.getActivity(), permissionFragment);
+            addRequestPermissionPage(fragment.getActivity(), RequestPermissionFragment.newInstance(option));
         }
     }
 
