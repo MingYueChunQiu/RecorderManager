@@ -3,6 +3,7 @@ package com.mingyuechunqiu.recordermanager.feature.record;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.feature.main.container.RequestPermissionFragment;
@@ -32,24 +33,26 @@ class RecordVideoPageRequest implements RequestRecordVideoPageable {
 
     @Override
     public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, RecordVideoRequestOption option) {
-        addRequestPermissionPage(activity, RequestPermissionFragment.newInstance(option));
+        if (activity.getSupportFragmentManager() == null) {
+            return;
+        }
+        addRequestPermissionPage(activity.getSupportFragmentManager(), RequestPermissionFragment.newInstance(option, requestCode, activity, null));
     }
 
     @Override
     public void startRecordVideo(@NonNull Fragment fragment, int requestCode, RecordVideoRequestOption option) {
-        if (fragment.getActivity() != null) {
-            addRequestPermissionPage(fragment.getActivity(), RequestPermissionFragment.newInstance(option));
-        }
+        addRequestPermissionPage(fragment.getChildFragmentManager(), RequestPermissionFragment.newInstance(
+                option, requestCode, null, fragment));
     }
 
     /**
      * 添加申请权限界面到主界面中
      *
-     * @param activity           界面
+     * @param fragmentManager    碎片管理器
      * @param permissionFragment 申请权限界面
      */
-    private void addRequestPermissionPage(@NonNull FragmentActivity activity, RequestPermissionFragment permissionFragment) {
-        activity.getSupportFragmentManager()
+    private void addRequestPermissionPage(@NonNull FragmentManager fragmentManager, RequestPermissionFragment permissionFragment) {
+        fragmentManager
                 .beginTransaction()
                 .add(permissionFragment, RequestPermissionFragment.class.getSimpleName())
                 .commitAllowingStateLoss();

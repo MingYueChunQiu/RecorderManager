@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp_10"
-        android:text="@string/fill_record_timing"
+        android:text="@string/rm_fill_record_timing"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/cpb_record_video_record"
         app:layout_constraintLeft_toLeftOf="parent"

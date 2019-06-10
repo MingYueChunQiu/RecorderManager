@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
 //            Uri uri = data.getData();
             RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
-            Log.e("MainActivity", "onActivityResult: " + " "
+            Log.e("MainActivity", "onActivityResult: bbb" + " "
                     + info.getDuration() + " " + info.getFilePath());
         }
     }

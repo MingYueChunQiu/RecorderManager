@@ -5,10 +5,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.widget.Toast;
 
+import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
@@ -29,6 +34,9 @@ import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_
 public class RequestPermissionFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
     private RecordVideoRequestOption mOption;
+    private int mRequestCode;
+    private WeakReference<FragmentActivity> mActivityRef;
+    private WeakReference<Fragment> mFragmentRef;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -36,6 +44,14 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
         if (RecordPermissionUtils.checkRecordPermissions(this)) {
             startRecordVideoPage();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mOption = null;
+        mActivityRef = null;
+        mFragmentRef = null;
     }
 
     @Override
@@ -54,10 +70,14 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
         RecordPermissionUtils.handleOnPermissionDenied(this);
     }
 
-    public static RequestPermissionFragment newInstance(RecordVideoRequestOption option) {
-        RequestPermissionFragment fragment = new RequestPermissionFragment();
-        fragment.mOption = option;
-        return fragment;
+    public static RequestPermissionFragment newInstance(RecordVideoRequestOption option, int requestCode,
+                                                        FragmentActivity activity, Fragment fragment) {
+        RequestPermissionFragment permissionFragment = new RequestPermissionFragment();
+        permissionFragment.mOption = option;
+        permissionFragment.mRequestCode = requestCode;
+        permissionFragment.mActivityRef = new WeakReference<>(activity);
+        permissionFragment.mFragmentRef = new WeakReference<>(fragment);
+        return permissionFragment;
     }
 
     /**
@@ -69,12 +89,33 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
         }
         Intent intent = new Intent(getContext(), RecordVideoActivity.class);
         intent.putExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION, mOption);
-        startActivity(intent);
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .remove(this)
-                    .commitAllowingStateLoss();
+        FragmentManager fragmentManager = null;
+        if (mActivityRef != null && mActivityRef.get() != null) {
+            fragmentManager = mActivityRef.get().getSupportFragmentManager();
+            mActivityRef.get().startActivityForResult(intent, mRequestCode);
+        } else if (mFragmentRef != null && mFragmentRef.get() != null) {
+            fragmentManager = mFragmentRef.get().getChildFragmentManager();
+            mFragmentRef.get().startActivityForResult(intent, mRequestCode);
+        } else {
+            if (getContext() != null) {
+                Toast.makeText(getContext(), getContext().getString(R.string.rm_error_start_record_video_page), Toast.LENGTH_SHORT).show();
+            }
         }
+        removeRequestPermissionPage(fragmentManager);
+    }
+
+    /**
+     * 从父布局中移除申请权限界面
+     *
+     * @param fragmentManager 碎片管理器
+     */
+    private void removeRequestPermissionPage(FragmentManager fragmentManager) {
+        if (fragmentManager == null) {
+            return;
+        }
+        fragmentManager
+                .beginTransaction()
+                .remove(this)
+                .commitAllowingStateLoss();
     }
 }

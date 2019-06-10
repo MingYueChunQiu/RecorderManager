@@ -66,7 +66,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         svVideo.getHolder().addCallback(this);
         svVideo.getHolder().setKeepScreenOn(true);
         svVideo.setOnClickListener(this);
-        tvTiming.setText(getString(R.string.fill_record_timing, "00"));
+        tvTiming.setText(getString(R.string.rm_fill_record_timing, "00"));
         cpbRecord.setMaxProgress(mOption.getMaxDuration());
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
             @Override

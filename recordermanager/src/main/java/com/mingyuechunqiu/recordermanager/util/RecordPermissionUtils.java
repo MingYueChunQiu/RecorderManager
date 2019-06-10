@@ -37,7 +37,7 @@ public class RecordPermissionUtils {
             return false;
         }
         if (!EasyPermissions.hasPermissions(activity, sPermissions)) {
-            EasyPermissions.requestPermissions(activity, activity.getString(R.string.warn_allow_record_video_permissions), 1, sPermissions);
+            EasyPermissions.requestPermissions(activity, activity.getString(R.string.rm_warn_allow_record_video_permissions), 1, sPermissions);
             return false;
         } else {
             return true;
@@ -55,7 +55,7 @@ public class RecordPermissionUtils {
             return false;
         }
         if (!EasyPermissions.hasPermissions(fragment.getContext(), sPermissions)) {
-            EasyPermissions.requestPermissions(fragment, fragment.getString(R.string.warn_allow_record_video_permissions), 1, sPermissions);
+            EasyPermissions.requestPermissions(fragment, fragment.getString(R.string.rm_warn_allow_record_video_permissions), 1, sPermissions);
             return false;
         } else {
             return true;
@@ -80,10 +80,10 @@ public class RecordPermissionUtils {
         if (builder == null) {
             return;
         }
-        builder.setTitle(R.string.set_permission)
-                .setRationale(R.string.warn_allow_record_video_permissions)
-                .setPositiveButton(R.string.set)
-                .setNegativeButton(R.string.cancel)
+        builder.setTitle(R.string.rm_set_permission)
+                .setRationale(R.string.rm_warn_allow_record_video_permissions)
+                .setPositiveButton(R.string.rm_set)
+                .setNegativeButton(R.string.rm_cancel)
                 .build().show();
     }
 }

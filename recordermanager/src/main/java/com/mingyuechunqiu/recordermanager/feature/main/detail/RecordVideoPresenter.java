@@ -132,7 +132,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
                         if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null &&
                                 tvTimingRef.get() != null) {
                             tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(
-                                    R.string.fill_record_timing, sbTiming.toString()));
+                                    R.string.rm_fill_record_timing, sbTiming.toString()));
                         }
                     }
                 });
@@ -210,7 +210,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         boolean isRecordSuccessful = true;//标记记录录制是否成功
         if (mTiming < 1) {
             if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null) {
-                Toast.makeText(mViewRef.get().getCurrentContext(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mViewRef.get().getCurrentContext(), R.string.rm_warn_record_time_too_short, Toast.LENGTH_SHORT).show();
             }
             isRecordSuccessful = false;
         }
@@ -360,7 +360,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         } else {
             playViewsVisibility = View.GONE;
             recordViewsVisibility = View.VISIBLE;
-            tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(R.string.fill_record_timing, "00"));
+            tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(R.string.rm_fill_record_timing, "00"));
             ivFlipCameraRef.get().setVisibility(recordViewsVisibility);
             ivPlayRef.get().setVisibility(playViewsVisibility);
         }
@@ -497,7 +497,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
                     //小于规定时长，不进入播放环节，重置资源
                     if (!mPresenter.checkViewRefIsNull() &&
                             mPresenter.mViewRef.get().getCurrentContext() != null) {
-                        Toast.makeText(mPresenter.mViewRef.get().getCurrentContext(), R.string.warn_record_time_too_short, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mPresenter.mViewRef.get().getCurrentContext(), R.string.rm_warn_record_time_too_short, Toast.LENGTH_SHORT).show();
                     }
                     mPresenter.releaseRecorderManager();
                     mPresenter.releaseTiming();

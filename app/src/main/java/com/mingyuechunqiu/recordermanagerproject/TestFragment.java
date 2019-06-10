@@ -1,5 +1,6 @@
 package com.mingyuechunqiu.recordermanagerproject;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,7 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
 /**
  * <pre>
@@ -62,5 +66,16 @@ public class TestFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && requestCode == 0) {
+//            Uri uri = data.getData();
+            RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
+            Log.e("MainActivity", "onActivityResult: " + " "
+                    + info.getDuration() + " " + info.getFilePath());
+        }
     }
 }
