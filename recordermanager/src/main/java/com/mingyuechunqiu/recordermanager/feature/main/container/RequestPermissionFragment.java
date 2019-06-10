@@ -22,7 +22,7 @@ import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/6/10
  *     desc   : 请求权限Fragment，空界面，只用于权限申请
- *              继承Fragment
+ *              继承自Fragment
  *     version: 1.0
  * </pre>
  */
