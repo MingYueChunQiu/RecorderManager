@@ -2,10 +2,13 @@
 
 
 
+
+
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.22版本更新： 
-1.优化视频录制监听
+最新0.2.24版本更新： 
+1.优化权限自动申请，可自动调起视频录制界面
+2.规范图片资源命名
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -26,7 +29,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.22'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.24'
 	}
 ```
 ## 三.使用
@@ -63,7 +66,7 @@ RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestReco
      * @param activity    Activity
      * @param requestCode 请求码
      */
-    void startRecordVideo(Activity activity, int requestCode);
+    void startRecordVideo(@NonNull FragmentActivity activity, int requestCode);
 
     /**
      * 以默认配置打开录制视频界面
@@ -71,7 +74,7 @@ RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestReco
      * @param fragment    Fragment
      * @param requestCode 请求码
      */
-    void startRecordVideo(Fragment fragment, int requestCode);
+    void startRecordVideo(@NonNull Fragment fragment, int requestCode);
 
     /**
      * 打开录制视频界面
@@ -80,7 +83,7 @@ RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestReco
      * @param requestCode 请求码
      * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(Activity activity, int requestCode, RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, RecordVideoRequestOption option);
 
     /**
      * 打开录制视频界面
@@ -89,7 +92,7 @@ RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestReco
      * @param requestCode 请求码
      * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(Fragment fragment, int requestCode, RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull Fragment fragment, int requestCode, RecordVideoRequestOption option);
 ```
 RecordVideoRequestOption可配置最大时长（秒）和文件保存路径
 
@@ -185,11 +188,11 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
 想要替换图标资源的话，提供下列名称图片
 
 ```
-record_video_flip_camera.png
-record_video_cancel.png
-record_video_confirm.png
-record_video_play.png
-record_video_pull_down.png
+rm_record_video_flip_camera.png
+rm_record_video_cancel.png
+rm_record_video_confirm.png
+rm_record_video_play.png
+rm_record_video_pull_down.png
 ```
 
 #### (3).同时提供了对应的RecordVideoFragment，实现与RecordVideoActivity同样的功能，实际RecordVideoActivity就是包裹了一个RecordVideoFragment
@@ -491,7 +494,7 @@ isRecording = mManager.recordVideo(mCamera, svVideoRef.get().getHolder().getSurf
 4.释放
 
 ```
-			mManager.release();
+	    mManager.release();
             mManager = null;
             mCamera = null;
 ```
