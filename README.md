@@ -6,7 +6,7 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.24版本更新： 
+最新0.2.25版本更新： 
 1.优化权限自动申请，可自动调起视频录制界面
 2.规范图片资源命名
 
@@ -29,7 +29,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.24'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.25'
 	}
 ```
 ## 三.使用
