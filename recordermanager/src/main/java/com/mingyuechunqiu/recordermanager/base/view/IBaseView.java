@@ -1,6 +1,6 @@
 package com.mingyuechunqiu.recordermanager.base.view;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.mingyuechunqiu.recordermanager.base.presenter.IBasePresenter;
 

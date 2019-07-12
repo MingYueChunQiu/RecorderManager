@@ -3,7 +3,7 @@ package com.mingyuechunqiu.recordermanager.feature.record;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 

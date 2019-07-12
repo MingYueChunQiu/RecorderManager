@@ -1,7 +1,7 @@
 package com.mingyuechunqiu.recordermanager.base.presenter;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
 

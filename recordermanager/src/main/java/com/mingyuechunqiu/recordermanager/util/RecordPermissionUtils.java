@@ -2,7 +2,7 @@ package com.mingyuechunqiu.recordermanager.util;
 
 import android.Manifest;
 import android.app.Activity;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.mingyuechunqiu.recordermanager.R;
 

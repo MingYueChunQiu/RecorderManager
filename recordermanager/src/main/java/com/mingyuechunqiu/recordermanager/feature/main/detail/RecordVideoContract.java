@@ -1,9 +1,9 @@
 package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 

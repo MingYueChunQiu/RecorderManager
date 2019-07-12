@@ -1,8 +1,8 @@
 package com.mingyuechunqiu.recordermanager.util;
 
 import android.hardware.Camera;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import java.util.Collections;
 import java.util.Comparator;

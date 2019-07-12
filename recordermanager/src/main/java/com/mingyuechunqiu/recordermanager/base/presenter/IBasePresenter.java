@@ -1,6 +1,6 @@
 package com.mingyuechunqiu.recordermanager.base.presenter;
 
-import android.arch.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleObserver;
 
 import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
 

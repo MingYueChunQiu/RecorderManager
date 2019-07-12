@@ -1,6 +1,6 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
 
