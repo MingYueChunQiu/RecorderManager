@@ -84,13 +84,15 @@ public class TestFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == 0) {
+        if (resultCode == Activity.RESULT_OK && requestCode == 0 && data != null) {
 //            Uri uri = data.getData();
-            RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
-            Log.e("MainActivity", "onActivityResult: " + " "
-                    + info.getDuration() + " " + info.getFilePath());
+            RecordVideoResultInfo info = RecorderManagerFactory.getRecordVideoResult(data);
+            if (info != null) {
+                Log.e("MainActivity", "onActivityResult: " + " "
+                        + info.getDuration() + " " + info.getFilePath());
+            }
         }
     }
 }

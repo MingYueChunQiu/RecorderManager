@@ -53,7 +53,7 @@ class RecordVideoPageRequest implements RequestRecordVideoPageable {
      * @param fragmentManager    碎片管理器
      * @param permissionFragment 申请权限界面
      */
-    private void addRequestPermissionPage(@NonNull FragmentManager fragmentManager, RequestPermissionFragment permissionFragment) {
+    private void addRequestPermissionPage(@NonNull FragmentManager fragmentManager, @NonNull RequestPermissionFragment permissionFragment) {
         fragmentManager
                 .beginTransaction()
                 .add(permissionFragment, RequestPermissionFragment.class.getSimpleName())

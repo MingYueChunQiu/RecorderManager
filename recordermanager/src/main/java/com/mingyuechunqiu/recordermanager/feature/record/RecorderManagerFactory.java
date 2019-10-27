@@ -1,8 +1,14 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
-import androidx.annotation.NonNull;
+import android.content.Intent;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
+
+import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
 /**
  * <pre>
@@ -63,5 +69,14 @@ public class RecorderManagerFactory {
     @NonNull
     public static RequestRecordVideoPageable getRecordVideoRequest() {
         return new RecordVideoPageRequest();
+    }
+
+    @Nullable
+    public static RecordVideoResultInfo getRecordVideoResult(@Nullable Intent data) {
+        RecordVideoResultInfo info = null;
+        if (data != null) {
+            info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
+        }
+        return info;
     }
 }

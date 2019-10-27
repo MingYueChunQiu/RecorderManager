@@ -9,9 +9,11 @@ import androidx.annotation.NonNull;
 /**
  * <pre>
  *     author : 明月春秋
+ *     Github : https://github.com/MingYueChunQiu
  *     e-mail : xiyujieit@163.com
  *     time   : 2018/10/31
  *     desc   : 录制参数信息类
+ *              实现Parcelable
  *     version: 1.0
  * </pre>
  */

@@ -4,9 +4,11 @@ import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -487,7 +489,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             if (mPresenter == null) {
                 return;
             }
