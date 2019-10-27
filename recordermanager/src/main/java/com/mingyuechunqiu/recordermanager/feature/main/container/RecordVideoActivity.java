@@ -1,11 +1,15 @@
 package com.mingyuechunqiu.recordermanager.feature.main.container;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.fragment.app.FragmentManager;
+
 import android.text.TextUtils;
 
 import com.mingyuechunqiu.recordermanager.R;
@@ -16,6 +20,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
 import com.mingyuechunqiu.recordermanager.ui.activity.BaseRecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
+import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
 import java.io.File;
@@ -50,66 +55,25 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
             finishActivity();
             return;
         }
-        if (getSupportFragmentManager() != null) {
-            String filePath = getFilesDir().getAbsolutePath() + File.separator +
-                    System.currentTimeMillis() + SUFFIX_MP4;
-            int maxDuration = 30;
-            if (getIntent() != null) {
-                RecordVideoRequestOption option = getIntent().getParcelableExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION);
-                maxDuration = option == null ? 30 : option.getMaxDuration();
-                filePath = option == null ? null : option.getFilePath();
-            }
-            if (TextUtils.isEmpty(filePath)) {
-                File file = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-                if (file != null) {
-                    filePath = file.getAbsolutePath() + File.separator +
-                            System.currentTimeMillis() + SUFFIX_MP4;
-                }
-            }
-            RecordVideoOption option = new RecordVideoOption.Builder()
-                    .setRecorderOption(new RecorderOption.Builder()
-                            .buildDefaultVideoBean(filePath))
-                    .setMaxDuration(maxDuration)
-                    .setOnRecordVideoListener(new RecordVideoOption.OnRecordVideoListener() {
-
-                        @Override
-                        public void onCompleteRecordVideo(String filePath, int videoDuration) {
-                        }
-
-                        @Override
-                        public void onClickConfirm(String filePath, int videoDuration) {
-                            if (getIntent() != null) {
-                                getIntent().putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
-                                        .setDuration(videoDuration)
-                                        .setFilePath(filePath)
-                                        .build());
-                                setResult(RESULT_OK, getIntent());
-                            }
-                            finishActivity();
-                        }
-
-                        @Override
-                        public void onClickCancel(String filePath, int videoDuration) {
-                        }
-
-                        @Override
-                        public void onClickBack() {
-                            finishActivity();
-                        }
-                    }).build();
-            mRecordVideoFg = RecordVideoFragment.newInstance(option);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fl_record_video_container, mRecordVideoFg,
-                            RecordVideoFragment.class.getSimpleName())
-                    .commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager == null) {
+            return;
         }
+
+        mRecordVideoFg = RecordVideoFragment.newInstance(initRecordVideoOption());
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.fl_record_video_container, mRecordVideoFg,
+                        RecordVideoFragment.class.getSimpleName())
+                .commitAllowingStateLoss();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (getSupportFragmentManager() != null && mRecordVideoFg != null) {
-            getSupportFragmentManager().beginTransaction()
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager != null && mRecordVideoFg != null) {
+            fragmentManager.beginTransaction()
                     .remove(mRecordVideoFg)
                     .commitAllowingStateLoss();
         }
@@ -193,6 +157,73 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
      */
     protected AppCompatImageView getBackView() {
         return mRecordVideoFg == null ? null : mRecordVideoFg.getBackView();
+    }
+
+    @NonNull
+    private RecordVideoOption initRecordVideoOption() {
+        String filePath = getFilesDir().getAbsolutePath() + File.separator +
+                System.currentTimeMillis() + SUFFIX_MP4;
+        int maxDuration = 30;
+        boolean hideFlipCameraButton = false;
+        RecorderOption recorderOption = null;
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            RecordVideoRequestOption option = intent.getParcelableExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION);
+            maxDuration = option == null ? 30 : option.getMaxDuration();
+            filePath = option == null ? null : option.getFilePath();
+            hideFlipCameraButton = option != null && option.isHideFlipCameraButton();
+            recorderOption = option == null ? null : option.getRecorderOption();
+        }
+
+        if (TextUtils.isEmpty(filePath)) {
+            filePath = FilePathUtils.getSaveFilePath(this);
+        }
+        if (recorderOption == null) {
+            recorderOption = new RecorderOption.Builder()
+                    .buildDefaultVideoBean(filePath);
+        } else {
+            if (TextUtils.isEmpty(recorderOption.getFilePath())) {
+                recorderOption.setFilePath(filePath);
+            }
+        }
+
+        return new RecordVideoOption.Builder()
+                .setRecorderOption(recorderOption)
+                .setMaxDuration(maxDuration)
+                .setHideFlipCameraButton(hideFlipCameraButton)
+                .setOnRecordVideoListener(initOnRecordVideoListener()).build();
+    }
+
+    @NonNull
+    private RecordVideoOption.OnRecordVideoListener initOnRecordVideoListener() {
+        return new RecordVideoOption.OnRecordVideoListener() {
+
+            @Override
+            public void onCompleteRecordVideo(String filePath1, int videoDuration) {
+            }
+
+            @Override
+            public void onClickConfirm(String filePath1, int videoDuration) {
+                if (getIntent() != null) {
+                    getIntent().putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
+                            .setDuration(videoDuration)
+                            .setFilePath(filePath1)
+                            .build());
+                    setResult(RESULT_OK, getIntent());
+                }
+                finishActivity();
+            }
+
+            @Override
+            public void onClickCancel(String filePath1, int videoDuration) {
+            }
+
+            @Override
+            public void onClickBack() {
+                finishActivity();
+            }
+        };
     }
 
     /**

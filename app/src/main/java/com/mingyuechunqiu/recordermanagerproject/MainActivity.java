@@ -3,13 +3,17 @@ package com.mingyuechunqiu.recordermanagerproject;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 
@@ -79,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
             Log.e("MainActivity", "onActivityResult: bbb" + " "
                     + info.getDuration() + " " + info.getFilePath());
+            Toast.makeText(this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
         }
     }
 

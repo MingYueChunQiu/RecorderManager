@@ -3,18 +3,25 @@ package com.mingyuechunqiu.recordermanagerproject;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.AppCompatButton;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
+import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+
+import java.io.File;
 
 import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
@@ -62,7 +69,15 @@ public class TestFragment extends Fragment {
                 Log.d("份dewv ", getResources().getDisplayMetrics().widthPixels + " " +
                         getResources().getDisplayMetrics().heightPixels + " "
                         + (getResources().getDisplayMetrics().widthPixels * 1.0f / getResources().getDisplayMetrics().heightPixels));
-                RecorderManagerFactory.getRecordVideoRequest().startRecordVideo(TestFragment.this, 0);
+                RecorderManagerFactory.getRecordVideoRequest().startRecordVideo(TestFragment.this, 0
+//                        , new RecordVideoRequestOption.Builder()
+//                                .setMaxDuration(10)
+//                                .setHideFlipCameraButton(true)
+//                                .setRecorderOption(new RecorderOption.Builder()
+//                                        .buildDefaultVideoBean(getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+//                                                + File.separator + "test.mp4"))
+//                                .build()
+                );
             }
         });
         return view;

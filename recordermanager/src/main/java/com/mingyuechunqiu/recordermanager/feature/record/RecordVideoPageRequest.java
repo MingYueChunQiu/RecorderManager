@@ -1,6 +1,7 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -32,17 +33,18 @@ class RecordVideoPageRequest implements RequestRecordVideoPageable {
     }
 
     @Override
-    public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, RecordVideoRequestOption option) {
+    public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, @Nullable RecordVideoRequestOption option) {
         if (activity.getSupportFragmentManager() == null) {
             return;
         }
-        addRequestPermissionPage(activity.getSupportFragmentManager(), RequestPermissionFragment.newInstance(option, requestCode, activity, null));
+        addRequestPermissionPage(activity.getSupportFragmentManager(),
+                RequestPermissionFragment.newInstance(option, requestCode, activity, null));
     }
 
     @Override
-    public void startRecordVideo(@NonNull Fragment fragment, int requestCode, RecordVideoRequestOption option) {
-        addRequestPermissionPage(fragment.getChildFragmentManager(), RequestPermissionFragment.newInstance(
-                option, requestCode, null, fragment));
+    public void startRecordVideo(@NonNull Fragment fragment, int requestCode, @Nullable RecordVideoRequestOption option) {
+        addRequestPermissionPage(fragment.getChildFragmentManager(),
+                RequestPermissionFragment.newInstance(option, requestCode, null, fragment));
     }
 
     /**

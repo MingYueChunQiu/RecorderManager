@@ -2,6 +2,7 @@ package com.mingyuechunqiu.recordermanager.data.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 /**
@@ -17,16 +18,22 @@ import androidx.annotation.NonNull;
  */
 public class RecordVideoRequestOption implements Parcelable {
 
-    private int maxDuration;//最大录制时长
-
-    private String filePath;//文件保存路径
+    private Builder mBuilder;
 
     public RecordVideoRequestOption() {
+        this(new Builder());
     }
 
-    public RecordVideoRequestOption(@NonNull Parcel in) {
-        maxDuration = in.readInt();
-        filePath = in.readString();
+    public RecordVideoRequestOption(@NonNull Builder builder) {
+        mBuilder = builder;
+    }
+
+    protected RecordVideoRequestOption(@NonNull Parcel in) {
+        mBuilder = new Builder();
+        mBuilder.maxDuration = in.readInt();
+        mBuilder.filePath = in.readString();
+        mBuilder.recorderOption = in.readParcelable(RecorderOption.class.getClassLoader());
+        mBuilder.hideFlipCameraButton = in.readByte() != 0;
     }
 
     public static final Creator<RecordVideoRequestOption> CREATOR = new Creator<RecordVideoRequestOption>() {
@@ -42,19 +49,35 @@ public class RecordVideoRequestOption implements Parcelable {
     };
 
     public int getMaxDuration() {
-        return maxDuration;
+        return mBuilder.maxDuration;
     }
 
     public void setMaxDuration(int maxDuration) {
-        this.maxDuration = maxDuration;
+        mBuilder.maxDuration = maxDuration;
     }
 
     public String getFilePath() {
-        return filePath;
+        return mBuilder.filePath;
     }
 
     public void setFilePath(String filePath) {
-        this.filePath = filePath;
+        mBuilder.filePath = filePath;
+    }
+
+    public RecorderOption getRecorderOption() {
+        return mBuilder.recorderOption;
+    }
+
+    public void setRecorderOption(RecorderOption recorderOption) {
+        mBuilder.recorderOption = recorderOption;
+    }
+
+    public boolean isHideFlipCameraButton() {
+        return mBuilder.hideFlipCameraButton;
+    }
+
+    public void setHideFlipCameraButton(boolean hideFlipCameraButton) {
+        mBuilder.hideFlipCameraButton = hideFlipCameraButton;
     }
 
     @Override
@@ -64,8 +87,10 @@ public class RecordVideoRequestOption implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(maxDuration);
-        dest.writeString(filePath);
+        dest.writeInt(mBuilder.maxDuration);
+        dest.writeString(mBuilder.filePath);
+        dest.writeParcelable(mBuilder.recorderOption, flags);
+        dest.writeByte((byte) (mBuilder.hideFlipCameraButton ? 1 : 0));
     }
 
     /**
@@ -73,31 +98,48 @@ public class RecordVideoRequestOption implements Parcelable {
      */
     public static class Builder {
 
-        private RecordVideoRequestOption mOption;
-
-        public Builder() {
-            mOption = new RecordVideoRequestOption();
-        }
+        private int maxDuration;//最大录制时长
+        private String filePath;//文件保存路径
+        private RecorderOption recorderOption;//录制参数信息类
+        private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
 
         public RecordVideoRequestOption build() {
-            return mOption;
+            return new RecordVideoRequestOption(this);
         }
 
         public int getMaxDuration() {
-            return mOption.maxDuration;
+            return maxDuration;
         }
 
         public Builder setMaxDuration(int maxDuration) {
-            mOption.maxDuration = maxDuration;
+            this.maxDuration = maxDuration;
             return this;
         }
 
         public String getFilePath() {
-            return mOption.filePath;
+            return filePath;
         }
 
         public Builder setFilePath(String filePath) {
-            mOption.filePath = filePath;
+            this.filePath = filePath;
+            return this;
+        }
+
+        public RecorderOption getRecorderOption() {
+            return recorderOption;
+        }
+
+        public Builder setRecorderOption(RecorderOption recorderOption) {
+            this.recorderOption = recorderOption;
+            return this;
+        }
+
+        public boolean isHideFlipCameraButton() {
+            return hideFlipCameraButton;
+        }
+
+        public Builder setHideFlipCameraButton(boolean hideFlipCameraButton) {
+            this.hideFlipCameraButton = hideFlipCameraButton;
             return this;
         }
     }

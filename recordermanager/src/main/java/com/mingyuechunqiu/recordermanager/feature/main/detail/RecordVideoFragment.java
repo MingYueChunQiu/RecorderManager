@@ -3,10 +3,13 @@ package com.mingyuechunqiu.recordermanager.feature.main.detail;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -21,6 +24,7 @@ import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActi
 import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
 import com.mingyuechunqiu.recordermanager.ui.fragment.BasePresenterFragment;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
+import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
 import java.io.File;
@@ -118,6 +122,9 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         checkHasPermissions();
         mPresenter.initView(tvTiming, svVideo, cpbRecord, ivFlipCamera, ivPlay,
                 ivCancel, ivConfirm, ivBack, mOption);
+
+        ivFlipCamera.setVisibility(mOption.isHideFlipCameraButton() ? View.GONE : View.VISIBLE);
+
         return view;
     }
 
@@ -244,7 +251,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @param filePath 存储文件路径
      * @return 返回RecordVideoFragment
      */
-    public static RecordVideoFragment newInstance(String filePath) {
+    public static RecordVideoFragment newInstance(@Nullable String filePath) {
         return newInstance(filePath, 30);
     }
 
@@ -255,7 +262,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @param maxDuration 最大时长（秒数）
      * @return 返回RecordVideoFragment
      */
-    public static RecordVideoFragment newInstance(String filePath, int maxDuration) {
+    public static RecordVideoFragment newInstance(@Nullable String filePath, int maxDuration) {
         return newInstance(new RecordVideoOption.Builder()
                 .setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(filePath))
                 .setMaxDuration(maxDuration)
@@ -268,19 +275,21 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @param option 录制配置信息对象
      * @return 返回RecordVideoFragment
      */
-    public static RecordVideoFragment newInstance(RecordVideoOption option) {
+    public static RecordVideoFragment newInstance(@Nullable RecordVideoOption option) {
         RecordVideoFragment fragment = new RecordVideoFragment();
         fragment.mOption = option;
         if (fragment.mOption == null) {
             fragment.mOption = new RecordVideoOption();
         }
-        if (fragment.mOption.getRecorderOption() == null && fragment.getContext() != null) {
-            File file = fragment.getContext().getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-            if (file != null) {
-                fragment.mOption.setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(
-                        file.getAbsolutePath() +
-                                File.separator + System.currentTimeMillis() + SUFFIX_MP4));
-            }
+        if (fragment.mOption.getRecorderOption() == null) {
+            fragment.mOption.setRecorderOption(new RecorderOption.Builder()
+                    .buildDefaultVideoBean(
+                            FilePathUtils.getSaveFilePath(fragment.getContext())
+                    ));
+        }
+        if (TextUtils.isEmpty(fragment.mOption.getRecorderOption().getFilePath())) {
+            fragment.mOption.getRecorderOption().setFilePath(
+                    FilePathUtils.getSaveFilePath(fragment.getContext()));
         }
         return fragment;
     }

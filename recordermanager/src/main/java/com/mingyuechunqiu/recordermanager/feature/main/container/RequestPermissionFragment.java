@@ -1,12 +1,15 @@
 package com.mingyuechunqiu.recordermanager.feature.main.container;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+
 import android.widget.Toast;
 
 import com.mingyuechunqiu.recordermanager.R;
@@ -70,8 +73,8 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
         RecordPermissionUtils.handleOnPermissionDenied(this);
     }
 
-    public static RequestPermissionFragment newInstance(RecordVideoRequestOption option, int requestCode,
-                                                        FragmentActivity activity, Fragment fragment) {
+    public static RequestPermissionFragment newInstance(@Nullable RecordVideoRequestOption option, int requestCode,
+                                                        @Nullable FragmentActivity activity, @Nullable Fragment fragment) {
         RequestPermissionFragment permissionFragment = new RequestPermissionFragment();
         permissionFragment.mOption = option;
         permissionFragment.mRequestCode = requestCode;
@@ -84,7 +87,8 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
      * 打开录制视频界面
      */
     private void startRecordVideoPage() {
-        if (getContext() == null) {
+        Context context = getContext();
+        if (context == null) {
             return;
         }
         Intent intent = new Intent(getContext(), RecordVideoActivity.class);
@@ -97,9 +101,7 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
             fragmentManager = mFragmentRef.get().getChildFragmentManager();
             mFragmentRef.get().startActivityForResult(intent, mRequestCode);
         } else {
-            if (getContext() != null) {
-                Toast.makeText(getContext(), getContext().getString(R.string.rm_error_start_record_video_page), Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(context, getContext().getString(R.string.rm_error_start_record_video_page), Toast.LENGTH_SHORT).show();
         }
         removeRequestPermissionPage(fragmentManager);
     }
@@ -109,7 +111,7 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
      *
      * @param fragmentManager 碎片管理器
      */
-    private void removeRequestPermissionPage(FragmentManager fragmentManager) {
+    private void removeRequestPermissionPage(@Nullable FragmentManager fragmentManager) {
         if (fragmentManager == null) {
             return;
         }

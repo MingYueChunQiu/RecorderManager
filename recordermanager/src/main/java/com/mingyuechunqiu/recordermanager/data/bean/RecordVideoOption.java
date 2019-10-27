@@ -1,5 +1,7 @@
 package com.mingyuechunqiu.recordermanager.data.bean;
 
+import androidx.annotation.NonNull;
+
 /**
  * <pre>
  *     author : xyj
@@ -12,76 +14,99 @@ package com.mingyuechunqiu.recordermanager.data.bean;
  */
 public class RecordVideoOption {
 
-    private RecorderOption option;//录制配置信息
-    private int maxDuration;//最大录制时间（秒数）
-    private OnRecordVideoListener listener;//录制视频监听器
+    private Builder mBuilder;
 
     public RecordVideoOption() {
-        maxDuration = 30;//默认30秒
+        this(new Builder());
+    }
+
+    public RecordVideoOption(@NonNull Builder builder) {
+        mBuilder = builder;
     }
 
     public RecorderOption getRecorderOption() {
-        return option;
+        return mBuilder.option;
     }
 
     public void setRecorderOption(RecorderOption option) {
-        this.option = option;
+        mBuilder.option = option;
     }
 
     public int getMaxDuration() {
-        return maxDuration;
+        return mBuilder.maxDuration;
     }
 
     public void setMaxDuration(int maxDuration) {
-        this.maxDuration = maxDuration;
+        mBuilder.maxDuration = maxDuration;
+    }
+
+    public boolean isHideFlipCameraButton() {
+        return mBuilder.hideFlipCameraButton;
+    }
+
+    public void setHideFlipCameraButton(boolean hideFlipCameraButton) {
+        mBuilder.hideFlipCameraButton = hideFlipCameraButton;
     }
 
     public OnRecordVideoListener getOnRecordVideoListener() {
-        return listener;
+        return mBuilder.listener;
     }
 
     public void setOnRecordVideoListener(OnRecordVideoListener listener) {
-        this.listener = listener;
+        mBuilder.listener = listener;
     }
 
     /**
      * 链式调用
      */
     public static class Builder {
-        RecordVideoOption mOption;
+
+        private RecorderOption option;//录制配置信息
+        private int maxDuration;//最大录制时间（秒数）
+        private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
+        private OnRecordVideoListener listener;//录制视频监听器
 
         public Builder() {
-            mOption = new RecordVideoOption();
+            maxDuration = 30;//默认30秒
         }
 
         public RecordVideoOption build() {
-            return mOption;
+            return new RecordVideoOption(this);
         }
 
         public RecorderOption getRecorderOption() {
-            return mOption.option;
+            return option;
         }
 
         public Builder setRecorderOption(RecorderOption option) {
-            mOption.option = option;
+            this.option = option;
             return this;
         }
 
         public int getMaxDuration() {
-            return mOption.maxDuration;
+            return maxDuration;
         }
 
         public Builder setMaxDuration(int maxDuration) {
-            mOption.maxDuration = maxDuration;
+            this.maxDuration = maxDuration;
+            return this;
+        }
+
+        public boolean isHideFlipCameraButton() {
+            return hideFlipCameraButton;
+        }
+
+        public Builder setHideFlipCameraButton(boolean hideFlipCameraButton) {
+            this.hideFlipCameraButton = hideFlipCameraButton;
             return this;
         }
 
         public OnRecordVideoListener getOnRecordVideoListener() {
-            return mOption.listener;
+            return listener;
         }
 
         public Builder setOnRecordVideoListener(OnRecordVideoListener listener) {
-            mOption.listener = listener;
+            this.listener = listener;
             return this;
         }
     }

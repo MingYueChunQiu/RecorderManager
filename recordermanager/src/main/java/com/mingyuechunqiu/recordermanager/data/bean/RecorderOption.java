@@ -1,6 +1,10 @@
 package com.mingyuechunqiu.recordermanager.data.bean;
 
 import android.media.MediaRecorder;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 
 /**
  * <pre>
@@ -11,132 +15,181 @@ import android.media.MediaRecorder;
  *     version: 1.0
  * </pre>
  */
-public class RecorderOption {
+public class RecorderOption implements Parcelable {
 
-    private int audioSource;//音频源
-    private int videoSource;//视频源
-    private int outputFormat;//输出格式
-    private int audioEncoder;//音频编码格式
-    private int videoEncoder;//视频编码格式
-    private int audioSamplingRate;//音频采样频率（一般44100）
-    private int bitRate;//视频编码比特率
-    private int frameRate;//视频帧率
-    private int videoWidth, videoHeight;//视频宽高
-    private int maxDuration;//最大时长
-    private long maxFileSize;//文件最大大小
-    private String filePath;//文件存储路径
-    private int orientationHint;//视频录制角度方向
+    private Builder mBuilder;
+
+    public RecorderOption() {
+        this(new Builder());
+    }
+
+    public RecorderOption(@NonNull Builder builder) {
+        mBuilder = builder;
+    }
+
+    protected RecorderOption(@NonNull Parcel in) {
+        mBuilder = new Builder();
+        mBuilder.audioSource = in.readInt();
+        mBuilder.videoSource = in.readInt();
+        mBuilder.outputFormat = in.readInt();
+        mBuilder.audioEncoder = in.readInt();
+        mBuilder.videoEncoder = in.readInt();
+        mBuilder.audioSamplingRate = in.readInt();
+        mBuilder.bitRate = in.readInt();
+        mBuilder.frameRate = in.readInt();
+        mBuilder.videoWidth = in.readInt();
+        mBuilder.videoHeight = in.readInt();
+        mBuilder.maxDuration = in.readInt();
+        mBuilder.maxFileSize = in.readLong();
+        mBuilder.filePath = in.readString();
+        mBuilder.orientationHint = in.readInt();
+    }
+
+    public static final Creator<RecorderOption> CREATOR = new Creator<RecorderOption>() {
+        @Override
+        public RecorderOption createFromParcel(Parcel in) {
+            return new RecorderOption(in);
+        }
+
+        @Override
+        public RecorderOption[] newArray(int size) {
+            return new RecorderOption[size];
+        }
+    };
 
     public int getAudioSource() {
-        return audioSource;
+        return mBuilder.audioSource;
     }
 
     public void setAudioSource(int audioSource) {
-        this.audioSource = audioSource;
+        mBuilder.audioSource = audioSource;
     }
 
     public int getVideoSource() {
-        return videoSource;
+        return mBuilder.videoSource;
     }
 
     public void setVideoSource(int videoSource) {
-        this.videoSource = videoSource;
+        mBuilder.videoSource = videoSource;
     }
 
     public int getOutputFormat() {
-        return outputFormat;
+        return mBuilder.outputFormat;
     }
 
     public void setOutputFormat(int outputFormat) {
-        this.outputFormat = outputFormat;
+        mBuilder.outputFormat = outputFormat;
     }
 
     public int getAudioEncoder() {
-        return audioEncoder;
+        return mBuilder.audioEncoder;
     }
 
     public void setAudioEncoder(int audioEncoder) {
-        this.audioEncoder = audioEncoder;
+        mBuilder.audioEncoder = audioEncoder;
     }
 
     public int getVideoEncoder() {
-        return videoEncoder;
+        return mBuilder.videoEncoder;
     }
 
     public void setVideoEncoder(int videoEncoder) {
-        this.videoEncoder = videoEncoder;
+        mBuilder.videoEncoder = videoEncoder;
     }
 
     public int getAudioSamplingRate() {
-        return audioSamplingRate;
+        return mBuilder.audioSamplingRate;
     }
 
     public void setAudioSamplingRate(int audioSamplingRate) {
-        this.audioSamplingRate = audioSamplingRate;
+        mBuilder.audioSamplingRate = audioSamplingRate;
     }
 
     public int getBitRate() {
-        return bitRate;
+        return mBuilder.bitRate;
     }
 
     public void setBitRate(int bitRate) {
-        this.bitRate = bitRate;
+        mBuilder.bitRate = bitRate;
     }
 
     public int getFrameRate() {
-        return frameRate;
+        return mBuilder.frameRate;
     }
 
     public void setFrameRate(int frameRate) {
-        this.frameRate = frameRate;
+        mBuilder.frameRate = frameRate;
     }
 
     public int getVideoWidth() {
-        return videoWidth;
+        return mBuilder.videoWidth;
     }
 
     public void setVideoWidth(int videoWidth) {
-        this.videoWidth = videoWidth;
+        mBuilder.videoWidth = videoWidth;
     }
 
     public int getVideoHeight() {
-        return videoHeight;
+        return mBuilder.videoHeight;
     }
 
     public void setVideoHeight(int videoHeight) {
-        this.videoHeight = videoHeight;
+        mBuilder.videoHeight = videoHeight;
     }
 
     public int getMaxDuration() {
-        return maxDuration;
+        return mBuilder.maxDuration;
     }
 
     public void setMaxDuration(int maxDuration) {
-        this.maxDuration = maxDuration;
+        mBuilder.maxDuration = maxDuration;
     }
 
     public long getMaxFileSize() {
-        return maxFileSize;
+        return mBuilder.maxFileSize;
     }
 
     public void setMaxFileSize(long maxFileSize) {
-        this.maxFileSize = maxFileSize;
+        mBuilder.maxFileSize = maxFileSize;
     }
 
     public String getFilePath() {
-        return filePath;
+        return mBuilder.filePath;
     }
 
     public void setFilePath(String filePath) {
-        this.filePath = filePath;
+        mBuilder.filePath = filePath;
     }
 
     public int getOrientationHint() {
-        return orientationHint;
+        return mBuilder.orientationHint;
     }
 
     public void setOrientationHint(int orientationHint) {
-        this.orientationHint = orientationHint;
+        mBuilder.orientationHint = orientationHint;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mBuilder.audioSource);
+        dest.writeInt(mBuilder.videoSource);
+        dest.writeInt(mBuilder.outputFormat);
+        dest.writeInt(mBuilder.audioEncoder);
+        dest.writeInt(mBuilder.videoEncoder);
+        dest.writeInt(mBuilder.audioSamplingRate);
+        dest.writeInt(mBuilder.bitRate);
+        dest.writeInt(mBuilder.frameRate);
+        dest.writeInt(mBuilder.videoWidth);
+        dest.writeInt(mBuilder.videoHeight);
+        dest.writeInt(mBuilder.maxDuration);
+        dest.writeLong(mBuilder.maxFileSize);
+        dest.writeString(mBuilder.filePath);
+        dest.writeInt(mBuilder.orientationHint);
     }
 
     /**
@@ -144,14 +197,22 @@ public class RecorderOption {
      */
     public static class Builder {
 
-        private RecorderOption mOption;
-
-        public Builder() {
-            mOption = new RecorderOption();
-        }
+        private int audioSource;//音频源
+        private int videoSource;//视频源
+        private int outputFormat;//输出格式
+        private int audioEncoder;//音频编码格式
+        private int videoEncoder;//视频编码格式
+        private int audioSamplingRate;//音频采样频率（一般44100）
+        private int bitRate;//视频编码比特率
+        private int frameRate;//视频帧率
+        private int videoWidth, videoHeight;//视频宽高
+        private int maxDuration;//最大时长
+        private long maxFileSize;//文件最大大小
+        private String filePath;//文件存储路径
+        private int orientationHint;//视频录制角度方向
 
         public RecorderOption build() {
-            return mOption;
+            return new RecorderOption(this);
         }
 
         /**
@@ -188,134 +249,134 @@ public class RecorderOption {
                     .setVideoHeight(480)
                     .setBitRate(3 * 1024 * 1024)
                     .setFrameRate(30)
-                    .setOrientionHint(90)
+                    .setOrientationHint(90)
                     .setFilePath(path)
                     .build();
         }
 
         public int getAudioSource() {
-            return mOption.audioSource;
+            return audioSource;
         }
 
         public Builder setAudioSource(int audioSource) {
-            mOption.audioSource = audioSource;
+            this.audioSource = audioSource;
             return this;
         }
 
         public int getVideoSource() {
-            return mOption.videoSource;
+            return videoSource;
         }
 
         public Builder setVideoSource(int videoSource) {
-            mOption.videoSource = videoSource;
+            this.videoSource = videoSource;
             return this;
         }
 
         public int getOutputFormat() {
-            return mOption.outputFormat;
+            return outputFormat;
         }
 
         public Builder setOutputFormat(int outputFormat) {
-            mOption.outputFormat = outputFormat;
+            this.outputFormat = outputFormat;
             return this;
         }
 
         public int getAudioEncoder() {
-            return mOption.getAudioEncoder();
+            return getAudioEncoder();
         }
 
         public Builder setAudioEncoder(int audioEncoder) {
-            mOption.audioEncoder = audioEncoder;
+            this.audioEncoder = audioEncoder;
             return this;
         }
 
         public int getVideoEncoder() {
-            return mOption.videoEncoder;
+            return videoEncoder;
         }
 
         public Builder setVideoEncoder(int videoEncoder) {
-            mOption.videoEncoder = videoEncoder;
+            this.videoEncoder = videoEncoder;
             return this;
         }
 
         public int getAudioSamplingRate() {
-            return mOption.audioSamplingRate;
+            return audioSamplingRate;
         }
 
         public Builder setAudioSamplingRate(int audioSamplingRate) {
-            mOption.audioSamplingRate = audioSamplingRate;
+            this.audioSamplingRate = audioSamplingRate;
             return this;
         }
 
         public int getBitRate() {
-            return mOption.bitRate;
+            return bitRate;
         }
 
         public Builder setBitRate(int bitRate) {
-            mOption.bitRate = bitRate;
+            this.bitRate = bitRate;
             return this;
         }
 
         public int getFrameRate() {
-            return mOption.frameRate;
+            return frameRate;
         }
 
         public Builder setFrameRate(int frameRate) {
-            mOption.frameRate = frameRate;
+            this.frameRate = frameRate;
             return this;
         }
 
         public int getVideoWidth() {
-            return mOption.getVideoWidth();
+            return getVideoWidth();
         }
 
         public Builder setVideoWidth(int videoWidth) {
-            mOption.videoWidth = videoWidth;
+            this.videoWidth = videoWidth;
             return this;
         }
 
         public int getVideoHeight() {
-            return mOption.getVideoHeight();
+            return getVideoHeight();
         }
 
         public Builder setVideoHeight(int videoHeight) {
-            mOption.videoHeight = videoHeight;
+            this.videoHeight = videoHeight;
             return this;
         }
 
         public long getMaxDuration() {
-            return mOption.maxDuration;
+            return maxDuration;
         }
 
         public Builder setMaxDuration(int maxDuration) {
-            mOption.maxDuration = maxDuration;
+            this.maxDuration = maxDuration;
             return this;
         }
 
         public long getMaxFileSize() {
-            return mOption.maxFileSize;
+            return maxFileSize;
         }
 
         public Builder setMaxFileSize(long maxFileSize) {
-            mOption.maxFileSize = maxFileSize;
+            this.maxFileSize = maxFileSize;
             return this;
         }
 
         public String getFilePath() {
-            return mOption.filePath;
+            return filePath;
         }
 
         public Builder setFilePath(String filePath) {
-            mOption.filePath = filePath;
+            this.filePath = filePath;
             return this;
         }
 
-        public int getOrientionHint() {
-            return mOption.orientationHint;
+        public int getOrientationHint() {
+            return orientationHint;
         }
 
-        public Builder setOrientionHint(int orientationHint) {
-            mOption.orientationHint = orientationHint;
+        public Builder setOrientationHint(int orientationHint) {
+            this.orientationHint = orientationHint;
             return this;
         }
     }
