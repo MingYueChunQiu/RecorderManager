@@ -6,11 +6,26 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.26版本更新：
+最新0.2.28版本更新：
+
+1.优化视频录制结果获取方式
+
+2.优化代码
+
+0.2.27版本更新：
+
+1.视频录制界面RecordVideoRequestOption新增RecorderOption和hideFlipCameraButton配置
+
+2.优化代码
+
+0.2.26版本更新： 
+
 1.项目迁移至AndroidX， 引入Kotlin
 
 0.2.25版本更新： 
+
 1.优化权限自动申请，可自动调起视频录制界面
+
 2.规范图片资源命名
 
 ## 一.效果展示
@@ -32,7 +47,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.26'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.28'
 	}
 ```
 ## 三.使用
@@ -86,7 +101,7 @@ RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestReco
      * @param requestCode 请求码
      * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, @Nullable RecordVideoRequestOption option);
 
     /**
      * 打开录制视频界面
@@ -95,16 +110,17 @@ RecorderManagerFactory中可以拿到RequestRecordVideoPageable，在RequestReco
      * @param requestCode 请求码
      * @param option      视频录制请求配置信息类
      */
-    void startRecordVideo(@NonNull Fragment fragment, int requestCode, RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull Fragment fragment, int requestCode, @Nullable RecordVideoRequestOption option);
 ```
 RecordVideoRequestOption可配置最大时长（秒）和文件保存路径
 
 ```
 public class RecordVideoRequestOption implements Parcelable {
 
-    private int maxDuration;//最大录制时长
-
-    private String filePath;//文件保存路径
+         private int maxDuration;//最大录制时长
+        private String filePath;//文件保存路径
+        private RecorderOption recorderOption;//录制参数信息类（在这里配置的文件路径会覆盖filePath，录制视频时设置该属性里的MaxDuration是无效的）
+        private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
 }
 ```
 
@@ -115,9 +131,15 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
-          RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
-            Log.e("MainActivity", "onActivityResult: " + " "
-                    + info.getDuration() + " " + info.getFilePath());
+        RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
+	  
+	//从0.2.28版本开始可以使用下面这种方式，更安全更灵活，兼容性强
+	RecordVideoResultInfo info = RecorderManagerFactory.getRecordVideoResult(data);
+	
+	if (info != null) {
+                Log.e("MainActivity", "onActivityResult: " + " "
+                        + info.getDuration() + " " + info.getFilePath());
+            }
         }
     }
 ```
@@ -208,7 +230,7 @@ rm_record_video_pull_down.png
      * @param filePath 存储文件路径
      * @return 返回RecordVideoFragment
      */
-    public static RecordVideoFragment newInstance(String filePath) {
+    public static RecordVideoFragment newInstance(@Nullable String filePath) {
         return newInstance(filePath, 30);
     }
 
@@ -219,7 +241,7 @@ rm_record_video_pull_down.png
      * @param maxDuration 最大时长（秒数）
      * @return 返回RecordVideoFragment
      */
-    public static RecordVideoFragment newInstance(String filePath, int maxDuration) {
+    public static RecordVideoFragment newInstance(@Nullable String filePath, int maxDuration) {
         return newInstance(new RecordVideoOption.Builder()
                 .setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(filePath))
                 .setMaxDuration(maxDuration)
@@ -232,19 +254,21 @@ rm_record_video_pull_down.png
      * @param option 录制配置信息对象
      * @return 返回RecordVideoFragment
      */
-    public static RecordVideoFragment newInstance(RecordVideoOption option) {
+    public static RecordVideoFragment newInstance(@Nullable RecordVideoOption option) {
         RecordVideoFragment fragment = new RecordVideoFragment();
         fragment.mOption = option;
         if (fragment.mOption == null) {
             fragment.mOption = new RecordVideoOption();
         }
-        if (fragment.mOption.getRecorderOption() == null && fragment.getContext() != null) {
-            File file = fragment.getContext().getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-            if (file != null) {
-                fragment.mOption.setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(
-                        file.getAbsolutePath() +
-                                File.separator + System.currentTimeMillis() + SUFFIX_MP4));
-            }
+        if (fragment.mOption.getRecorderOption() == null) {
+            fragment.mOption.setRecorderOption(new RecorderOption.Builder()
+                    .buildDefaultVideoBean(
+                            FilePathUtils.getSaveFilePath(fragment.getContext())
+                    ));
+        }
+        if (TextUtils.isEmpty(fragment.mOption.getRecorderOption().getFilePath())) {
+            fragment.mOption.getRecorderOption().setFilePath(
+                    FilePathUtils.getSaveFilePath(fragment.getContext()));
         }
         return fragment;
     }
@@ -254,9 +278,11 @@ rm_record_video_pull_down.png
 
 ```
 public class RecordVideoOption：
- 	private RecorderOption option;//录制配置信息
-    private int maxDuration;//最大录制时间
-    private OnRecordVideoListener listener;//录制视频监听器
+
+	private RecorderOption option;//录制配置信息
+        private int maxDuration;//最大录制时间（秒数）
+        private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
+        private OnRecordVideoListener listener;//录制视频监听器
 
 	/**
      * 录制视频监听器
@@ -292,6 +318,23 @@ public class RecordVideoOption：
         void onClickBack();
     }
 ```
+4.RecorderOption是具体的录制参数配置类
+```
+	private int audioSource;//音频源
+        private int videoSource;//视频源
+        private int outputFormat;//输出格式
+        private int audioEncoder;//音频编码格式
+        private int videoEncoder;//视频编码格式
+        private int audioSamplingRate;//音频采样频率（一般44100）
+        private int bitRate;//视频编码比特率
+        private int frameRate;//视频帧率
+        private int videoWidth, videoHeight;//视频宽高
+        private int maxDuration;//最大时长
+        private long maxFileSize;//文件最大大小
+        private String filePath;//文件存储路径
+        private int orientationHint;//视频录制角度方向
+```
+
 #### (4).如果想自定义自己的界面，可以直接使用RecorderManagerable类
 1.通过RecorderManagerFactory获取RecorderManagerable
 ```
@@ -344,6 +387,15 @@ public class RecorderManagerFactory {
     @NonNull
     public static RequestRecordVideoPageable getRecordVideoRequest() {
         return new RecordVideoPageRequest();
+    }
+    
+    @Nullable
+    public static RecordVideoResultInfo getRecordVideoResult(@Nullable Intent data) {
+        RecordVideoResultInfo info = null;
+        if (data != null) {
+            info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
+        }
+        return info;
     }
 
 }
