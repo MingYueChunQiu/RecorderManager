@@ -100,7 +100,7 @@ public class RecordVideoRequestOption implements Parcelable {
 
         private int maxDuration;//最大录制时长
         private String filePath;//文件保存路径
-        private RecorderOption recorderOption;//录制参数信息类
+        private RecorderOption recorderOption;//录制参数信息类（在这里配置的文件路径会覆盖filePath）
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
 
         public RecordVideoRequestOption build() {
