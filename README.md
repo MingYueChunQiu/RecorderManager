@@ -6,27 +6,21 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.2.28版本更新：
-
-1.优化视频录制结果获取方式
-
-2.优化代码
-
-0.2.27版本更新：
-
-1.视频录制界面RecordVideoRequestOption新增RecorderOption和hideFlipCameraButton配置
-
-2.优化代码
-
-0.2.26版本更新： 
-
-1.项目迁移至AndroidX， 引入Kotlin
-
-0.2.25版本更新： 
-
-1.优化权限自动申请，可自动调起视频录制界面
-
-2.规范图片资源命名
+最新0.2.29版本更新：</br>
+1.新增圆形进度按钮配置功能</br>
+2.新增指定前后置摄像头功能</br>
+3.优化代码，调整启动视频录制配置项</br>
+最新0.2.28版本更新：</br>
+1.优化视频录制结果获取方式</br>
+2.优化代码</br>
+0.2.27版本更新：</br>
+1.视频录制界面RecordVideoRequestOption新增RecorderOption和hideFlipCameraButton配置</br>
+2.优化代码</br>
+0.2.26版本更新：</br> 
+1.项目迁移至AndroidX， 引入Kotlin</br>
+0.2.25版本更新：</br>
+1.优化权限自动申请，可自动调起视频录制界面</br>
+2.规范图片资源命名</br>
 
 ## 一.效果展示
 仿微信界面视频录制
@@ -47,7 +41,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.28'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.29'
 	}
 ```
 ## 三.使用
@@ -117,10 +111,9 @@ RecordVideoRequestOption可配置最大时长（秒）和文件保存路径
 ```
 public class RecordVideoRequestOption implements Parcelable {
 
-         private int maxDuration;//最大录制时长
         private String filePath;//文件保存路径
-        private RecorderOption recorderOption;//录制参数信息类（在这里配置的文件路径会覆盖filePath，录制视频时设置该属性里的MaxDuration是无效的）
-        private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
+        private int maxDuration;//最大录制时间（秒数）
+        private RecordVideoOption recordVideoOption;//录制视频配置信息类（里面配置的filePath和maxDuration会覆盖外面的）
 }
 ```
 
@@ -260,16 +253,6 @@ rm_record_video_pull_down.png
         if (fragment.mOption == null) {
             fragment.mOption = new RecordVideoOption();
         }
-        if (fragment.mOption.getRecorderOption() == null) {
-            fragment.mOption.setRecorderOption(new RecorderOption.Builder()
-                    .buildDefaultVideoBean(
-                            FilePathUtils.getSaveFilePath(fragment.getContext())
-                    ));
-        }
-        if (TextUtils.isEmpty(fragment.mOption.getRecorderOption().getFilePath())) {
-            fragment.mOption.getRecorderOption().setFilePath(
-                    FilePathUtils.getSaveFilePath(fragment.getContext()));
-        }
         return fragment;
     }
 ```
@@ -279,10 +262,12 @@ rm_record_video_pull_down.png
 ```
 public class RecordVideoOption：
 
-	private RecorderOption option;//录制配置信息
+	private RecorderOption recorderOption;//录制配置信息
+        private RecordVideoButtonOption recordVideoButtonOption;//录制视频按钮配置信息类
         private int maxDuration;//最大录制时间（秒数）
+        private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
-        private OnRecordVideoListener listener;//录制视频监听器
+        private OnRecordVideoListener listener;//录制视频监听器(直接使用RecorderManagerFactory启动视频录制界面，不需要设置此项)
 
 	/**
      * 录制视频监听器
