@@ -2,15 +2,13 @@ package com.mingyuechunqiu.recordermanager.feature.main.container;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.FragmentManager;
-
-import android.text.TextUtils;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
@@ -23,14 +21,13 @@ import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
-import java.io.File;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_REQUEST_OPTION;
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_RESULT_INFO;
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX_MP4;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.DEFAULT_RECORD_VIDEO_DURATION;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_REQUEST_OPTION;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
 /**
  * <pre>
@@ -161,37 +158,32 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
 
     @NonNull
     private RecordVideoOption initRecordVideoOption() {
-        String filePath = getFilesDir().getAbsolutePath() + File.separator +
-                System.currentTimeMillis() + SUFFIX_MP4;
-        int maxDuration = 30;
-        boolean hideFlipCameraButton = false;
-        RecorderOption recorderOption = null;
+        String filePath = null;
+        int maxDuration = DEFAULT_RECORD_VIDEO_DURATION;
 
         Intent intent = getIntent();
         if (intent != null) {
             RecordVideoRequestOption option = intent.getParcelableExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION);
-            maxDuration = option == null ? 30 : option.getMaxDuration();
+            if (option != null && option.getRecordVideoOption() != null) {
+                RecordVideoOption recordVideoOption = option.getRecordVideoOption();
+                recordVideoOption.setOnRecordVideoListener(initOnRecordVideoListener());
+                return recordVideoOption;
+            }
+            maxDuration = option == null ? DEFAULT_RECORD_VIDEO_DURATION : option.getMaxDuration();
             filePath = option == null ? null : option.getFilePath();
-            hideFlipCameraButton = option != null && option.isHideFlipCameraButton();
-            recorderOption = option == null ? null : option.getRecorderOption();
         }
 
+        if (maxDuration < 1) {
+            maxDuration = DEFAULT_RECORD_VIDEO_DURATION;
+        }
         if (TextUtils.isEmpty(filePath)) {
             filePath = FilePathUtils.getSaveFilePath(this);
         }
-        if (recorderOption == null) {
-            recorderOption = new RecorderOption.Builder()
-                    .buildDefaultVideoBean(filePath);
-        } else {
-            if (TextUtils.isEmpty(recorderOption.getFilePath())) {
-                recorderOption.setFilePath(filePath);
-            }
-        }
 
         return new RecordVideoOption.Builder()
-                .setRecorderOption(recorderOption)
+                .setRecorderOption(new RecorderOption.Builder()
+                        .buildDefaultVideoBean(filePath))
                 .setMaxDuration(maxDuration)
-                .setHideFlipCameraButton(hideFlipCameraButton)
                 .setOnRecordVideoListener(initOnRecordVideoListener()).build();
     }
 

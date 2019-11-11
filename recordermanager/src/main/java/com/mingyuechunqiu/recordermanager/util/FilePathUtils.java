@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX_MP4;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.SUFFIX_MP4;
 
 /**
  * <pre>

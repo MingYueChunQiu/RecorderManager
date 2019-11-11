@@ -5,7 +5,7 @@ import android.media.MediaRecorder;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
-import com.mingyuechunqiu.recordermanager.data.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.record.Recorderable;
 
@@ -39,7 +39,7 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
     }
 
     @Override
-    public Camera initCamera(Constants.CameraType cameraType, SurfaceHolder holder) {
+    public Camera initCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
         return null;
     }
 
@@ -49,12 +49,12 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
     }
 
     @Override
-    public Camera flipCamera(Constants.CameraType cameraType, SurfaceHolder holder) {
+    public Camera flipCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
         return null;
     }
 
     @Override
-    public Constants.CameraType getCameraType() {
+    public RecorderManagerConstants.CameraType getCameraType() {
         return null;
     }
 

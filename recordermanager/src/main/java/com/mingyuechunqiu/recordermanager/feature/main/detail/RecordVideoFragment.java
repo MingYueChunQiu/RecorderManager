@@ -2,13 +2,6 @@ package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Environment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
-
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,7 +10,13 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.mingyuechunqiu.recordermanager.R;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoButtonOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
@@ -27,12 +26,11 @@ import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
-import java.io.File;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.SUFFIX_MP4;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.DEFAULT_RECORD_VIDEO_DURATION;
 
 /**
  * <pre>
@@ -67,10 +65,14 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         ivCancel = view.findViewById(R.id.iv_record_video_cancel);
         ivConfirm = view.findViewById(R.id.iv_record_video_confirm);
         ivBack = view.findViewById(R.id.iv_record_video_back);
+
         svVideo.getHolder().addCallback(this);
         svVideo.getHolder().setKeepScreenOn(true);
         svVideo.setOnClickListener(this);
+
+        initRecorderOption();
         tvTiming.setText(getString(R.string.rm_fill_record_timing, "00"));
+        initCircleProgressButton(mOption.getRecordVideoButtonOption());
         cpbRecord.setMaxProgress(mOption.getMaxDuration());
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
             @Override
@@ -252,7 +254,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @return 返回RecordVideoFragment
      */
     public static RecordVideoFragment newInstance(@Nullable String filePath) {
-        return newInstance(filePath, 30);
+        return newInstance(filePath, DEFAULT_RECORD_VIDEO_DURATION);
     }
 
     /**
@@ -280,16 +282,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         fragment.mOption = option;
         if (fragment.mOption == null) {
             fragment.mOption = new RecordVideoOption();
-        }
-        if (fragment.mOption.getRecorderOption() == null) {
-            fragment.mOption.setRecorderOption(new RecorderOption.Builder()
-                    .buildDefaultVideoBean(
-                            FilePathUtils.getSaveFilePath(fragment.getContext())
-                    ));
-        }
-        if (TextUtils.isEmpty(fragment.mOption.getRecorderOption().getFilePath())) {
-            fragment.mOption.getRecorderOption().setFilePath(
-                    FilePathUtils.getSaveFilePath(fragment.getContext()));
         }
         return fragment;
     }
@@ -364,5 +356,71 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      */
     private boolean checkHasPermissions() {
         return RecordPermissionUtils.checkRecordPermissions(this);
+    }
+
+    /**
+     * 初始化录制参数信息对象
+     */
+    private void initRecorderOption() {
+        if (mOption.getRecorderOption() == null) {
+            mOption.setRecorderOption(new RecorderOption.Builder()
+                    .buildDefaultVideoBean(
+                            FilePathUtils.getSaveFilePath(getContext())
+                    ));
+        }
+        if (TextUtils.isEmpty(mOption.getRecorderOption().getFilePath())) {
+            mOption.getRecorderOption().setFilePath(
+                    FilePathUtils.getSaveFilePath(getContext()));
+        }
+    }
+
+    /**
+     * 初始化圆形进度按钮相关属性
+     *
+     * @param option 录制视频按钮配置信息类
+     */
+    private void initCircleProgressButton(@Nullable RecordVideoButtonOption option) {
+        if (cpbRecord == null || option == null) {
+            return;
+        }
+        if (option.getIdleCircleColor() != 0) {
+            cpbRecord.setIdleCircleColor(option.getIdleCircleColor());
+        }
+        if (option.getPressedCircleColor() != 0) {
+            cpbRecord.setPressedCircleColor(option.getPressedCircleColor());
+        }
+        if (option.getReleasedCircleColor() != 0) {
+            cpbRecord.setReleasedCircleColor(option.getReleasedCircleColor());
+        }
+        if (option.getIdleRingColor() != 0) {
+            cpbRecord.setIdleRingColor(option.getIdleRingColor());
+        }
+        if (option.getPressedRingColor() != 0) {
+            cpbRecord.setPressedRingColor(option.getPressedRingColor());
+        }
+        if (option.getReleasedRingColor() != 0) {
+            cpbRecord.setReleasedRingColor(option.getReleasedRingColor());
+        }
+        if (option.getIdleRingWidth() > 0) {
+            cpbRecord.setIdleRingWidth(option.getIdleRingWidth());
+        }
+        if (option.getPressedRingWidth() > 0) {
+            cpbRecord.setPressedRingWidth(option.getPressedRingWidth());
+        }
+        if (option.getReleasedRingWidth() > 0) {
+            cpbRecord.setReleasedRingWidth(option.getReleasedRingWidth());
+        }
+        if (option.getIdleInnerPadding() > 0) {
+            cpbRecord.setIdleInnerPadding(option.getIdleInnerPadding());
+        }
+        if (option.getPressedInnerPadding() > 0) {
+            cpbRecord.setPressedInnerPadding(option.getPressedInnerPadding());
+        }
+        if (option.getReleasedInnerPadding() > 0) {
+            cpbRecord.setReleasedInnerPadding(option.getReleasedInnerPadding());
+        }
+        cpbRecord.setIdleRingVisible(option.isIdleRingVisible());
+        cpbRecord.setPressedRingVisible(option.isPressedRingVisible());
+        cpbRecord.setReleasedRingVisible(option.isReleasedRingVisible());
     }
 }

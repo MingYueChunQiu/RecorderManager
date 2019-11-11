@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.EXTRA_RECORD_VIDEO_RESULT_INFO;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
 /**
  * <pre>

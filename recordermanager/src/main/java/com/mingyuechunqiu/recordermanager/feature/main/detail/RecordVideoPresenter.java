@@ -4,19 +4,18 @@ import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
-
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
-import com.mingyuechunqiu.recordermanager.data.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
@@ -30,8 +29,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_FRONT;
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_NOT_SET;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType.CAMERA_FRONT;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType.CAMERA_NOT_SET;
 
 /**
  * <pre>
@@ -66,10 +65,13 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     private Handler mHandler;
     private boolean hasHandledReleaseRecord;//标记是否处理了录制释放事件
     private int mVideoDuration;//录制视频时长（毫秒）
-    private Constants.CameraType mCameraType;//摄像头类型
+    private RecorderManagerConstants.CameraType mCameraType;//摄像头类型
 
     @Override
-    void initView(@NonNull AppCompatTextView tvTiming, @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord, @NonNull AppCompatImageView ivFlipCamera, @NonNull AppCompatImageView ivPlay, @NonNull AppCompatImageView ivCancel, @NonNull AppCompatImageView ivConfirm, @NonNull AppCompatImageView ivBack, @NonNull RecordVideoOption option) {
+    void initView(@NonNull AppCompatTextView tvTiming, @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
+                  @NonNull AppCompatImageView ivFlipCamera, @NonNull AppCompatImageView ivPlay,
+                  @NonNull AppCompatImageView ivCancel, @NonNull AppCompatImageView ivConfirm,
+                  @NonNull AppCompatImageView ivBack, @NonNull RecordVideoOption option) {
         tvTimingRef = new WeakReference<>(tvTiming);
         svVideoRef = new WeakReference<>(svVideo);
         cpbRecordRef = new WeakReference<>(cpbRecord);
@@ -79,7 +81,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         ivConfirmRef = new WeakReference<>(ivConfirm);
         ivBackRef = new WeakReference<>(ivBack);
         mOption = option;
-        mCameraType = CAMERA_NOT_SET;
+        mCameraType = mOption.getCameraType();
     }
 
     /**
@@ -363,7 +365,9 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
             playViewsVisibility = View.GONE;
             recordViewsVisibility = View.VISIBLE;
             tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(R.string.rm_fill_record_timing, "00"));
-            ivFlipCameraRef.get().setVisibility(recordViewsVisibility);
+            if (!mOption.isHideFlipCameraButton()) {
+                ivFlipCameraRef.get().setVisibility(recordViewsVisibility);
+            }
             ivPlayRef.get().setVisibility(playViewsVisibility);
         }
         ivCancelRef.get().setVisibility(playViewsVisibility);

@@ -3,7 +3,7 @@ package com.mingyuechunqiu.recordermanager.feature.record;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
-import com.mingyuechunqiu.recordermanager.data.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 
 /**
  * <pre>
@@ -47,7 +47,7 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder     Surface持有者
      * @return 返回初始化好的相机对象
      */
-    Camera initCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+    Camera initCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder);
 
     /**
      * 翻转摄像头
@@ -64,14 +64,14 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder     Surface持有者
      * @return 返回翻转并初始化好的相机对象
      */
-    Camera flipCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+    Camera flipCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder);
 
     /**
      * 获取当前摄像头类型
      *
      * @return 返回摄像头类型
      */
-    Constants.CameraType getCameraType();
+    RecorderManagerConstants.CameraType getCameraType();
 
     /**
      * 释放相机资源

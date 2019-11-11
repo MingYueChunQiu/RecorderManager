@@ -10,7 +10,7 @@ package com.mingyuechunqiu.recordermanager.data.constants;
  *     version: 1.0
  * </pre>
  */
-public class Constants {
+public class RecorderManagerConstants {
 
     public static final String PREFIX_EXTRA = "EXTRA_";//Intent数据前缀
 
@@ -20,6 +20,8 @@ public class Constants {
     public static final String EXTRA_RECORD_VIDEO_RESULT_INFO = PREFIX_EXTRA + "record_video_result_info";
 
     public static final String SUFFIX_MP4 = ".mp4";//MP4视频格式后缀
+
+    public static final int DEFAULT_RECORD_VIDEO_DURATION = 30;//默认录制视频持续时长
 
     /**
      * 摄像头类型

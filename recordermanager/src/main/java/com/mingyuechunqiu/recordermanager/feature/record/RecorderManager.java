@@ -3,21 +3,22 @@ package com.mingyuechunqiu.recordermanager.feature.record;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import androidx.core.util.Pair;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import androidx.core.util.Pair;
+
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
-import com.mingyuechunqiu.recordermanager.data.constants.Constants;
+import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerIntercept;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
 import com.mingyuechunqiu.recordermanager.util.CameraParamsUtils;
 
 import java.io.IOException;
 
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_BACK;
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_FRONT;
-import static com.mingyuechunqiu.recordermanager.data.constants.Constants.CameraType.CAMERA_NOT_SET;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType.CAMERA_BACK;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType.CAMERA_FRONT;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType.CAMERA_NOT_SET;
 
 /**
  * <pre>
@@ -33,7 +34,7 @@ class RecorderManager implements RecorderManagerable {
 
     private Recorderable mRecorderable;
     private Camera mCamera;
-    private Constants.CameraType mCameraType;
+    private RecorderManagerConstants.CameraType mCameraType;
     private RecorderManagerInterceptable mIntercept;
 
     RecorderManager(Recorderable recorderable) {
@@ -152,7 +153,7 @@ class RecorderManager implements RecorderManagerable {
     }
 
     @Override
-    public Camera initCamera(Constants.CameraType cameraType, SurfaceHolder holder) {
+    public Camera initCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
         if (mIntercept != null) {
             mIntercept.initCamera(cameraType, holder);
         }
@@ -190,7 +191,7 @@ class RecorderManager implements RecorderManagerable {
     }
 
     @Override
-    public Camera flipCamera(Constants.CameraType cameraType, SurfaceHolder holder) {
+    public Camera flipCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
         if (mIntercept != null) {
             mIntercept.flipCamera(cameraType, holder);
         }
@@ -201,7 +202,7 @@ class RecorderManager implements RecorderManagerable {
     }
 
     @Override
-    public Constants.CameraType getCameraType() {
+    public RecorderManagerConstants.CameraType getCameraType() {
         if (mIntercept != null) {
             mIntercept.getCameraType();
         }
