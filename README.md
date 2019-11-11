@@ -307,7 +307,31 @@ public class RecordVideoOption：
         void onClickBack();
     }
 ```
-4.RecorderOption是具体的录制参数配置类
+4.RecordVideoButtonOption是圆形进度按钮配置类
+```
+	private @ColorInt
+        int idleCircleColor;//空闲状态内部圆形颜色
+        private @ColorInt
+        int pressedCircleColor;//按下状态内部圆形颜色
+        private @ColorInt
+        int releasedCircleColor;//释放状态内部圆形颜色
+        private @ColorInt
+        int idleRingColor;//空闲状态外部圆环颜色
+        private @ColorInt
+        int pressedRingColor;//按下状态外部圆环颜色
+        private @ColorInt
+        int releasedRingColor;//释放状态外部圆环颜色
+        private int idleRingWidth;//空闲状态外部圆环宽度
+        private int pressedRingWidth;//按下状态外部圆环宽度
+        private int releasedRingWidth;//释放状态外部圆环宽度
+        private int idleInnerPadding;//空闲状态外部圆环与内部圆形之间边距
+        private int pressedInnerPadding;//按下状态外部圆环与内部圆形之间边距
+        private int releasedInnerPadding;//释放状态外部圆环与内部圆形之间边距
+        private boolean idleRingVisible;//空闲状态下外部圆环是否可见
+        private boolean pressedRingVisible;//按下状态下外部圆环是否可见
+        private boolean releasedRingVisible;//释放状态下外部圆环是否可见
+```
+5.RecorderOption是具体的录制参数配置类
 ```
 	private int audioSource;//音频源
         private int videoSource;//视频源
