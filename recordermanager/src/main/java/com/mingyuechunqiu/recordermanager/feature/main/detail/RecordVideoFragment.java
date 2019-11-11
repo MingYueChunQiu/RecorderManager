@@ -39,7 +39,7 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     e-mail : yujie.xi@ehailuo.com
  *     time   : 2019/1/28
  *     desc   : 录制视频界面
- *              继承自Fragment
+ *              继承自BasePresenterFragment
  *     version: 1.0
  * </pre>
  */
