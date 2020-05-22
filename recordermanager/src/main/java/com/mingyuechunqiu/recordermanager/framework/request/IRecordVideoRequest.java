@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.feature.record;
+package com.mingyuechunqiu.recordermanager.framework.request;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,10 +14,11 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/5/5
  *     desc   : 打开录制视频页面能力接口
+ *              继承自IRequest
  *     version: 1.0
  * </pre>
  */
-public interface RequestRecordVideoPageable {
+public interface IRecordVideoRequest extends IRequest {
 
     /**
      * 以默认配置打开录制视频界面

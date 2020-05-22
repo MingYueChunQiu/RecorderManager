@@ -1,14 +1,10 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
-import android.content.Intent;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
-
-import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_RESULT_INFO;
+import com.mingyuechunqiu.recordermanager.framework.parser.IRecordVideoResultParser;
+import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoRequest;
 
 /**
  * <pre>
@@ -20,7 +16,10 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     version: 1.0
  * </pre>
  */
-public class RecorderManagerFactory {
+public final class RecorderManagerFactory {
+
+    private RecorderManagerFactory() {
+    }
 
     /**
      * 创建录制管理类实例（使用默认录制类）
@@ -67,16 +66,12 @@ public class RecorderManagerFactory {
     }
 
     @NonNull
-    public static RequestRecordVideoPageable getRecordVideoRequest() {
+    public static IRecordVideoRequest getRecordVideoRequest() {
         return new RecordVideoPageRequest();
     }
 
-    @Nullable
-    public static RecordVideoResultInfo getRecordVideoResult(@Nullable Intent data) {
-        RecordVideoResultInfo info = null;
-        if (data != null) {
-            info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
-        }
-        return info;
+    @NonNull
+    public static IRecordVideoResultParser getRecordVideoResultParser() {
+        return new RecordVideoResultParser();
     }
 }

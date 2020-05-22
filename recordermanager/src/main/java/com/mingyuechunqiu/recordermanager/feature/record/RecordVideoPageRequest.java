@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.feature.main.container.RequestPermissionFragment;
+import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoRequest;
 
 /**
  * <pre>
@@ -16,11 +17,11 @@ import com.mingyuechunqiu.recordermanager.feature.main.container.RequestPermissi
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/5/5
  *     desc   : 录制视频页面请求类
- *              实现StartRecordVideoPageable
+ *              实现IRecordVideoRequest
  *     version: 1.0
  * </pre>
  */
-class RecordVideoPageRequest implements RequestRecordVideoPageable {
+final class RecordVideoPageRequest implements IRecordVideoRequest {
 
     @Override
     public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode) {
@@ -34,9 +35,6 @@ class RecordVideoPageRequest implements RequestRecordVideoPageable {
 
     @Override
     public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, @Nullable RecordVideoRequestOption option) {
-        if (activity.getSupportFragmentManager() == null) {
-            return;
-        }
         addRequestPermissionPage(activity.getSupportFragmentManager(),
                 RequestPermissionFragment.newInstance(option, requestCode, activity, null));
     }
