@@ -43,8 +43,8 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     version: 1.0
  * </pre>
  */
-public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View<RecordVideoContract.Presenter>, RecordVideoContract.Presenter>
-        implements RecordVideoContract.View<RecordVideoContract.Presenter>, View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
+public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View<RecordVideoContract.Presenter<?>>, RecordVideoContract.Presenter<?>>
+        implements RecordVideoContract.View<RecordVideoContract.Presenter<?>>, View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
 
     private AppCompatTextView tvTiming;
     private CircleProgressButton cpbRecord;
@@ -155,7 +155,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     @Override
-    protected RecordVideoContract.Presenter initPresenter() {
+    protected RecordVideoContract.Presenter<?> initPresenter() {
         return new RecordVideoPresenter();
     }
 
@@ -243,7 +243,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     @Override
-    public void setPresenter(@NonNull RecordVideoContract.Presenter presenter) {
+    public void setPresenter(@NonNull RecordVideoContract.Presenter<?> presenter) {
         mPresenter = presenter;
     }
 

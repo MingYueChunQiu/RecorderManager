@@ -43,7 +43,7 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     version: 1.0
  * </pre>
  */
-class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoContract.View> {
+class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoContract.View<?>> {
 
     private static final int MSG_STOP_RECORD = 0x00;
 

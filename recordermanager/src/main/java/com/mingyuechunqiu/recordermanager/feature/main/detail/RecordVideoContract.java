@@ -1,11 +1,12 @@
 package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
 import android.content.Context;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 import com.mingyuechunqiu.recordermanager.base.presenter.BaseAbstractPresenter;
 import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
@@ -24,12 +25,12 @@ import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
  */
 interface RecordVideoContract {
 
-    interface View<P extends Presenter> extends IBaseView<P> {
+    interface View<P extends Presenter<?>> extends IBaseView<P> {
 
         Context getCurrentContext();
     }
 
-    abstract class Presenter<V extends View> extends BaseAbstractPresenter<V> {
+    abstract class Presenter<V extends View<?>> extends BaseAbstractPresenter<V> {
 
         abstract void initView(@NonNull AppCompatTextView tvTiming,
                                @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
