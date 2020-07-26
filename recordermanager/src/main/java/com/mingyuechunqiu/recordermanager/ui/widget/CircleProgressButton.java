@@ -114,7 +114,7 @@ public class CircleProgressButton extends View {
         int ringWidth = getRingWidth();
         int realWidth = getWidth() - getPaddingLeft() - getPaddingRight();
         int realHeight = getHeight() - getPaddingTop() - getPaddingBottom();
-        int size = realWidth < realHeight ? realWidth : realHeight;
+        int size = Math.min(realWidth, realHeight);
         checkInnerPadding(ringWidth, size);
         int radius = (size - ringWidth * 2 - mInnerPadding * 2) / 2;
         int currentX = getWidth() / 2;

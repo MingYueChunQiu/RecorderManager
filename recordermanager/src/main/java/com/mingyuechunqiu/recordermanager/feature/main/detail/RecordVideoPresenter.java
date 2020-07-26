@@ -1,9 +1,11 @@
 package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
+import android.content.Context;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -135,8 +137,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
                         }
                         if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null &&
                                 tvTimingRef.get() != null) {
-                            tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(
-                                    R.string.rm_fill_record_timing, sbTiming.toString()));
+                            tvTimingRef.get().setText(getTimingHint(sbTiming.toString()));
                         }
                     }
                 });
@@ -213,9 +214,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         releaseRecorderManager();
         boolean isRecordSuccessful = true;//标记记录录制是否成功
         if (mTiming < 1) {
-            if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null) {
-                Toast.makeText(mViewRef.get().getCurrentContext(), R.string.rm_warn_record_time_too_short, Toast.LENGTH_SHORT).show();
-            }
+            showErrorToast();
             isRecordSuccessful = false;
         }
         releaseTiming();
@@ -364,7 +363,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         } else {
             playViewsVisibility = View.GONE;
             recordViewsVisibility = View.VISIBLE;
-            tvTimingRef.get().setText(mViewRef.get().getCurrentContext().getString(R.string.rm_fill_record_timing, "00"));
+            tvTimingRef.get().setText(getTimingHint("00"));
             if (!mOption.isHideFlipCameraButton()) {
                 ivFlipCameraRef.get().setVisibility(recordViewsVisibility);
             }
@@ -428,6 +427,23 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         }
     }
 
+    @NonNull
+    @Override
+    String getTimingHint(@NonNull String timing) {
+        if (checkViewRefIsNull()) {
+            return "";
+        }
+        Context context = mViewRef.get().getCurrentContext();
+        if (context == null) {
+            return "";
+        }
+        String timingHint = mOption.getTimingHint();
+        if (TextUtils.isEmpty(mOption.getTimingHint())) {
+            timingHint = context.getString(R.string.rm_fill_record_timing, timing);
+        }
+        return timingHint != null ? timingHint : "";
+    }
+
     @Override
     public void release() {
         if (mHandler != null) {
@@ -484,6 +500,21 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         }
     }
 
+    private void showErrorToast() {
+        if (checkViewRefIsNull()) {
+            return;
+        }
+        Context context = mViewRef.get().getCurrentContext();
+        if (context == null) {
+            return;
+        }
+        String msg = mOption.getErrorToastMsg();
+        if (TextUtils.isEmpty(msg)) {
+            msg = context.getString(R.string.rm_warn_record_time_too_short);
+        }
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+    }
+
     private static class MyHandler extends Handler {
 
         private RecordVideoPresenter mPresenter;
@@ -501,10 +532,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
                 if (mPresenter.needStopDelayed) {
                     mPresenter.needStopDelayed = false;
                     //小于规定时长，不进入播放环节，重置资源
-                    if (!mPresenter.checkViewRefIsNull() &&
-                            mPresenter.mViewRef.get().getCurrentContext() != null) {
-                        Toast.makeText(mPresenter.mViewRef.get().getCurrentContext(), R.string.rm_warn_record_time_too_short, Toast.LENGTH_SHORT).show();
-                    }
+                    mPresenter.showErrorToast();
                     mPresenter.releaseRecorderManager();
                     mPresenter.releaseTiming();
                     mPresenter.isRecording = false;

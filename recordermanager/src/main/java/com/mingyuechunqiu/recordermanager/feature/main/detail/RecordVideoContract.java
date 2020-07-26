@@ -147,5 +147,14 @@ interface RecordVideoContract {
          * 点击返回键事件
          */
         abstract void onClickBack();
+
+        /**
+         * 获取计时提示信息
+         *
+         * @param timing 计时信息
+         * @return 返回最终文本
+         */
+        @NonNull
+        abstract String getTimingHint(@NonNull String timing);
     }
 }

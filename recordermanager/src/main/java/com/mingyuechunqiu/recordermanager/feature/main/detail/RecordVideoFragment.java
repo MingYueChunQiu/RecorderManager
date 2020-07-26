@@ -71,7 +71,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         svVideo.setOnClickListener(this);
 
         initRecorderOption();
-        tvTiming.setText(getString(R.string.rm_fill_record_timing, "00"));
         initCircleProgressButton(mOption.getRecordVideoButtonOption());
         cpbRecord.setMaxProgress(mOption.getMaxDuration());
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
@@ -126,6 +125,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
                 ivCancel, ivConfirm, ivBack, mOption);
 
         ivFlipCamera.setVisibility(mOption.isHideFlipCameraButton() ? View.GONE : View.VISIBLE);
+        tvTiming.setText(mPresenter == null ? "" : mPresenter.getTimingHint("00"));
 
         return view;
     }

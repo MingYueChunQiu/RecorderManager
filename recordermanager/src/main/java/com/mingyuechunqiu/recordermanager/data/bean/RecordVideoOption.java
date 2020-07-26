@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 
@@ -36,6 +37,8 @@ public class RecordVideoOption implements Parcelable {
         mBuilder.maxDuration = in.readInt();
         mBuilder.cameraType = RecorderManagerConstants.CameraType.values()[in.readInt()];
         mBuilder.hideFlipCameraButton = in.readByte() != 0;
+        mBuilder.timingHint = in.readString();
+        mBuilder.errorToastMsg = in.readString();
     }
 
     public static final Creator<RecordVideoOption> CREATOR = new Creator<RecordVideoOption>() {
@@ -98,6 +101,24 @@ public class RecordVideoOption implements Parcelable {
         mBuilder.listener = listener;
     }
 
+    @Nullable
+    public String getTimingHint() {
+        return mBuilder.timingHint;
+    }
+
+    public void setTimingHint(@Nullable String timingHint) {
+        mBuilder.timingHint = timingHint;
+    }
+
+    @Nullable
+    public String getErrorToastMsg() {
+        return mBuilder.errorToastMsg;
+    }
+
+    public void setErrorToastMsg(@Nullable String errorToastMsg) {
+        mBuilder.errorToastMsg = errorToastMsg;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -110,6 +131,8 @@ public class RecordVideoOption implements Parcelable {
         dest.writeInt(mBuilder.maxDuration);
         dest.writeInt(mBuilder.cameraType.ordinal());
         dest.writeByte((byte) (mBuilder.hideFlipCameraButton ? 1 : 0));
+        dest.writeString(mBuilder.timingHint);
+        dest.writeString(mBuilder.errorToastMsg);
     }
 
     /**
@@ -123,6 +146,8 @@ public class RecordVideoOption implements Parcelable {
         private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
         private OnRecordVideoListener listener;//录制视频监听器
+        private String timingHint;//录制按钮上方提示语句（默认：0：%s）
+        private String errorToastMsg;//录制发生错误Toast（默认：录制时间小于1秒，请重试）
 
         public Builder() {
             maxDuration = 30;//默认30秒
@@ -184,6 +209,26 @@ public class RecordVideoOption implements Parcelable {
 
         public Builder setOnRecordVideoListener(OnRecordVideoListener listener) {
             this.listener = listener;
+            return this;
+        }
+
+        @Nullable
+        public String getTimingHint() {
+            return timingHint;
+        }
+
+        public Builder setTimingHint(@Nullable String timingHint) {
+            this.timingHint = timingHint;
+            return this;
+        }
+
+        @Nullable
+        public String getErrorToastMsg() {
+            return errorToastMsg;
+        }
+
+        public Builder setErrorToastMsg(@Nullable String errorToastMsg) {
+            this.errorToastMsg = errorToastMsg;
             return this;
         }
     }
