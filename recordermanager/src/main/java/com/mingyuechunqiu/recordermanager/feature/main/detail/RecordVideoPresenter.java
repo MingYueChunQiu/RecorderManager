@@ -6,24 +6,22 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
-import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -50,11 +48,6 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     //停止录制
     private static final int MSG_STOP_RECORD = 0x00;
 
-    private WeakReference<SurfaceView> svVideoRef;
-    private WeakReference<AppCompatTextView> tvTimingRef;
-    private WeakReference<CircleProgressButton> cpbRecordRef;
-    private WeakReference<AppCompatImageView> ivFlipCameraRef, ivPlayRef, ivCancelRef, ivConfirmRef, ivBackRef;
-
     private RecorderManagerable mManager;
     private RecordVideoOption mOption;
     private Camera mCamera;
@@ -71,18 +64,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     private RecorderManagerConstants.CameraType mCameraType;//摄像头类型
 
     @Override
-    void initView(@NonNull AppCompatTextView tvTiming, @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
-                  @NonNull AppCompatImageView ivFlipCamera, @NonNull AppCompatImageView ivPlay,
-                  @NonNull AppCompatImageView ivCancel, @NonNull AppCompatImageView ivConfirm,
-                  @NonNull AppCompatImageView ivBack, @NonNull RecordVideoOption option) {
-        tvTimingRef = new WeakReference<>(tvTiming);
-        svVideoRef = new WeakReference<>(svVideo);
-        cpbRecordRef = new WeakReference<>(cpbRecord);
-        ivFlipCameraRef = new WeakReference<>(ivFlipCamera);
-        ivPlayRef = new WeakReference<>(ivPlay);
-        ivCancelRef = new WeakReference<>(ivCancel);
-        ivConfirmRef = new WeakReference<>(ivConfirm);
-        ivBackRef = new WeakReference<>(ivBack);
+    void initView(@NonNull RecordVideoOption option) {
         mOption = option;
         mCameraType = mOption.getCameraType();
     }
@@ -91,13 +73,13 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
      * 开始图像预览
      */
     @Override
-    void startPreview() {
-        if (svVideoRef.get() == null) {
+    void startPreview(@Nullable SurfaceHolder holder) {
+        if (holder == null) {
             return;
         }
-        checkOrCreateRecorderManagerable();
+        checkOrCreateRecorderManager();
         if (mCamera == null) {
-            mCamera = mManager.initCamera(mCameraType, svVideoRef.get().getHolder());
+            mCamera = mManager.initCamera(mCameraType, holder);
             mCameraType = mManager.getCameraType();
         }
     }
@@ -108,21 +90,21 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
      * @return 如果成功开始录制返回true，否则返回false
      */
     @Override
-    boolean pressToStartRecordVideo() {
-        checkOrCreateRecorderManagerable();
+    boolean pressToStartRecordVideo(@Nullable SurfaceHolder holder, @NonNull AppCompatImageView ivFlipCamera,
+                                    @NonNull AppCompatImageView ivBack) {
+        if (checkViewRefIsNull()) {
+            return false;
+        }
+        checkOrCreateRecorderManager();
         if (mCamera == null) {
-            startPreview();
+            startPreview(holder);
         }
         if (isRecording) {
             return false;
         }
         hasHandledReleaseRecord = false;
-        if (ivFlipCameraRef.get() != null) {
-            ivFlipCameraRef.get().setVisibility(View.GONE);
-        }
-        if (ivBackRef.get() != null) {
-            ivBackRef.get().setVisibility(View.GONE);
-        }
+        ivFlipCamera.setVisibility(View.GONE);
+        ivBack.setVisibility(View.GONE);
         isRecording = true;
         isReleaseRecord = false;
         releaseTiming();
@@ -136,13 +118,12 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
                         if (mTiming < 10) {
                             sbTiming.insert(0, "0");
                         }
-                        if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null &&
-                                tvTimingRef.get() != null) {
-                            tvTimingRef.get().setText(getTimingHint(sbTiming.toString()));
+                        if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null) {
+                            mViewRef.get().showTimingText(sbTiming.toString());
                         }
                     }
                 });
-        startRecordVideo();
+        startRecordVideo(holder);
         return true;
     }
 
@@ -173,33 +154,36 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     }
 
     @Override
-    void flipCamera() {
-        if (svVideoRef.get() == null) {
+    void flipCamera(@Nullable SurfaceHolder holder) {
+        if (holder == null) {
             return;
         }
-        checkOrCreateRecorderManagerable();
-        mCamera = mManager.flipCamera(svVideoRef.get().getHolder());
+        checkOrCreateRecorderManager();
+        mCamera = mManager.flipCamera(holder);
         mCameraType = mManager.getCameraType();
     }
 
     /**
      * 开始录制视频
      */
-    @Override
-    void startRecordVideo() {
-        if (svVideoRef.get() == null) {
+    private void startRecordVideo(@Nullable SurfaceHolder holder) {
+        if (holder == null) {
             return;
         }
-        checkOrCreateRecorderManagerable();
+        Surface surface = holder.getSurface();
+        if (surface == null) {
+            return;
+        }
+        checkOrCreateRecorderManager();
         if (mCamera == null) {
-            mCamera = mManager.initCamera(mCameraType, svVideoRef.get().getHolder());
+            mCamera = mManager.initCamera(mCameraType, holder);
         }
         if (mCameraType == CAMERA_FRONT) {
             mOption.getRecorderOption().setOrientationHint(270);
         } else {
             mOption.getRecorderOption().setOrientationHint(90);
         }
-        isRecording = mManager.recordVideo(mCamera, svVideoRef.get().getHolder().getSurface(), mOption.getRecorderOption());
+        isRecording = mManager.recordVideo(mCamera, surface, mOption.getRecorderOption());
     }
 
     /**
@@ -248,7 +232,11 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
      */
     @Override
     void playVideo() {
-        if (svVideoRef.get() == null) {
+        if (checkViewRefIsNull()) {
+            return;
+        }
+        SurfaceHolder holder = mViewRef.get().getSurfaceHolder();
+        if (holder == null) {
             return;
         }
         if (mMediaPlayer == null) {
@@ -258,7 +246,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         try {
             mMediaPlayer.setDataSource(mOption.getRecorderOption().getFilePath());
             mMediaPlayer.setLooping(true);
-            mMediaPlayer.setDisplay(svVideoRef.get().getHolder());
+            mMediaPlayer.setDisplay(holder);
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -275,12 +263,10 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     }
 
     @Override
-    void pausePlayVideo(boolean controlViews) {
+    void pausePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay) {
         if (isInPlayingState && mMediaPlayer != null && mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
-            if (ivPlayRef.get() != null) {
-                ivPlayRef.get().setVisibility(View.VISIBLE);
-            }
+            ivPlay.setVisibility(View.VISIBLE);
         }
     }
 
@@ -288,23 +274,21 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
      * 恢复播放视频
      */
     @Override
-    void resumePlayVideo(boolean controlViews) {
-        if (isInPlayingState && mMediaPlayer != null && svVideoRef.get() != null) {
-            mMediaPlayer.setDisplay(svVideoRef.get().getHolder());
+    void resumePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder) {
+        if (isInPlayingState && mMediaPlayer != null && holder != null) {
+            mMediaPlayer.setDisplay(holder);
             mMediaPlayer.start();
-            if (ivPlayRef.get() != null) {
-                ivPlayRef.get().setVisibility(View.GONE);
-            }
+            ivPlay.setVisibility(View.GONE);
         }
     }
 
     @Override
-    void controlPlayOrPauseVideo() {
+    void controlPlayOrPauseVideo(@NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder) {
         if (isInPlayingState && mMediaPlayer != null) {
             if (mMediaPlayer.isPlaying()) {
-                pausePlayVideo(true);
+                pausePlayVideo(true, ivPlay);
             } else {
-                resumePlayVideo(true);
+                resumePlayVideo(true, ivPlay, holder);
             }
         }
     }
@@ -341,56 +325,26 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     @Override
     void resetResource() {
         releaseMediaPlayer();
-        startPreview();
-        controlRecordOrPlayVisibility(false);
-    }
-
-    /**
-     * 控制录制或播放的控件可见性
-     *
-     * @param isInPlayingState 是否正在播放
-     */
-    @Override
-    void controlRecordOrPlayVisibility(boolean isInPlayingState) {
-        if (checkViewRefIsNull() || mViewRef.get().getCurrentContext() == null ||
-                tvTimingRef.get() == null || cpbRecordRef.get() == null ||
-                ivPlayRef.get() == null || ivCancelRef.get() == null || ivConfirmRef.get() == null) {
-            return;
+        if (!checkViewRefIsNull()) {
+            startPreview(mViewRef.get().getSurfaceHolder());
+            mViewRef.get().controlRecordOrPlayVisibility(false);
         }
-        int playViewsVisibility, recordViewsVisibility;
-        if (isInPlayingState) {
-            playViewsVisibility = View.VISIBLE;
-            recordViewsVisibility = View.GONE;
-        } else {
-            playViewsVisibility = View.GONE;
-            recordViewsVisibility = View.VISIBLE;
-            tvTimingRef.get().setText(getTimingHint("00"));
-            if (!mOption.isHideFlipCameraButton()) {
-                ivFlipCameraRef.get().setVisibility(recordViewsVisibility);
-            }
-            ivPlayRef.get().setVisibility(playViewsVisibility);
-        }
-        ivCancelRef.get().setVisibility(playViewsVisibility);
-        ivConfirmRef.get().setVisibility(playViewsVisibility);
-        tvTimingRef.get().setVisibility(recordViewsVisibility);
-        cpbRecordRef.get().setVisibility(recordViewsVisibility);
-        ivBackRef.get().setVisibility(recordViewsVisibility);
     }
 
     /**
      * 设置SurfaceHolder（在调用到onPause()方法后，SurfaceView会销毁重建，要重新设置）
      *
-     * @param surfaceHolder 图层控制
+     * @param holder 图层控制
      */
     @Override
-    void onSurfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        surfaceHolder.setKeepScreenOn(true);
+    void onSurfaceCreated(@NonNull SurfaceHolder holder, @NonNull AppCompatImageView ivPlay) {
+        holder.setKeepScreenOn(true);
         if (!isInPlayingState) {
-            startPreview();
+            startPreview(holder);
             return;
         }
-        mMediaPlayer.setDisplay(surfaceHolder);
-        resumePlayVideo(false);
+        mMediaPlayer.setDisplay(holder);
+        resumePlayVideo(false, ivPlay, holder);
     }
 
     /**
@@ -465,21 +419,13 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         releaseMediaPlayer();
         mManager = null;
         mOption = null;
-        svVideoRef = null;
-        tvTimingRef = null;
-        cpbRecordRef = null;
-        ivFlipCameraRef = null;
-        ivPlayRef = null;
-        ivCancelRef = null;
-        ivConfirmRef = null;
-        ivBackRef = null;
         mCameraType = CAMERA_NOT_SET;
     }
 
     /**
      * 检查录制管理器是否存在，若不存在则创建
      */
-    private void checkOrCreateRecorderManagerable() {
+    private void checkOrCreateRecorderManager() {
         if (mManager == null) {
             mManager = RecorderManagerFactory.newInstance();
         }
@@ -521,6 +467,13 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
     }
 
+    private void setRecordOrPlayVisible() {
+        if (checkViewRefIsNull()) {
+            return;
+        }
+        mViewRef.get().controlRecordOrPlayVisibility(true);
+    }
+
     private static class MyHandler extends Handler {
 
         private RecordVideoPresenter mPresenter;
@@ -546,7 +499,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
                 } else {
                     if (mPresenter.stopRecordVideo() && msg.arg1 == 0) {
                         mPresenter.playVideo();
-                        mPresenter.controlRecordOrPlayVisibility(true);
+                        mPresenter.setRecordOrPlayVisible();
                     }
                 }
             }

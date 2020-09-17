@@ -46,6 +46,7 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
 public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View<RecordVideoContract.Presenter<?>>, RecordVideoContract.Presenter<?>>
         implements RecordVideoContract.View<RecordVideoContract.Presenter<?>>, View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
 
+    private SurfaceView svVideo;
     private AppCompatTextView tvTiming;
     private CircleProgressButton cpbRecord;
     private AppCompatImageView ivFlipCamera, ivPlay, ivCancel, ivConfirm, ivBack;
@@ -58,7 +59,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.rm_fragment_record_video, container, false);
-        SurfaceView svVideo = view.findViewById(R.id.sv_record_video_screen);
+        svVideo = view.findViewById(R.id.sv_record_video_screen);
         tvTiming = view.findViewById(R.id.tv_record_video_timing);
         cpbRecord = view.findViewById(R.id.cpb_record_video_record);
         ivFlipCamera = view.findViewById(R.id.iv_record_video_flip_camera);
@@ -78,10 +79,10 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
             @Override
             public boolean onPreProgress(CircleProgressButton v) {
-                if (!checkHasPermissions() || mPresenter == null) {
+                if (!checkHasPermissions() || mPresenter == null || ivFlipCamera == null || ivBack == null) {
                     return false;
                 }
-                return mPresenter.pressToStartRecordVideo();
+                return mPresenter.pressToStartRecordVideo(svVideo.getHolder(), ivFlipCamera, ivBack);
             }
 
             @Override
@@ -123,8 +124,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             });
         }
         checkHasPermissions();
-        mPresenter.initView(tvTiming, svVideo, cpbRecord, ivFlipCamera, ivPlay,
-                ivCancel, ivConfirm, ivBack, mOption);
+        mPresenter.initView(mOption);
 
         ivFlipCamera.setVisibility(mOption.isHideFlipCameraButton() ? View.GONE : View.VISIBLE);
         tvTiming.setText(mPresenter == null ? "" : mPresenter.getTimingHint("00"));
@@ -137,16 +137,16 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     public void onResume() {
         super.onResume();
         //在红米Note5A上，锁屏没有调用surfaceDestroyed方法，所以要加以判断
-        if (!isSurfaceHolderDestroyed && mPresenter != null) {
-            mPresenter.resumePlayVideo(false);
+        if (!isSurfaceHolderDestroyed && mPresenter != null && ivPlay != null && svVideo != null) {
+            mPresenter.resumePlayVideo(false, ivPlay, svVideo.getHolder());
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mPresenter != null) {
-            mPresenter.pausePlayVideo(false);
+        if (mPresenter != null && ivPlay != null) {
+            mPresenter.pausePlayVideo(false, ivPlay);
         }
     }
 
@@ -177,16 +177,16 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         //库需要使用if else，使用switch判断id会导致问题
         int id = v.getId();
         if (id == R.id.sv_record_video_screen) {
-            if (mPresenter != null) {
-                mPresenter.controlPlayOrPauseVideo();
+            if (mPresenter != null & ivPlay != null && svVideo != null) {
+                mPresenter.controlPlayOrPauseVideo(ivPlay, svVideo.getHolder());
             }
         } else if (id == R.id.iv_record_video_flip_camera) {
             if (mPresenter != null) {
-                mPresenter.flipCamera();
+                mPresenter.flipCamera(svVideo.getHolder());
             }
         } else if (id == R.id.iv_record_video_play) {
-            if (mPresenter != null) {
-                mPresenter.resumePlayVideo(true);
+            if (mPresenter != null && ivPlay != null && svVideo != null) {
+                mPresenter.resumePlayVideo(true, ivPlay, svVideo.getHolder());
             }
         } else if (id == R.id.iv_record_video_cancel) {
             if (mPresenter != null) {
@@ -208,8 +208,8 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        if (mPresenter != null) {
-            mPresenter.onSurfaceCreated(holder);
+        if (mPresenter != null && holder != null && ivPlay != null) {
+            mPresenter.onSurfaceCreated(holder, ivPlay);
         }
         isSurfaceHolderDestroyed = false;
     }
@@ -246,6 +246,48 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     @Override
     public Context getCurrentContext() {
         return getContext();
+    }
+
+    @Override
+    public void showTimingText(@NonNull String text) {
+        if (tvTiming == null) {
+            return;
+        }
+        tvTiming.setText(text);
+    }
+
+    @Nullable
+    @Override
+    public SurfaceHolder getSurfaceHolder() {
+        return svVideo == null ? null : svVideo.getHolder();
+    }
+
+    @Override
+    public void controlRecordOrPlayVisibility(boolean isInPlayingState) {
+        if (tvTiming == null || ivFlipCamera == null || ivPlay == null || ivCancel == null ||
+                ivConfirm == null || cpbRecord == null || ivBack == null) {
+            return;
+        }
+        int playViewsVisibility, recordViewsVisibility;
+        if (isInPlayingState) {
+            playViewsVisibility = View.VISIBLE;
+            recordViewsVisibility = View.GONE;
+        } else {
+            playViewsVisibility = View.GONE;
+            recordViewsVisibility = View.VISIBLE;
+            if (mPresenter != null) {
+                showTimingText(mPresenter.getTimingHint("00"));
+            }
+            if (!mOption.isHideFlipCameraButton()) {
+                ivFlipCamera.setVisibility(recordViewsVisibility);
+            }
+            ivPlay.setVisibility(playViewsVisibility);
+        }
+        ivCancel.setVisibility(playViewsVisibility);
+        ivConfirm.setVisibility(playViewsVisibility);
+        tvTiming.setVisibility(recordViewsVisibility);
+        cpbRecord.setVisibility(recordViewsVisibility);
+        ivBack.setVisibility(recordViewsVisibility);
     }
 
     @Override

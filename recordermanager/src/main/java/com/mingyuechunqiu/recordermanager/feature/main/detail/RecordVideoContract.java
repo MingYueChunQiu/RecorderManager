@@ -2,16 +2,14 @@ package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
 import android.content.Context;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.AppCompatTextView;
 
 import com.mingyuechunqiu.recordermanager.base.presenter.BaseAbstractPresenter;
 import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
-import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 
 /**
  * <pre>
@@ -28,28 +26,41 @@ interface RecordVideoContract {
     interface View<P extends Presenter<?>> extends IBaseView<P> {
 
         Context getCurrentContext();
+
+        /**
+         * 显示计时控件信息
+         *
+         * @param text 文本信息
+         */
+        void showTimingText(@NonNull String text);
+
+        @Nullable
+        SurfaceHolder getSurfaceHolder();
+
+        /**
+         * 控制录制或播放的控件可见性
+         *
+         * @param isInPlayingState 是否正在播放
+         */
+        void controlRecordOrPlayVisibility(boolean isInPlayingState);
     }
 
     abstract class Presenter<V extends View<?>> extends BaseAbstractPresenter<V> {
 
-        abstract void initView(@NonNull AppCompatTextView tvTiming,
-                               @NonNull SurfaceView svVideo, @NonNull CircleProgressButton cpbRecord,
-                               @NonNull AppCompatImageView ivFlipCamera,
-                               @NonNull AppCompatImageView ivPlay, @NonNull AppCompatImageView ivCancel,
-                               @NonNull AppCompatImageView ivConfirm, @NonNull AppCompatImageView ivBack,
-                               @NonNull RecordVideoOption option);
+        abstract void initView(@NonNull RecordVideoOption option);
 
         /**
          * 开始相机预览
          */
-        abstract void startPreview();
+        abstract void startPreview(@Nullable SurfaceHolder holder);
 
         /**
          * 按下按钮开始录制视频
          *
          * @return 如果成功开始录制返回true，否则返回false
          */
-        abstract boolean pressToStartRecordVideo();
+        abstract boolean pressToStartRecordVideo(@Nullable SurfaceHolder holder, @NonNull AppCompatImageView ivFlipCamera,
+                                                 @NonNull AppCompatImageView ivBack);
 
         /**
          * 释放按钮停止录制视频
@@ -61,12 +72,7 @@ interface RecordVideoContract {
         /**
          * 翻转摄像头
          */
-        abstract void flipCamera();
-
-        /**
-         * 开始录制视频
-         */
-        abstract void startRecordVideo();
+        abstract void flipCamera(@Nullable SurfaceHolder holder);
 
         /**
          * 停止录制视频，返回是否录制成功
@@ -90,19 +96,19 @@ interface RecordVideoContract {
          *
          * @param controlViews 是否要控制控件
          */
-        abstract void pausePlayVideo(boolean controlViews);
+        abstract void pausePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay);
 
         /**
          * 恢复播放视频
          *
          * @param controlViews 是否要控制控件
          */
-        abstract void resumePlayVideo(boolean controlViews);
+        abstract void resumePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder);
 
         /**
          * 控制播放或暂停视频
          */
-        abstract void controlPlayOrPauseVideo();
+        abstract void controlPlayOrPauseVideo(@NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder);
 
         /**
          * 释放播放资源
@@ -120,18 +126,11 @@ interface RecordVideoContract {
         abstract void resetResource();
 
         /**
-         * 控制录制或播放的控件可见性
-         *
-         * @param isInPlayingState 是否正在播放
-         */
-        abstract void controlRecordOrPlayVisibility(boolean isInPlayingState);
-
-        /**
          * 设置SurfaceHolder（在调用到onPause()方法后，SurfaceView会销毁重建，要重新设置）
          *
-         * @param surfaceHolder 图层控制
+         * @param holder 图层控制
          */
-        abstract void onSurfaceCreated(@NonNull SurfaceHolder surfaceHolder);
+        abstract void onSurfaceCreated(@NonNull SurfaceHolder holder, @NonNull AppCompatImageView ivPlay);
 
         /**
          * 点击确认录制视频事件
