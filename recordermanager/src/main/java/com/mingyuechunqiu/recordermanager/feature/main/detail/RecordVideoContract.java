@@ -156,5 +156,12 @@ interface RecordVideoContract {
          */
         @NonNull
         abstract String getTimingHint(@NonNull String timing);
+
+        /**
+         * 切换闪光灯状态
+         *
+         * @param turnOn true表示打开，false关闭
+         */
+        abstract void switchFlashlightState(boolean turnOn);
     }
 }

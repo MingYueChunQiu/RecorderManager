@@ -49,6 +49,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     private AppCompatTextView tvTiming;
     private CircleProgressButton cpbRecord;
     private AppCompatImageView ivFlipCamera, ivPlay, ivCancel, ivConfirm, ivBack;
+    private AppCompatImageView ivFlashlight;
 
     private RecordVideoOption mOption;
     private boolean isSurfaceHolderDestroyed;//标记SurfaceHolder是否被销毁了
@@ -65,6 +66,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         ivCancel = view.findViewById(R.id.iv_record_video_cancel);
         ivConfirm = view.findViewById(R.id.iv_record_video_confirm);
         ivBack = view.findViewById(R.id.iv_record_video_back);
+        ivFlashlight = view.findViewById(R.id.iv_record_video_flashlight);
 
         svVideo.getHolder().addCallback(this);
         svVideo.getHolder().setKeepScreenOn(true);
@@ -126,6 +128,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
 
         ivFlipCamera.setVisibility(mOption.isHideFlipCameraButton() ? View.GONE : View.VISIBLE);
         tvTiming.setText(mPresenter == null ? "" : mPresenter.getTimingHint("00"));
+        ivFlashlight.setOnClickListener(this);
 
         return view;
     }
@@ -171,6 +174,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
 
     @Override
     public void onClick(View v) {
+        //库需要使用if else，使用switch判断id会导致问题
         int id = v.getId();
         if (id == R.id.sv_record_video_screen) {
             if (mPresenter != null) {
@@ -197,6 +201,8 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             if (mPresenter != null) {
                 mPresenter.onClickBack();
             }
+        } else if (id == R.id.iv_record_video_flashlight) {
+            ivFlashlight.setSelected(!ivFlashlight.isSelected());
         }
     }
 

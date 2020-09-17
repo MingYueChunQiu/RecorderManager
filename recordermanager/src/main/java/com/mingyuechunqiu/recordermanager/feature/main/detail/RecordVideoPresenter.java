@@ -47,6 +47,7 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  */
 class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoContract.View<?>> {
 
+    //停止录制
     private static final int MSG_STOP_RECORD = 0x00;
 
     private WeakReference<SurfaceView> svVideoRef;
@@ -64,7 +65,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     private Disposable mTimingDisposable;//用于计时
     private boolean isInPlayingState;//标记是否处于播放视频状态
     private MediaPlayer mMediaPlayer;
-    private Handler mHandler;
+    private MyHandler mHandler;
     private boolean hasHandledReleaseRecord;//标记是否处理了录制释放事件
     private int mVideoDuration;//录制视频时长（毫秒）
     private RecorderManagerConstants.CameraType mCameraType;//摄像头类型
@@ -158,7 +159,7 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
         //防止用户按下就抬起，导致MediaRecorder初始化还没完成就release导致报错
 
         if (mHandler == null) {
-            mHandler = new RecordVideoPresenter.MyHandler(this);
+            mHandler = new MyHandler(this);
         } else {
             mHandler.removeMessages(MSG_STOP_RECORD);
         }
@@ -442,6 +443,11 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
             timingHint = context.getString(R.string.rm_fill_record_timing, timing);
         }
         return timingHint != null ? timingHint : "";
+    }
+
+    @Override
+    void switchFlashlightState(boolean turnOn) {
+
     }
 
     @Override

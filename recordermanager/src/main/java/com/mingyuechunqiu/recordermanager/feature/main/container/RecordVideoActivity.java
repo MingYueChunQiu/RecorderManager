@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.fragment.app.FragmentManager;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
@@ -52,14 +51,8 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
             finishActivity();
             return;
         }
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager == null) {
-            return;
-        }
-
         mRecordVideoFg = RecordVideoFragment.newInstance(initRecordVideoOption());
-
-        fragmentManager.beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_record_video_container, mRecordVideoFg,
                         RecordVideoFragment.class.getSimpleName())
                 .commitAllowingStateLoss();
@@ -68,9 +61,8 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager != null && mRecordVideoFg != null) {
-            fragmentManager.beginTransaction()
+        if (mRecordVideoFg != null) {
+            getSupportFragmentManager().beginTransaction()
                     .remove(mRecordVideoFg)
                     .commitAllowingStateLoss();
         }
