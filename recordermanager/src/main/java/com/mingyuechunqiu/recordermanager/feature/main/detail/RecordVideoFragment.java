@@ -19,7 +19,9 @@ import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoButtonOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
+import com.mingyuechunqiu.recordermanager.data.constants.KeyPrefixConstants;
 import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
 import com.mingyuechunqiu.recordermanager.ui.fragment.BasePresenterFragment;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
@@ -46,6 +48,8 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
 public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View<RecordVideoContract.Presenter<?>>, RecordVideoContract.Presenter<?>>
         implements RecordVideoContract.View<RecordVideoContract.Presenter<?>>, View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
 
+    private static final String BUNDLE_EXTRA_RECORD_VIDEO_OPTION = KeyPrefixConstants.KEY_BUNDLE + "record_video_option";
+
     private SurfaceView svVideo;
     private AppCompatTextView tvTiming;
     private CircleProgressButton cpbRecord;
@@ -58,7 +62,14 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.rm_fragment_record_video, container, false);
+        return inflater.inflate(R.layout.rm_fragment_record_video, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initRecorderOption();
+
         svVideo = view.findViewById(R.id.sv_record_video_screen);
         tvTiming = view.findViewById(R.id.tv_record_video_timing);
         cpbRecord = view.findViewById(R.id.cpb_record_video_record);
@@ -72,8 +83,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         svVideo.getHolder().addCallback(this);
         svVideo.getHolder().setKeepScreenOn(true);
         svVideo.setOnClickListener(this);
-
-        initRecorderOption();
         initCircleProgressButton(mOption.getRecordVideoButtonOption());
         cpbRecord.setMaxProgress(mOption.getMaxDuration());
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
@@ -87,7 +96,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
 
             @Override
             public void onProgress(CircleProgressButton v, float progress) {
-
             }
 
             @Override
@@ -95,15 +103,17 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
                 if (mPresenter != null) {
                     mPresenter.releaseToStopRecordVideo(false);
                 }
+                if (cpbRecord != null) {
+                    cpbRecord.reset();
+                }
                 return 360;
             }
 
             @Override
-            public boolean onCancelProgress(CircleProgressButton v) {
+            public void onCancelProgress(CircleProgressButton v) {
                 if (mPresenter != null) {
                     mPresenter.releaseToStopRecordVideo(true);
                 }
-                return false;
             }
         });
         ivFlipCamera.setOnClickListener(this);
@@ -129,8 +139,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         ivFlipCamera.setVisibility(mOption.isHideFlipCameraButton() ? View.GONE : View.VISIBLE);
         tvTiming.setText(mPresenter == null ? "" : mPresenter.getTimingHint("00"));
         ivFlashlight.setOnClickListener(this);
-
-        return view;
     }
 
     @Override
@@ -151,25 +159,19 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mOption = null;
-        isSurfaceHolderDestroyed = false;
-    }
-
-    @Override
     protected RecordVideoContract.Presenter<?> initPresenter() {
         return new RecordVideoPresenter();
     }
 
     @Override
     protected void releaseOnDestroyView() {
-
+        RecorderManagerFactory.getRecordDispatcher().unregisterOnRecordVideoListener();
     }
 
     @Override
     protected void releaseOnDestroy() {
-
+        mOption = null;
+        isSurfaceHolderDestroyed = false;
     }
 
     @Override
@@ -301,6 +303,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @param filePath 存储文件路径
      * @return 返回RecordVideoFragment
      */
+    @NonNull
     public static RecordVideoFragment newInstance(@Nullable String filePath) {
         return newInstance(filePath, DEFAULT_RECORD_VIDEO_DURATION);
     }
@@ -312,6 +315,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @param maxDuration 最大时长（秒数）
      * @return 返回RecordVideoFragment
      */
+    @NonNull
     public static RecordVideoFragment newInstance(@Nullable String filePath, int maxDuration) {
         return newInstance(new RecordVideoOption.Builder()
                 .setRecorderOption(new RecorderOption.Builder().buildDefaultVideoBean(filePath))
@@ -325,12 +329,16 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * @param option 录制配置信息对象
      * @return 返回RecordVideoFragment
      */
+    @NonNull
     public static RecordVideoFragment newInstance(@Nullable RecordVideoOption option) {
         RecordVideoFragment fragment = new RecordVideoFragment();
-        fragment.mOption = option;
-        if (fragment.mOption == null) {
-            fragment.mOption = new RecordVideoOption();
+        Bundle args = new Bundle();
+        RecordVideoOption o = option == null ? new RecordVideoOption() : option;
+        if (o.getOnRecordVideoListener() != null) {
+            RecorderManagerFactory.getRecordDispatcher().registerOnRecordVideoListener(o.getOnRecordVideoListener());
         }
+        args.putParcelable(BUNDLE_EXTRA_RECORD_VIDEO_OPTION, o);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -410,6 +418,13 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      * 初始化录制参数信息对象
      */
     private void initRecorderOption() {
+        Bundle args = getArguments();
+        if (args != null) {
+            mOption = args.getParcelable(BUNDLE_EXTRA_RECORD_VIDEO_OPTION);
+        }
+        if (mOption == null) {
+            mOption = new RecordVideoOption();
+        }
         if (mOption.getRecorderOption() == null) {
             mOption.setRecorderOption(new RecorderOption.Builder()
                     .buildDefaultVideoBean(

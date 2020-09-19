@@ -1,86 +1,66 @@
-package com.mingyuechunqiu.recordermanager.feature.main.detail;
+package com.mingyuechunqiu.recordermanager.feature.main.detail
 
-import android.content.Context;
-import android.hardware.Camera;
-import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.Message;
-import android.text.TextUtils;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.View;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageView;
-
-import com.mingyuechunqiu.recordermanager.R;
-import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
-import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-
-import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType.CAMERA_FRONT;
-import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType.CAMERA_NOT_SET;
+import android.hardware.Camera
+import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
+import android.text.TextUtils
+import android.view.SurfaceHolder
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageView
+import com.mingyuechunqiu.recordermanager.R
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption
+import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType
+import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoContract.Presenter
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable
+import java.io.IOException
+import java.util.*
 
 /**
  * <pre>
- *     author : xyj
- *     Github : https://github.com/MingYueChunQiu
- *     e-mail : xiyujieit@163.com
- *     time   : 2019/4/29
- *     desc   : 录制视频MVP中P层
- *              继承自RecordVideoContract.Presenter
- *     version: 1.0
- * </pre>
+ * author : xyj
+ * Github : https://github.com/MingYueChunQiu
+ * e-mail : xiyujieit@163.com
+ * time   : 2019/4/29
+ * desc   : 录制视频MVP中P层
+ * 继承自RecordVideoContract.Presenter
+ * version: 1.0
+</pre> *
  */
-class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoContract.View<?>> {
+internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
 
-    //停止录制
-    private static final int MSG_STOP_RECORD = 0x00;
+    private val mManager: RecorderManagerable by lazy { RecorderManagerFactory.newInstance() }
+    private var mOption: RecordVideoOption? = null
+    private var mCamera: Camera? = null
+    private var isRecording = false//标记是否正在录制中
+    private var isReleaseRecord = false//标记是否已经释放了资源
+    private var mTiming: Long = 0 //计时数值
+    private var needStopDelayed = false//标记是否需要延迟停止
+    private var isInPlayingState = false//标记是否处于播放视频状态
+    private var mMediaPlayer: MediaPlayer? = null
+    private val mHandler: MyHandler by lazy { MyHandler(this) }
+    private var hasHandledReleaseRecord = false //标记是否处理了录制释放事件
+    private var mVideoDuration = 0 //录制视频时长（毫秒）
+    private var mCameraType: CameraType = CameraType.CAMERA_NOT_SET//摄像头类型
+    private var mTimer: Timer? = null//录制计时器
 
-    private RecorderManagerable mManager;
-    private RecordVideoOption mOption;
-    private Camera mCamera;
-    private boolean isRecording;//标记是否正在录制中
-    private boolean isReleaseRecord;//标记是否已经释放了资源
-    private long mTiming;//计时数值
-    private boolean needStopDelayed;//标记是否需要延迟停止
-    private Disposable mTimingDisposable;//用于计时
-    private boolean isInPlayingState;//标记是否处于播放视频状态
-    private MediaPlayer mMediaPlayer;
-    private MyHandler mHandler;
-    private boolean hasHandledReleaseRecord;//标记是否处理了录制释放事件
-    private int mVideoDuration;//录制视频时长（毫秒）
-    private RecorderManagerConstants.CameraType mCameraType;//摄像头类型
-
-    @Override
-    void initView(@NonNull RecordVideoOption option) {
-        mOption = option;
-        mCameraType = mOption.getCameraType();
+    public override fun initView(option: RecordVideoOption) {
+        mOption = option
+        mCameraType = mOption?.cameraType ?: CameraType.CAMERA_NOT_SET
     }
 
     /**
      * 开始图像预览
      */
-    @Override
-    void startPreview(@Nullable SurfaceHolder holder) {
-        if (holder == null) {
-            return;
-        }
-        checkOrCreateRecorderManager();
-        if (mCamera == null) {
-            mCamera = mManager.initCamera(mCameraType, holder);
-            mCameraType = mManager.getCameraType();
+    public override fun startPreview(holder: SurfaceHolder?) {
+        holder?.let {
+            if (mCamera == null) {
+                mCamera = mManager.initCamera(mCameraType, it)
+                mCameraType = mManager.cameraType
+            }
         }
     }
 
@@ -89,101 +69,78 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
      *
      * @return 如果成功开始录制返回true，否则返回false
      */
-    @Override
-    boolean pressToStartRecordVideo(@Nullable SurfaceHolder holder, @NonNull AppCompatImageView ivFlipCamera,
-                                    @NonNull AppCompatImageView ivBack) {
-        if (checkViewRefIsNull()) {
-            return false;
-        }
-        checkOrCreateRecorderManager();
+    public override fun pressToStartRecordVideo(holder: SurfaceHolder?, ivFlipCamera: AppCompatImageView,
+                                                ivBack: AppCompatImageView): Boolean {
         if (mCamera == null) {
-            startPreview(holder);
+            startPreview(holder)
         }
         if (isRecording) {
-            return false;
+            return false
         }
-        hasHandledReleaseRecord = false;
-        ivFlipCamera.setVisibility(View.GONE);
-        ivBack.setVisibility(View.GONE);
-        isRecording = true;
-        isReleaseRecord = false;
-        releaseTiming();
-        mTimingDisposable = Observable.interval(0, 1, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) {
-                        mTiming = aLong;
-                        StringBuilder sbTiming = new StringBuilder(mTiming + "");
-                        if (mTiming < 10) {
-                            sbTiming.insert(0, "0");
-                        }
-                        if (!checkViewRefIsNull() && mViewRef.get().getCurrentContext() != null) {
-                            mViewRef.get().showTimingText(sbTiming.toString());
-                        }
-                    }
-                });
-        startRecordVideo(holder);
-        return true;
+        hasHandledReleaseRecord = false
+        ivFlipCamera.visibility = View.GONE
+        ivBack.visibility = View.GONE
+        isRecording = true
+        isReleaseRecord = false
+        releaseTiming()
+        mTimer = Timer().apply {
+            mTiming = -1
+            schedule(object : TimerTask() {
+
+                override fun run() {
+                    mHandler.removeMessages(MSG_UPDATE_TIMING)
+                    mHandler.sendEmptyMessage(MSG_UPDATE_TIMING)
+                }
+            }, 0, 1000)
+        }
+        startRecordVideo(holder)
+        return true
     }
 
     /**
      * 释放按钮停止录制视频
      */
-    @Override
-    void releaseToStopRecordVideo(final boolean isCancel) {
+    public override fun releaseToStopRecordVideo(isCancel: Boolean) {
         //释放方法会执行两次，进行过滤
         if (hasHandledReleaseRecord) {
-            return;
+            return
         }
-        hasHandledReleaseRecord = true;
+        hasHandledReleaseRecord = true
         //防止用户按下就抬起，导致MediaRecorder初始化还没完成就release导致报错
-
-        if (mHandler == null) {
-            mHandler = new MyHandler(this);
-        } else {
-            mHandler.removeMessages(MSG_STOP_RECORD);
-        }
+        mHandler.removeMessages(MSG_STOP_RECORD)
         if (mTiming < 1) {
-            needStopDelayed = true;
+            needStopDelayed = true
         }
-        Message message = mHandler.obtainMessage();
-        message.what = MSG_STOP_RECORD;
-        message.arg1 = isCancel ? 1 : 0;
-        mHandler.sendMessageDelayed(message, needStopDelayed ? 1200 : 0);
+        val message = mHandler.obtainMessage()
+        message.what = MSG_STOP_RECORD
+        message.arg1 = if (isCancel) 1 else 0
+        mHandler.sendMessageDelayed(message, if (needStopDelayed) 1200 else 0.toLong())
     }
 
-    @Override
-    void flipCamera(@Nullable SurfaceHolder holder) {
-        if (holder == null) {
-            return;
+    public override fun flipCamera(holder: SurfaceHolder?) {
+        holder?.let {
+            mCamera = mManager.flipCamera(it)
+            mCameraType = mManager.cameraType
         }
-        checkOrCreateRecorderManager();
-        mCamera = mManager.flipCamera(holder);
-        mCameraType = mManager.getCameraType();
     }
 
     /**
      * 开始录制视频
      */
-    private void startRecordVideo(@Nullable SurfaceHolder holder) {
-        if (holder == null) {
-            return;
+    private fun startRecordVideo(holder: SurfaceHolder?) {
+        holder?.let {
+            val surface = it.surface ?: return
+            if (mCamera == null) {
+                mCamera = mManager.initCamera(mCameraType, it)
+                mCameraType = mManager.cameraType
+            }
+            if (mCameraType == CameraType.CAMERA_FRONT) {
+                mOption?.recorderOption?.orientationHint = 270
+            } else {
+                mOption?.recorderOption?.orientationHint = 90
+            }
+            isRecording = mManager.recordVideo(mCamera, surface, mOption?.recorderOption)
         }
-        Surface surface = holder.getSurface();
-        if (surface == null) {
-            return;
-        }
-        checkOrCreateRecorderManager();
-        if (mCamera == null) {
-            mCamera = mManager.initCamera(mCameraType, holder);
-        }
-        if (mCameraType == CAMERA_FRONT) {
-            mOption.getRecorderOption().setOrientationHint(270);
-        } else {
-            mOption.getRecorderOption().setOrientationHint(90);
-        }
-        isRecording = mManager.recordVideo(mCamera, surface, mOption.getRecorderOption());
     }
 
     /**
@@ -191,104 +148,92 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
      *
      * @return 录制成功返回true，否则返回false
      */
-    @Override
-    boolean stopRecordVideo() {
+    public override fun stopRecordVideo(): Boolean {
         if (!isRecording) {
-            return false;
+            return false
         }
-        releaseRecorderManager();
-        boolean isRecordSuccessful = true;//标记记录录制是否成功
+        releaseRecorderManager()
+        var isRecordSuccessful = true //标记记录录制是否成功
         if (mTiming < 1) {
-            showErrorToast();
-            isRecordSuccessful = false;
+            showErrorToast()
+            isRecordSuccessful = false
         }
-        releaseTiming();
+        releaseTiming()
         if (isRecordSuccessful) {
             //停顿200毫秒，确保写入数据结束完成
             try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.sleep(200)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
             }
         }
-        isRecording = false;
-        return isRecordSuccessful;
+        isRecording = false
+        return isRecordSuccessful
     }
 
     /**
      * 释放计时资源
      */
-    @Override
-    void releaseTiming() {
-        if (mTimingDisposable != null && !mTimingDisposable.isDisposed()) {
-            mTimingDisposable.dispose();
-            mTimingDisposable = null;
-            mTiming = 0;
-        }
+    public override fun releaseTiming() {
+        mTimer?.cancel()
+        mTimer = null
+        mTiming = 0
     }
 
     /**
      * 播放录制好的视频
      */
-    @Override
-    void playVideo() {
-        if (checkViewRefIsNull()) {
-            return;
-        }
-        SurfaceHolder holder = mViewRef.get().getSurfaceHolder();
-        if (holder == null) {
-            return;
-        }
+    public override fun playVideo() {
+        val holder = mViewRef?.get()?.surfaceHolder ?: return
         if (mMediaPlayer == null) {
-            mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setScreenOnWhilePlaying(true);
+            mMediaPlayer = MediaPlayer().apply {
+                setScreenOnWhilePlaying(true)
+            }
         }
-        try {
-            mMediaPlayer.setDataSource(mOption.getRecorderOption().getFilePath());
-            mMediaPlayer.setLooping(true);
-            mMediaPlayer.setDisplay(holder);
-            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                    mVideoDuration = mp.getDuration();
-                    onCompleteRecordVideo();
+        mMediaPlayer?.let {
+            try {
+                it.setDataSource(mOption!!.recorderOption.filePath)
+                it.isLooping = true
+                it.setDisplay(holder)
+                it.setOnPreparedListener { mp ->
+                    mp.start()
+                    mVideoDuration = mp.duration
+                    onCompleteRecordVideo()
                 }
-            });
-            mMediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
+                it.prepare()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            isInPlayingState = true
         }
-        isInPlayingState = true;
     }
 
-    @Override
-    void pausePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay) {
-        if (isInPlayingState && mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-            mMediaPlayer.pause();
-            ivPlay.setVisibility(View.VISIBLE);
+    public override fun pausePlayVideo(controlViews: Boolean, ivPlay: AppCompatImageView) {
+        if (isInPlayingState && mMediaPlayer?.isPlaying == true) {
+            mMediaPlayer?.pause()
+            ivPlay.visibility = View.VISIBLE
         }
     }
 
     /**
      * 恢复播放视频
      */
-    @Override
-    void resumePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder) {
-        if (isInPlayingState && mMediaPlayer != null && holder != null) {
-            mMediaPlayer.setDisplay(holder);
-            mMediaPlayer.start();
-            ivPlay.setVisibility(View.GONE);
+    public override fun resumePlayVideo(controlViews: Boolean, ivPlay: AppCompatImageView, holder: SurfaceHolder?) {
+        holder?.let {
+            if (isInPlayingState) {
+                mMediaPlayer?.setDisplay(it)
+                mMediaPlayer?.start()
+                ivPlay.visibility = View.GONE
+            }
         }
     }
 
-    @Override
-    void controlPlayOrPauseVideo(@NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder) {
-        if (isInPlayingState && mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                pausePlayVideo(true, ivPlay);
+    public override fun controlPlayOrPauseVideo(ivPlay: AppCompatImageView, holder: SurfaceHolder?) {
+        if (isInPlayingState) {
+            if (mMediaPlayer?.isPlaying == true) {
+                pausePlayVideo(true, ivPlay)
             } else {
-                resumePlayVideo(true, ivPlay, holder);
+                resumePlayVideo(true, ivPlay, holder)
             }
         }
     }
@@ -296,39 +241,29 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
     /**
      * 释放播放资源
      */
-    @Override
-    void releaseMediaPlayer() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.reset();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-        isInPlayingState = false;
+    public override fun releaseMediaPlayer() {
+        mMediaPlayer?.stop()
+        mMediaPlayer?.reset()
+        mMediaPlayer?.release()
+        mMediaPlayer = null
+        isInPlayingState = false
     }
 
     /**
      * 释放相机资源
      */
-    @Override
-    void releaseCamera() {
-        if (mManager == null) {
-            return;
-        }
-        mManager.releaseCamera();
-        mCamera = null;
+    public override fun releaseCamera() {
+        mManager.releaseCamera()
+        mCamera = null
     }
 
     /**
      * 重置资源进行下次拍摄
      */
-    @Override
-    void resetResource() {
-        releaseMediaPlayer();
-        if (!checkViewRefIsNull()) {
-            startPreview(mViewRef.get().getSurfaceHolder());
-            mViewRef.get().controlRecordOrPlayVisibility(false);
-        }
+    public override fun resetResource() {
+        releaseMediaPlayer()
+        startPreview(mViewRef?.get()?.surfaceHolder)
+        mViewRef?.get()?.controlRecordOrPlayVisibility(false)
     }
 
     /**
@@ -336,173 +271,137 @@ class RecordVideoPresenter extends RecordVideoContract.Presenter<RecordVideoCont
      *
      * @param holder 图层控制
      */
-    @Override
-    void onSurfaceCreated(@NonNull SurfaceHolder holder, @NonNull AppCompatImageView ivPlay) {
-        holder.setKeepScreenOn(true);
+    public override fun onSurfaceCreated(holder: SurfaceHolder, ivPlay: AppCompatImageView) {
+        holder.setKeepScreenOn(true)
         if (!isInPlayingState) {
-            startPreview(holder);
-            return;
+            startPreview(holder)
+            return
         }
-        mMediaPlayer.setDisplay(holder);
-        resumePlayVideo(false, ivPlay, holder);
+        mMediaPlayer?.setDisplay(holder)
+        resumePlayVideo(false, ivPlay, holder)
     }
 
     /**
      * 点击确认录制视频事件
      */
-    @Override
-    void onClickConfirm() {
-        if (mOption.getOnRecordVideoListener() != null) {
-            mOption.getOnRecordVideoListener().onClickConfirm(mOption.getRecorderOption().getFilePath(), mVideoDuration);
-        }
+    public override fun onClickConfirm() {
+        RecorderManagerFactory.getRecordDispatcher().onClickConfirm(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
     /**
      * 点击取消按钮事件
      */
-    @Override
-    void onClickCancel() {
-        if (mOption.getOnRecordVideoListener() != null) {
-            mOption.getOnRecordVideoListener().onClickCancel(mOption.getRecorderOption().getFilePath(), mVideoDuration);
-        }
+    public override fun onClickCancel() {
+        RecorderManagerFactory.getRecordDispatcher().onClickCancel(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
     /**
      * 点击返回键事件
      */
-    @Override
-    void onClickBack() {
-        if (mOption.getOnRecordVideoListener() != null) {
-            if (isInPlayingState) {
-                resetResource();
-                mOption.getOnRecordVideoListener().onClickCancel(mOption.getRecorderOption().getFilePath(), mVideoDuration);
-            } else {
-                mOption.getOnRecordVideoListener().onClickBack();
-            }
+    public override fun onClickBack() {
+        if (isInPlayingState) {
+            resetResource()
+            RecorderManagerFactory.getRecordDispatcher().onClickCancel(mOption!!.recorderOption.filePath, mVideoDuration)
+        } else {
+            RecorderManagerFactory.getRecordDispatcher().onClickBack()
         }
     }
 
-    @NonNull
-    @Override
-    String getTimingHint(@NonNull String timing) {
-        if (checkViewRefIsNull()) {
-            return "";
+    public override fun getTimingHint(timing: String): String {
+        val context = mViewRef?.get()?.currentContext ?: return ""
+        var timingHint = mOption?.timingHint
+        if (TextUtils.isEmpty(mOption?.timingHint)) {
+            timingHint = context.getString(R.string.rm_fill_record_timing, timing)
         }
-        Context context = mViewRef.get().getCurrentContext();
-        if (context == null) {
-            return "";
-        }
-        String timingHint = mOption.getTimingHint();
-        if (TextUtils.isEmpty(mOption.getTimingHint())) {
-            timingHint = context.getString(R.string.rm_fill_record_timing, timing);
-        }
-        return timingHint != null ? timingHint : "";
+        return timingHint ?: ""
     }
 
-    @Override
-    void switchFlashlightState(boolean turnOn) {
+    public override fun switchFlashlightState(turnOn: Boolean) {}
 
+    override fun release() {
+        mHandler.removeCallbacksAndMessages(null)
+        stopRecordVideo()
+        isRecording = false
+        isReleaseRecord = false
+        needStopDelayed = false
+        mTiming = 0
+        mVideoDuration = 0
+        releaseMediaPlayer()
+        mOption = null
+        mCameraType = CameraType.CAMERA_NOT_SET
     }
 
-    @Override
-    public void release() {
-        if (mHandler != null) {
-            mHandler.removeCallbacksAndMessages(null);
-            mHandler = null;
+    private fun updateTiming() {
+        mTiming++
+        val sbTiming = StringBuilder(mTiming.toString() + "")
+        if (mTiming < 10) {
+            sbTiming.insert(0, "0")
         }
-        stopRecordVideo();
-        isRecording = false;
-        isReleaseRecord = false;
-        needStopDelayed = false;
-        mTiming = 0;
-        mVideoDuration = 0;
-        releaseMediaPlayer();
-        mManager = null;
-        mOption = null;
-        mCameraType = CAMERA_NOT_SET;
-    }
-
-    /**
-     * 检查录制管理器是否存在，若不存在则创建
-     */
-    private void checkOrCreateRecorderManager() {
-        if (mManager == null) {
-            mManager = RecorderManagerFactory.newInstance();
-        }
+        mViewRef?.get()?.showTimingText(sbTiming.toString())
     }
 
     /**
      * 释放录制管理器
      */
-    private void releaseRecorderManager() {
-        if (!isReleaseRecord && mManager != null) {
-            mManager.release();
-            mManager = null;
-            mCamera = null;
-            isReleaseRecord = true;
+    private fun releaseRecorderManager() {
+        if (!isReleaseRecord) {
+            mManager.release()
+            mCamera = null
+            isReleaseRecord = true
         }
     }
 
     /**
      * 当完成一次录制时回调
      */
-    private void onCompleteRecordVideo() {
-        if (mOption.getOnRecordVideoListener() != null) {
-            mOption.getOnRecordVideoListener().onCompleteRecordVideo(mOption.getRecorderOption().getFilePath(), mVideoDuration);
-        }
+    private fun onCompleteRecordVideo() {
+        RecorderManagerFactory.getRecordDispatcher().onCompleteRecordVideo(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
-    private void showErrorToast() {
-        if (checkViewRefIsNull()) {
-            return;
-        }
-        Context context = mViewRef.get().getCurrentContext();
-        if (context == null) {
-            return;
-        }
-        String msg = mOption.getErrorToastMsg();
+    private fun showErrorToast() {
+        val context = mViewRef?.get()?.currentContext ?: return
+        var msg = mOption?.errorToastMsg
         if (TextUtils.isEmpty(msg)) {
-            msg = context.getString(R.string.rm_warn_record_time_too_short);
+            msg = context.getString(R.string.rm_warn_record_time_too_short)
         }
-        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 
-    private void setRecordOrPlayVisible() {
-        if (checkViewRefIsNull()) {
-            return;
-        }
-        mViewRef.get().controlRecordOrPlayVisibility(true);
+    private fun setRecordOrPlayVisible() {
+        mViewRef?.get()?.controlRecordOrPlayVisibility(true)
     }
 
-    private static class MyHandler extends Handler {
+    private class MyHandler(private val mPresenter: RecordVideoPresenter) : Handler(Looper.getMainLooper()) {
 
-        private RecordVideoPresenter mPresenter;
-
-        MyHandler(RecordVideoPresenter presenter) {
-            mPresenter = presenter;
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            if (mPresenter == null) {
-                return;
-            }
-            if (msg.what == MSG_STOP_RECORD) {
-                if (mPresenter.needStopDelayed) {
-                    mPresenter.needStopDelayed = false;
-                    //小于规定时长，不进入播放环节，重置资源
-                    mPresenter.showErrorToast();
-                    mPresenter.releaseRecorderManager();
-                    mPresenter.releaseTiming();
-                    mPresenter.isRecording = false;
-                    mPresenter.resetResource();
-                } else {
-                    if (mPresenter.stopRecordVideo() && msg.arg1 == 0) {
-                        mPresenter.playVideo();
-                        mPresenter.setRecordOrPlayVisible();
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                MSG_UPDATE_TIMING -> mPresenter.updateTiming()
+                MSG_STOP_RECORD -> {
+                    if (mPresenter.needStopDelayed) {
+                        mPresenter.needStopDelayed = false
+                        //小于规定时长，不进入播放环节，重置资源
+                        mPresenter.showErrorToast()
+                        mPresenter.releaseRecorderManager()
+                        mPresenter.releaseTiming()
+                        mPresenter.isRecording = false
+                        mPresenter.resetResource()
+                    } else {
+                        if (mPresenter.stopRecordVideo() && msg.arg1 == 0) {
+                            mPresenter.playVideo()
+                            mPresenter.setRecordOrPlayVisible()
+                        }
                     }
                 }
             }
         }
+    }
+
+    companion object {
+
+        //更新计时
+        private const val MSG_UPDATE_TIMING = 0x01
+
+        //停止录制
+        private const val MSG_STOP_RECORD = 0x02
     }
 }

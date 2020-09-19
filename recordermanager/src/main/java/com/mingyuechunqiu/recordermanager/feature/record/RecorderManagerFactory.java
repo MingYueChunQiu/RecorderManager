@@ -74,4 +74,9 @@ public final class RecorderManagerFactory {
     public static IRecordVideoResultParser getRecordVideoResultParser() {
         return new RecordVideoResultParser();
     }
+
+    @NonNull
+    public static RecordDispatcher getRecordDispatcher() {
+        return RecordDispatcher.INSTANCE;
+    }
 }

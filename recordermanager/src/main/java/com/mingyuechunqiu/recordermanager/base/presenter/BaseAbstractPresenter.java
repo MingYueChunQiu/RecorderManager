@@ -56,8 +56,4 @@ public abstract class BaseAbstractPresenter<V extends IBaseView<?>> implements I
         release();
         mViewRef = null;
     }
-
-    protected boolean checkViewRefIsNull() {
-        return mViewRef == null || mViewRef.get() == null;
-    }
 }
