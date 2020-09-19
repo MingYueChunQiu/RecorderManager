@@ -5,6 +5,9 @@ import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 
 import java.io.IOException;
@@ -15,11 +18,11 @@ import java.io.IOException;
  *     e-mail : xiyujieit@163.com
  *     time   : 2018/10/30
  *     desc   : 调用系统API的录制具体实现类
- *              实现Recorderable
+ *              实现IRecorderHelper
  *     version: 1.0
  * </pre>
  */
-public class RecorderHelper implements Recorderable {
+public class RecorderHelper implements IRecorderHelper {
 
     private RecorderOption mOption;
     private MediaRecorder mRecorder;
@@ -29,20 +32,22 @@ public class RecorderHelper implements Recorderable {
      */
     @Override
     public void release() {
-        if (mRecorder != null) {
-            try {
-                mRecorder.stop();
-                mRecorder.reset();
-                mRecorder.release();
-                mRecorder = null;
-            } catch (RuntimeException stopException) {
-                //录制时间过短stop，会有崩溃异常，所以进行捕获
-                Log.d("RecorderHelper", stopException.getMessage() == null
-                        ? "释放MediaRecorder异常" : stopException.getMessage());
-            }
+        if (mRecorder == null) {
+            return;
+        }
+        try {
+            mRecorder.stop();
+            mRecorder.reset();
+            mRecorder.release();
+            mRecorder = null;
+        } catch (RuntimeException stopException) {
+            //录制时间过短stop，会有崩溃异常，所以进行捕获
+            Log.d("RecorderHelper", stopException.getMessage() == null
+                    ? "释放MediaRecorder异常" : stopException.getMessage());
         }
     }
 
+    @NonNull
     @Override
     public MediaRecorder getMediaRecorder() {
         if (mRecorder == null) {
@@ -51,6 +56,7 @@ public class RecorderHelper implements Recorderable {
         return mRecorder;
     }
 
+    @Nullable
     @Override
     public RecorderOption getRecorderOption() {
         return mOption;
@@ -63,7 +69,7 @@ public class RecorderHelper implements Recorderable {
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
     @Override
-    public boolean recordAudio(String path) {
+    public boolean recordAudio(@NonNull String path) {
         return recordAudio(new RecorderOption.Builder().buildDefaultAudioBean(path));
     }
 
@@ -74,10 +80,7 @@ public class RecorderHelper implements Recorderable {
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
     @Override
-    public boolean recordAudio(RecorderOption option) {
-        if (option == null) {
-            return false;
-        }
+    public boolean recordAudio(@NonNull RecorderOption option) {
         resetRecorder();
         mOption = option;
         mRecorder.setAudioSource(mOption.getAudioSource());
@@ -115,7 +118,7 @@ public class RecorderHelper implements Recorderable {
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, String path) {
+    public boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable String path) {
         return recordVideo(camera, surface, new RecorderOption.Builder().buildDefaultVideoBean(path));
     }
 
@@ -128,7 +131,7 @@ public class RecorderHelper implements Recorderable {
      * @return 返回是否成功开启视频录制，成功返回true，否则返回false
      */
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, RecorderOption option) {
+    public boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable RecorderOption option) {
         if (camera == null || surface == null || option == null) {
             return false;
         }

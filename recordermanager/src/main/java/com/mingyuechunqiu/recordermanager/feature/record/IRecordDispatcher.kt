@@ -15,5 +15,11 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption
  *      Version:    1.0
  * </pre>
  */
-interface IRecordDispatcher:RecordVideoOption.OnRecordVideoListener {
+interface IRecordDispatcher : RecordVideoOption.OnRecordVideoListener {
+
+    fun registerOnRecordVideoListener(listener: RecordVideoOption.OnRecordVideoListener)
+
+    fun unregisterOnRecordVideoListener()
+
+    fun isRegisteredOnRecordVideoListener(): Boolean
 }

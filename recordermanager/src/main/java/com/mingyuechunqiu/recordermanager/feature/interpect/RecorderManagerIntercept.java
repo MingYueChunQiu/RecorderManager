@@ -5,9 +5,12 @@ import android.media.MediaRecorder;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
-import com.mingyuechunqiu.recordermanager.feature.record.Recorderable;
+import com.mingyuechunqiu.recordermanager.feature.record.IRecorderHelper;
 
 import java.util.List;
 
@@ -18,44 +21,56 @@ import java.util.List;
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/3/8
  *     desc   : 录制管理器拦截类
- *              实现RecorderManagerInterceptable
+ *              实现IRecorderManagerInterceptor
  *     version: 1.0
  * </pre>
  */
-public class RecorderManagerIntercept implements RecorderManagerInterceptable {
+public class RecorderManagerIntercept implements IRecorderManagerInterceptor {
 
+    @NonNull
     @Override
-    public void setRecorderable(Recorderable recorderable) {
+    public IRecorderHelper setRecorderable(@NonNull IRecorderHelper helper) {
+        return helper;
     }
 
+    @NonNull
     @Override
-    public Recorderable getRecorderable() {
+    public IRecorderHelper getRecorderable(@NonNull IRecorderHelper helper) {
+        return helper;
+    }
+
+    @Nullable
+    @Override
+    public Camera initCamera(@NonNull SurfaceHolder holder) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Camera initCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder) {
         return null;
     }
 
     @Override
-    public Camera initCamera(SurfaceHolder holder) {
+    public void switchFlashlight(boolean turnOn) {
+    }
+
+    @Nullable
+    @Override
+    public Camera flipCamera(@NonNull SurfaceHolder holder) {
         return null;
     }
 
+    @Nullable
     @Override
-    public Camera initCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
+    public Camera flipCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder) {
         return null;
     }
 
+    @NonNull
     @Override
-    public Camera flipCamera(SurfaceHolder holder) {
-        return null;
-    }
-
-    @Override
-    public Camera flipCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
-        return null;
-    }
-
-    @Override
-    public RecorderManagerConstants.CameraType getCameraType() {
-        return null;
+    public RecorderManagerConstants.CameraType getCameraType(@NonNull RecorderManagerConstants.CameraType cameraType) {
+        return cameraType;
     }
 
     @Override
@@ -63,37 +78,35 @@ public class RecorderManagerIntercept implements RecorderManagerInterceptable {
     }
 
     @Override
-    public boolean recordAudio(String path) {
-        return false;
+    public void recordAudio(@NonNull String path) {
     }
 
     @Override
-    public boolean recordAudio(RecorderOption option) {
-        return false;
+    public void recordAudio(@NonNull RecorderOption option) {
     }
 
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, String path) {
-        return false;
+    public void recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable String path) {
     }
 
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, RecorderOption option) {
-        return false;
+    public void recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable RecorderOption option) {
     }
 
     @Override
     public void release() {
     }
 
+    @NonNull
     @Override
-    public MediaRecorder getMediaRecorder() {
-        return null;
+    public MediaRecorder getMediaRecorder(@NonNull MediaRecorder recorder) {
+        return recorder;
     }
 
+    @Nullable
     @Override
-    public RecorderOption getRecorderOption() {
-        return null;
+    public RecorderOption getRecorderOption(@Nullable RecorderOption option) {
+        return option;
     }
 
     @Override

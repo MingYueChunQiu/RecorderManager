@@ -3,6 +3,9 @@ package com.mingyuechunqiu.recordermanager.feature.record;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 
 /**
@@ -16,21 +19,22 @@ import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstant
  *     version: 1.0
  * </pre>
  */
-public interface RecorderManagerable extends Recorderable {
+public interface IRecorderManager extends IRecorderHelper {
 
     /**
      * 设置录制对象
      *
-     * @param recorderable 录制对象实例
+     * @param helper 录制对象实例
      */
-    void setRecorderable(Recorderable recorderable);
+    void setRecorderable(@NonNull IRecorderHelper helper);
 
     /**
      * 获取录制对象
      *
      * @return 返回录制对象实例
      */
-    Recorderable getRecorderable();
+    @NonNull
+    IRecorderHelper getRecorderable();
 
     /**
      * 初始化相机对象
@@ -38,7 +42,8 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder Surface持有者
      * @return 返回初始化好的相机对象
      */
-    Camera initCamera(SurfaceHolder holder);
+    @Nullable
+    Camera initCamera(@NonNull SurfaceHolder holder);
 
     /**
      * 初始化相机对象
@@ -47,7 +52,15 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder     Surface持有者
      * @return 返回初始化好的相机对象
      */
-    Camera initCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder);
+    @Nullable
+    Camera initCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder);
+
+    /**
+     * 打开或关闭闪光灯
+     *
+     * @param turnOn true表示打开，false关闭
+     */
+    void switchFlashlight(boolean turnOn);
 
     /**
      * 翻转摄像头
@@ -55,7 +68,8 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder Surface持有者
      * @return 返回翻转并初始化好的相机对象
      */
-    Camera flipCamera(SurfaceHolder holder);
+    @Nullable
+    Camera flipCamera(@NonNull SurfaceHolder holder);
 
     /**
      * 翻转到指定类型摄像头
@@ -64,13 +78,15 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder     Surface持有者
      * @return 返回翻转并初始化好的相机对象
      */
-    Camera flipCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder);
+    @Nullable
+    Camera flipCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder);
 
     /**
      * 获取当前摄像头类型
      *
      * @return 返回摄像头类型
      */
+    @NonNull
     RecorderManagerConstants.CameraType getCameraType();
 
     /**

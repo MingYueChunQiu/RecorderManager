@@ -1,5 +1,7 @@
 package com.mingyuechunqiu.recordermanager.data.constants;
 
+import static com.mingyuechunqiu.recordermanager.data.constants.KeyPrefixConstants.KEY_EXTRA;
+
 /**
  * <pre>
  *     author : xyj
@@ -12,12 +14,10 @@ package com.mingyuechunqiu.recordermanager.data.constants;
  */
 public class RecorderManagerConstants {
 
-    public static final String PREFIX_EXTRA = "EXTRA_";//Intent数据前缀
-
     //录制视频请求配置信息
-    public static final String EXTRA_RECORD_VIDEO_REQUEST_OPTION = PREFIX_EXTRA + "record_video_request_option";
+    public static final String EXTRA_RECORD_VIDEO_REQUEST_OPTION = KEY_EXTRA + "record_video_request_option";
     //录制视频结果
-    public static final String EXTRA_RECORD_VIDEO_RESULT_INFO = PREFIX_EXTRA + "record_video_result_info";
+    public static final String EXTRA_RECORD_VIDEO_RESULT_INFO = KEY_EXTRA + "record_video_result_info";
 
     public static final String SUFFIX_MP4 = ".mp4";//MP4视频格式后缀
 

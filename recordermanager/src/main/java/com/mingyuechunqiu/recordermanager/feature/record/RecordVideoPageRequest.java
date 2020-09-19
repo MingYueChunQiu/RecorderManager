@@ -35,14 +35,12 @@ final class RecordVideoPageRequest implements IRecordVideoRequest {
 
     @Override
     public void startRecordVideo(@NonNull FragmentActivity activity, int requestCode, @Nullable RecordVideoRequestOption option) {
-        addRequestPermissionPage(activity.getSupportFragmentManager(),
-                RequestPermissionFragment.newInstance(option, requestCode, activity, null));
+        addRequestPermissionPage(activity.getSupportFragmentManager(), RequestPermissionFragment.newInstance(option, requestCode));
     }
 
     @Override
     public void startRecordVideo(@NonNull Fragment fragment, int requestCode, @Nullable RecordVideoRequestOption option) {
-        addRequestPermissionPage(fragment.getChildFragmentManager(),
-                RequestPermissionFragment.newInstance(option, requestCode, null, fragment));
+        addRequestPermissionPage(fragment.getChildFragmentManager(), RequestPermissionFragment.newInstance(option, requestCode));
     }
 
     /**

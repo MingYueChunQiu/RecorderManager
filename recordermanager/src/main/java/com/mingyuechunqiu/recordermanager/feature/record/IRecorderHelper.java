@@ -4,6 +4,9 @@ import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.view.Surface;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 
 /**
@@ -15,7 +18,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
  *     version: 1.0
  * </pre>
  */
-public interface Recorderable {
+public interface IRecorderHelper {
 
     /**
      * 录制音频
@@ -23,7 +26,7 @@ public interface Recorderable {
      * @param path 文件存储路径
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
-    boolean recordAudio(String path);
+    boolean recordAudio(@NonNull String path);
 
     /**
      * 录制音频
@@ -31,7 +34,7 @@ public interface Recorderable {
      * @param option 存储录制信息的对象
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
-    boolean recordAudio(RecorderOption option);
+    boolean recordAudio(@NonNull RecorderOption option);
 
     /**
      * 录制视频
@@ -41,7 +44,7 @@ public interface Recorderable {
      * @param path    文件存储路径
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
-    boolean recordVideo(Camera camera, Surface surface, String path);
+    boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable String path);
 
     /**
      * 录制视频
@@ -51,7 +54,7 @@ public interface Recorderable {
      * @param option  存储录制信息的对象
      * @return 返回是否成功开启视频录制，成功返回true，否则返回false
      */
-    boolean recordVideo(Camera camera, Surface surface, RecorderOption option);
+    boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable RecorderOption option);
 
     /**
      * 释放资源
@@ -63,6 +66,7 @@ public interface Recorderable {
      *
      * @return 返回实例对象
      */
+    @NonNull
     MediaRecorder getMediaRecorder();
 
     /**
@@ -70,5 +74,6 @@ public interface Recorderable {
      *
      * @return 返回实例对象
      */
+    @Nullable
     RecorderOption getRecorderOption();
 }

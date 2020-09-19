@@ -15,6 +15,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.ui.activity.BaseRecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
@@ -158,7 +159,9 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
             RecordVideoRequestOption option = intent.getParcelableExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION);
             if (option != null && option.getRecordVideoOption() != null) {
                 RecordVideoOption recordVideoOption = option.getRecordVideoOption();
-                recordVideoOption.setOnRecordVideoListener(initOnRecordVideoListener());
+                if (!RecorderManagerFactory.getRecordDispatcher().isRegisteredOnRecordVideoListener()) {
+                    recordVideoOption.setOnRecordVideoListener(initOnRecordVideoListener());
+                }
                 return recordVideoOption;
             }
             maxDuration = option == null ? DEFAULT_RECORD_VIDEO_DURATION : option.getMaxDuration();
@@ -189,13 +192,12 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
 
             @Override
             public void onClickConfirm(String filePath1, int videoDuration) {
-                if (getIntent() != null) {
-                    getIntent().putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
-                            .setDuration(videoDuration)
-                            .setFilePath(filePath1)
-                            .build());
-                    setResult(RESULT_OK, getIntent());
-                }
+                Intent intent = new Intent();
+                intent.putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
+                        .setDuration(videoDuration)
+                        .setFilePath(filePath1)
+                        .build());
+                setResult(RESULT_OK, intent);
                 finishActivity();
             }
 

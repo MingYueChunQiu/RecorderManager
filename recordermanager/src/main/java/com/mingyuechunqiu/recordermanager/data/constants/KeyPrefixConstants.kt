@@ -14,5 +14,7 @@ package com.mingyuechunqiu.recordermanager.data.constants
  */
 object KeyPrefixConstants {
 
+    const val KEY_EXTRA = "EXTRA_" //Intent数据前缀
+
     const val KEY_BUNDLE = "BUNDLE_" //Bundle
 }

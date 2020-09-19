@@ -6,12 +6,14 @@ import android.media.MediaRecorder;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerIntercept;
-import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
+import com.mingyuechunqiu.recordermanager.feature.interpect.IRecorderManagerInterceptor;
 import com.mingyuechunqiu.recordermanager.util.CameraParamsUtils;
 
 import java.io.IOException;
@@ -30,19 +32,19 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     version: 1.0
  * </pre>
  */
-class RecorderManager implements RecorderManagerable {
+class RecorderManager implements IRecorderManager {
 
-    private Recorderable mRecorderable;
+    private IRecorderHelper mRecorderHelper;
     private Camera mCamera;
     private RecorderManagerConstants.CameraType mCameraType;
-    private RecorderManagerInterceptable mIntercept;
+    private IRecorderManagerInterceptor mIntercept;
 
-    RecorderManager(Recorderable recorderable) {
-        this(recorderable, null);
+    RecorderManager(@NonNull IRecorderHelper helper) {
+        this(helper, null);
     }
 
-    RecorderManager(Recorderable recorderable, RecorderManagerInterceptable intercept) {
-        mRecorderable = recorderable;
+    RecorderManager(@NonNull IRecorderHelper helper, @Nullable IRecorderManagerInterceptor intercept) {
+        mRecorderHelper = helper;
         checkOrCreateDefaultRecorderable();
         mCameraType = CAMERA_NOT_SET;
         mIntercept = intercept;
@@ -52,39 +54,39 @@ class RecorderManager implements RecorderManagerable {
     }
 
     @Override
-    public boolean recordAudio(String path) {
+    public boolean recordAudio(@NonNull String path) {
         checkOrCreateDefaultRecorderable();
         if (mIntercept != null) {
             mIntercept.recordAudio(path);
         }
-        return mRecorderable.recordAudio(path);
+        return mRecorderHelper.recordAudio(path);
     }
 
     @Override
-    public boolean recordAudio(RecorderOption option) {
+    public boolean recordAudio(@NonNull RecorderOption option) {
         checkOrCreateDefaultRecorderable();
         if (mIntercept != null) {
             mIntercept.recordAudio(option);
         }
-        return mRecorderable.recordAudio(option);
+        return mRecorderHelper.recordAudio(option);
     }
 
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, String path) {
+    public boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable String path) {
         checkOrCreateDefaultRecorderable();
         if (mIntercept != null) {
             mIntercept.recordVideo(camera, surface, path);
         }
-        return mRecorderable.recordVideo(camera, surface, path);
+        return mRecorderHelper.recordVideo(camera, surface, path);
     }
 
     @Override
-    public boolean recordVideo(Camera camera, Surface surface, RecorderOption option) {
+    public boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable RecorderOption option) {
         checkOrCreateDefaultRecorderable();
         if (mIntercept != null) {
             mIntercept.recordVideo(camera, surface, option);
         }
-        return mRecorderable.recordVideo(camera, surface, option);
+        return mRecorderHelper.recordVideo(camera, surface, option);
     }
 
     @Override
@@ -93,50 +95,53 @@ class RecorderManager implements RecorderManagerable {
             mIntercept.release();
             mIntercept = null;
         }
-        if (mRecorderable != null) {
-            mRecorderable.release();
-            mRecorderable = null;
+        if (mRecorderHelper != null) {
+            mRecorderHelper.release();
+            mRecorderHelper = null;
         }
         releaseCamera();
         mCameraType = CAMERA_NOT_SET;
     }
 
+    @NonNull
     @Override
     public MediaRecorder getMediaRecorder() {
         checkOrCreateDefaultRecorderable();
+        MediaRecorder recorder = mRecorderHelper.getMediaRecorder();
         if (mIntercept != null) {
-            mIntercept.getMediaRecorder();
+            recorder = mIntercept.getMediaRecorder(recorder);
         }
-        return mRecorderable.getMediaRecorder();
+        return recorder;
     }
 
+    @Nullable
     @Override
     public RecorderOption getRecorderOption() {
         checkOrCreateDefaultRecorderable();
+        RecorderOption option = mRecorderHelper.getRecorderOption();
         if (mIntercept != null) {
-            mIntercept.getRecorderOption();
+            option = mIntercept.getRecorderOption(option);
         }
-        return mRecorderable.getRecorderOption();
+        return option;
     }
 
     @Override
-    public void setRecorderable(Recorderable recorderable) {
+    public void setRecorderable(@NonNull IRecorderHelper helper) {
         if (mIntercept != null) {
-            mIntercept.setRecorderable(recorderable);
+            mRecorderHelper = mIntercept.setRecorderable(helper);
+        } else {
+            mRecorderHelper = helper;
         }
-        if (recorderable == null) {
-            return;
-        }
-        mRecorderable = recorderable;
     }
 
+    @NonNull
     @Override
-    public Recorderable getRecorderable() {
+    public IRecorderHelper getRecorderable() {
         checkOrCreateDefaultRecorderable();
         if (mIntercept != null) {
-            mIntercept.getRecorderable();
+            mRecorderHelper = mIntercept.getRecorderable(mRecorderHelper);
         }
-        return mRecorderable;
+        return mRecorderHelper;
     }
 
     /**
@@ -144,18 +149,28 @@ class RecorderManager implements RecorderManagerable {
      *
      * @return 返回设置好参数的相机
      */
+    @Nullable
     @Override
-    public Camera initCamera(SurfaceHolder holder) {
+    public Camera initCamera(@NonNull SurfaceHolder holder) {
         if (mIntercept != null) {
-            mIntercept.initCamera(holder);
+            Camera camera = mIntercept.initCamera(holder);
+            if (camera != null) {
+                mCamera = camera;
+                return mCamera;
+            }
         }
         return initCamera(CAMERA_BACK, holder);
     }
 
+    @Nullable
     @Override
-    public Camera initCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
+    public Camera initCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder) {
         if (mIntercept != null) {
-            mIntercept.initCamera(cameraType, holder);
+            Camera camera = mIntercept.initCamera(cameraType, holder);
+            if (camera != null) {
+                mCamera = camera;
+                return mCamera;
+            }
         }
         int numberOfCameras = Camera.getNumberOfCameras();
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
@@ -169,7 +184,7 @@ class RecorderManager implements RecorderManagerable {
                 mCameraType = CAMERA_FRONT;
                 initCameraParameters(holder, i);
                 return mCamera;
-            } else if ((cameraType == null || cameraType == CAMERA_NOT_SET ||
+            } else if ((cameraType == CAMERA_NOT_SET ||
                     cameraType == CAMERA_BACK) &&
                     cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
                 releaseCamera();
@@ -183,30 +198,54 @@ class RecorderManager implements RecorderManagerable {
     }
 
     @Override
-    public Camera flipCamera(SurfaceHolder holder) {
+    public void switchFlashlight(boolean turnOn) {
+        if (mCamera == null) {
+            return;
+        }
         if (mIntercept != null) {
-            mIntercept.flipCamera(holder);
+            mIntercept.switchFlashlight(turnOn);
+        }
+        Camera.Parameters parameters = mCamera.getParameters();
+        parameters.setFlashMode(turnOn ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF);
+        mCamera.setParameters(parameters);
+    }
+
+    @Nullable
+    @Override
+    public Camera flipCamera(@NonNull SurfaceHolder holder) {
+        if (mIntercept != null) {
+            Camera camera = mIntercept.flipCamera(holder);
+            if (camera != null) {
+                mCamera = camera;
+                return mCamera;
+            }
         }
         return flipCamera(mCameraType == CAMERA_BACK ? CAMERA_FRONT : CAMERA_BACK, holder);
     }
 
+    @Nullable
     @Override
-    public Camera flipCamera(RecorderManagerConstants.CameraType cameraType, SurfaceHolder holder) {
-        if (mIntercept != null) {
-            mIntercept.flipCamera(cameraType, holder);
-        }
+    public Camera flipCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder) {
         if (mCameraType == cameraType) {
             return null;
+        }
+        if (mIntercept != null) {
+            Camera camera = mIntercept.flipCamera(cameraType, holder);
+            if (camera != null) {
+                mCamera = camera;
+                return mCamera;
+            }
         }
         return initCamera(cameraType, holder);
     }
 
+    @NonNull
     @Override
     public RecorderManagerConstants.CameraType getCameraType() {
         if (mIntercept != null) {
-            mIntercept.getCameraType();
+            mCameraType = mIntercept.getCameraType(mCameraType);
         }
-        return mCameraType;
+        return mCameraType == null ? CAMERA_NOT_SET : mCameraType;
     }
 
     /**
@@ -237,7 +276,7 @@ class RecorderManager implements RecorderManagerable {
      *
      * @param holder Surface持有者
      */
-    private void initCameraParameters(SurfaceHolder holder, int cameraId) {
+    private void initCameraParameters(@NonNull SurfaceHolder holder, int cameraId) {
         Camera.Parameters parameters = mCamera.getParameters();
         /*有的手机前置摄像头可能不支持变焦，设置对焦模式会崩溃
         isSmoothZoomSupported()返回为false，则不支持变焦，设置zoom出错
@@ -298,8 +337,8 @@ class RecorderManager implements RecorderManagerable {
      * 检查或者创建默认的录制对象
      */
     private void checkOrCreateDefaultRecorderable() {
-        if (mRecorderable == null) {
-            mRecorderable = new RecorderHelper();
+        if (mRecorderHelper == null) {
+            mRecorderHelper = new RecorderHelper();
         }
     }
 }

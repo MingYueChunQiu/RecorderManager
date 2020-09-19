@@ -3,16 +3,17 @@ package com.mingyuechunqiu.recordermanagerproject;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+
+import com.mingyuechunqiu.recordermanager.feature.record.IRecorderManager;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable;
 
 import java.io.File;
 
@@ -30,7 +31,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 
     private SurfaceView svVideo;
 
-    private RecorderManagerable mManager;
+    private IRecorderManager mManager;
     private Camera mCamera;
     private boolean isRecording;
 

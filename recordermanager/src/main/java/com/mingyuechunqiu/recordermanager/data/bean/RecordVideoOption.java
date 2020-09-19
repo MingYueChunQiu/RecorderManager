@@ -37,6 +37,7 @@ public class RecordVideoOption implements Parcelable {
         mBuilder.maxDuration = in.readInt();
         mBuilder.cameraType = RecorderManagerConstants.CameraType.values()[in.readInt()];
         mBuilder.hideFlipCameraButton = in.readByte() != 0;
+        mBuilder.hideFlashlightButton = in.readByte() != 0;
         mBuilder.timingHint = in.readString();
         mBuilder.errorToastMsg = in.readString();
     }
@@ -93,6 +94,14 @@ public class RecordVideoOption implements Parcelable {
         mBuilder.hideFlipCameraButton = hideFlipCameraButton;
     }
 
+    public boolean isHideFlashlightButton() {
+        return mBuilder.hideFlashlightButton;
+    }
+
+    public void setHideFlashlightButton(boolean hideFlashlightButton) {
+        mBuilder.hideFlashlightButton = hideFlashlightButton;
+    }
+
     public OnRecordVideoListener getOnRecordVideoListener() {
         return mBuilder.listener;
     }
@@ -131,6 +140,7 @@ public class RecordVideoOption implements Parcelable {
         dest.writeInt(mBuilder.maxDuration);
         dest.writeInt(mBuilder.cameraType.ordinal());
         dest.writeByte((byte) (mBuilder.hideFlipCameraButton ? 1 : 0));
+        dest.writeByte((byte) (mBuilder.hideFlashlightButton ? 1 : 0));
         dest.writeString(mBuilder.timingHint);
         dest.writeString(mBuilder.errorToastMsg);
     }
@@ -145,6 +155,7 @@ public class RecordVideoOption implements Parcelable {
         private int maxDuration;//最大录制时间（秒数）
         private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
+        private boolean hideFlashlightButton;//隐藏闪光灯按钮
         private OnRecordVideoListener listener;//录制视频监听器
         private String timingHint;//录制按钮上方提示语句（默认：0：%s）
         private String errorToastMsg;//录制发生错误Toast（默认：录制时间小于1秒，请重试）
@@ -200,6 +211,15 @@ public class RecordVideoOption implements Parcelable {
 
         public Builder setHideFlipCameraButton(boolean hideFlipCameraButton) {
             this.hideFlipCameraButton = hideFlipCameraButton;
+            return this;
+        }
+
+        public boolean isHideFlashlightButton() {
+            return hideFlashlightButton;
+        }
+
+        public Builder setHideFlashlightButton(boolean hideFlashlightButton) {
+            this.hideFlashlightButton = hideFlashlightButton;
             return this;
         }
 

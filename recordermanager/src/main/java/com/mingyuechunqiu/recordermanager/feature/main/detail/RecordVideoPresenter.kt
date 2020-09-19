@@ -14,8 +14,9 @@ import com.mingyuechunqiu.recordermanager.R
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption
 import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoContract.Presenter
+import com.mingyuechunqiu.recordermanager.feature.record.IRecorderManager
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerable
+import java.io.File
 import java.io.IOException
 import java.util.*
 
@@ -32,7 +33,7 @@ import java.util.*
  */
 internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
 
-    private val mManager: RecorderManagerable by lazy { RecorderManagerFactory.newInstance() }
+    private val mManager: IRecorderManager by lazy { RecorderManagerFactory.newInstance() }
     private var mOption: RecordVideoOption? = null
     private var mCamera: Camera? = null
     private var isRecording = false//标记是否正在录制中
@@ -47,7 +48,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
     private var mCameraType: CameraType = CameraType.CAMERA_NOT_SET//摄像头类型
     private var mTimer: Timer? = null//录制计时器
 
-    public override fun initView(option: RecordVideoOption) {
+    public override fun initConfiguration(option: RecordVideoOption) {
         mOption = option
         mCameraType = mOption?.cameraType ?: CameraType.CAMERA_NOT_SET
     }
@@ -292,6 +293,12 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
      * 点击取消按钮事件
      */
     public override fun onClickCancel() {
+        mOption?.recorderOption?.filePath?.let {
+            val file = File(it)
+            if (file.exists()) {
+                file.delete()
+            }
+        }
         RecorderManagerFactory.getRecordDispatcher().onClickCancel(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
@@ -301,19 +308,19 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
     public override fun onClickBack() {
         if (isInPlayingState) {
             resetResource()
-            RecorderManagerFactory.getRecordDispatcher().onClickCancel(mOption!!.recorderOption.filePath, mVideoDuration)
+            onClickCancel()
         } else {
             RecorderManagerFactory.getRecordDispatcher().onClickBack()
         }
     }
 
-    public override fun getTimingHint(timing: String): String {
+    public override fun getTimingHint(timing: String, isInTiming: Boolean): String {
         val context = mViewRef?.get()?.currentContext ?: return ""
-        var timingHint = mOption?.timingHint
-        if (TextUtils.isEmpty(mOption?.timingHint)) {
-            timingHint = context.getString(R.string.rm_fill_record_timing, timing)
+        return if (isInTiming) {
+            context.getString(R.string.rm_fill_record_timing, timing)
+        } else {
+            mOption?.timingHint ?: context.getString(R.string.rm_fill_record_timing, "00")
         }
-        return timingHint ?: ""
     }
 
     public override fun switchFlashlightState(turnOn: Boolean) {}
@@ -337,7 +344,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         if (mTiming < 10) {
             sbTiming.insert(0, "0")
         }
-        mViewRef?.get()?.showTimingText(sbTiming.toString())
+        mViewRef?.get()?.showTimingText(getTimingHint(sbTiming.toString(), true));
     }
 
     /**

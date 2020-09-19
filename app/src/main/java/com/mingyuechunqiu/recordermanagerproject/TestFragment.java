@@ -19,7 +19,6 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoButtonOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
-import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 
 /**
@@ -67,13 +66,13 @@ public class TestFragment extends Fragment {
                         new RecordVideoRequestOption.Builder()
                                 .setMaxDuration(20)
                                 .setRecordVideoOption(new RecordVideoOption.Builder()
-                                        .setHideFlipCameraButton(true)
+//                                        .setHideFlipCameraButton(true)
                                         .setMaxDuration(60)
                                         .setRecordVideoButtonOption(new RecordVideoButtonOption.Builder()
                                                 .setIdleCircleColor(Color.BLUE)
                                                 .setPressedRingColor(Color.GREEN)
                                                 .build())
-                                        .setCameraType(RecorderManagerConstants.CameraType.CAMERA_FRONT)
+//                                        .setCameraType(RecorderManagerConstants.CameraType.CAMERA_FRONT)
                                         .setTimingHint("较为金额")
                                         .setErrorToastMsg("的方法教教我")
                                         .build())

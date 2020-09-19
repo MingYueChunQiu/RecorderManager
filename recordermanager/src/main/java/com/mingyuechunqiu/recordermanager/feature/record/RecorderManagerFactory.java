@@ -1,8 +1,9 @@
 package com.mingyuechunqiu.recordermanager.feature.record;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.mingyuechunqiu.recordermanager.feature.interpect.RecorderManagerInterceptable;
+import com.mingyuechunqiu.recordermanager.feature.interpect.IRecorderManagerInterceptor;
 import com.mingyuechunqiu.recordermanager.framework.parser.IRecordVideoResultParser;
 import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoRequest;
 
@@ -27,7 +28,7 @@ public final class RecorderManagerFactory {
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance() {
+    public static IRecorderManager newInstance() {
         return newInstance(new RecorderHelper());
     }
 
@@ -38,31 +39,31 @@ public final class RecorderManagerFactory {
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(RecorderManagerInterceptable intercept) {
+    public static IRecorderManager newInstance(@NonNull IRecorderManagerInterceptor intercept) {
         return newInstance(new RecorderHelper(), intercept);
     }
 
     /**
      * 创建录制管理类实例
      *
-     * @param recorderable 实际录制类
+     * @param helper 实际录制类
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(Recorderable recorderable) {
-        return newInstance(recorderable, null);
+    public static IRecorderManager newInstance(@NonNull IRecorderHelper helper) {
+        return newInstance(helper, null);
     }
 
     /**
      * 创建录制管理类实例
      *
-     * @param recorderable 实际录制类
-     * @param intercept    录制管理器拦截器
+     * @param helper    实际录制类
+     * @param intercept 录制管理器拦截器
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(Recorderable recorderable, RecorderManagerInterceptable intercept) {
-        return new RecorderManager(recorderable, intercept);
+    public static IRecorderManager newInstance(@NonNull IRecorderHelper helper, @Nullable IRecorderManagerInterceptor intercept) {
+        return new RecorderManager(helper, intercept);
     }
 
     @NonNull
@@ -76,7 +77,7 @@ public final class RecorderManagerFactory {
     }
 
     @NonNull
-    public static RecordDispatcher getRecordDispatcher() {
+    public static IRecordDispatcher getRecordDispatcher() {
         return RecordDispatcher.INSTANCE;
     }
 }

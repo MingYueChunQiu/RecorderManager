@@ -101,7 +101,7 @@ public class CameraParamsUtils {
     /**
      * 大小比较器，以宽度为准
      */
-    private class SizeComparator implements Comparator<Camera.Size> {
+    private static class SizeComparator implements Comparator<Camera.Size> {
 
         @Override
         public int compare(Camera.Size o1, Camera.Size o2) {

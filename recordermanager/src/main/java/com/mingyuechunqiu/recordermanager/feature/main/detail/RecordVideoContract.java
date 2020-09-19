@@ -47,16 +47,26 @@ interface RecordVideoContract {
 
     abstract class Presenter<V extends View<?>> extends BaseAbstractPresenter<V> {
 
-        abstract void initView(@NonNull RecordVideoOption option);
+        /**
+         * 初始化配置
+         *
+         * @param option 配置信息对象
+         */
+        abstract void initConfiguration(@NonNull RecordVideoOption option);
 
         /**
          * 开始相机预览
+         *
+         * @param holder 图层控制
          */
         abstract void startPreview(@Nullable SurfaceHolder holder);
 
         /**
          * 按下按钮开始录制视频
          *
+         * @param holder       图层控制
+         * @param ivFlipCamera 翻转摄像头控件
+         * @param ivBack       返回录制控件
          * @return 如果成功开始录制返回true，否则返回false
          */
         abstract boolean pressToStartRecordVideo(@Nullable SurfaceHolder holder, @NonNull AppCompatImageView ivFlipCamera,
@@ -71,6 +81,8 @@ interface RecordVideoContract {
 
         /**
          * 翻转摄像头
+         *
+         * @param holder 图层控制
          */
         abstract void flipCamera(@Nullable SurfaceHolder holder);
 
@@ -95,6 +107,7 @@ interface RecordVideoContract {
          * 暂停播放视频
          *
          * @param controlViews 是否要控制控件
+         * @param ivPlay       播放控件
          */
         abstract void pausePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay);
 
@@ -102,11 +115,16 @@ interface RecordVideoContract {
          * 恢复播放视频
          *
          * @param controlViews 是否要控制控件
+         * @param ivPlay       播放控件
+         * @param holder       图层控制
          */
         abstract void resumePlayVideo(boolean controlViews, @NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder);
 
         /**
          * 控制播放或暂停视频
+         *
+         * @param ivPlay 播放控件
+         * @param holder 图层控制
          */
         abstract void controlPlayOrPauseVideo(@NonNull AppCompatImageView ivPlay, @Nullable SurfaceHolder holder);
 
@@ -129,6 +147,7 @@ interface RecordVideoContract {
          * 设置SurfaceHolder（在调用到onPause()方法后，SurfaceView会销毁重建，要重新设置）
          *
          * @param holder 图层控制
+         * @param ivPlay 播放控件
          */
         abstract void onSurfaceCreated(@NonNull SurfaceHolder holder, @NonNull AppCompatImageView ivPlay);
 
@@ -151,10 +170,11 @@ interface RecordVideoContract {
          * 获取计时提示信息
          *
          * @param timing 计时信息
+         * @param isInTiming 是否正在计时，true表示
          * @return 返回最终文本
          */
         @NonNull
-        abstract String getTimingHint(@NonNull String timing);
+        abstract String getTimingHint(@NonNull String timing, boolean isInTiming);
 
         /**
          * 切换闪光灯状态

@@ -19,12 +19,16 @@ internal object RecordDispatcher : IRecordDispatcher {
 
     private var mOnRecordVideoListener: RecordVideoOption.OnRecordVideoListener? = null
 
-    fun registerOnRecordVideoListener(listener: RecordVideoOption.OnRecordVideoListener) {
+    override fun registerOnRecordVideoListener(listener: RecordVideoOption.OnRecordVideoListener) {
         mOnRecordVideoListener = listener
     }
 
-    fun unregisterOnRecordVideoListener() {
+    override fun unregisterOnRecordVideoListener() {
         mOnRecordVideoListener = null
+    }
+
+    override fun isRegisteredOnRecordVideoListener(): Boolean {
+        return mOnRecordVideoListener != null
     }
 
     override fun onCompleteRecordVideo(filePath: String?, videoDuration: Int) {

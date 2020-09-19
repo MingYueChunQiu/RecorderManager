@@ -68,7 +68,10 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        checkHasPermissions();
         initRecorderOption();
+        mPresenter.initConfiguration(mOption);
 
         svVideo = view.findViewById(R.id.sv_record_video_screen);
         tvTiming = view.findViewById(R.id.tv_record_video_timing);
@@ -83,6 +86,15 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         svVideo.getHolder().addCallback(this);
         svVideo.getHolder().setKeepScreenOn(true);
         svVideo.setOnClickListener(this);
+        ivFlipCamera.setVisibility(mOption.isHideFlipCameraButton() ? View.GONE : View.VISIBLE);
+        ivFlipCamera.setOnClickListener(this);
+        ivPlay.setOnClickListener(this);
+        ivCancel.setOnClickListener(this);
+        ivConfirm.setOnClickListener(this);
+        ivBack.setOnClickListener(this);
+        tvTiming.setText(mPresenter == null ? "" : mPresenter.getTimingHint("00", false));
+        ivFlashlight.setVisibility(mOption.isHideFlashlightButton() ? View.GONE : View.VISIBLE);
+        ivFlashlight.setOnClickListener(this);
         initCircleProgressButton(mOption.getRecordVideoButtonOption());
         cpbRecord.setMaxProgress(mOption.getMaxDuration());
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
@@ -116,11 +128,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
                 }
             }
         });
-        ivFlipCamera.setOnClickListener(this);
-        ivPlay.setOnClickListener(this);
-        ivCancel.setOnClickListener(this);
-        ivConfirm.setOnClickListener(this);
-        ivBack.setOnClickListener(this);
+
         if (getActivity() instanceof KeyBackCallback) {
             ((KeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
                 @Override
@@ -133,12 +141,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
                 }
             });
         }
-        checkHasPermissions();
-        mPresenter.initView(mOption);
-
-        ivFlipCamera.setVisibility(mOption.isHideFlipCameraButton() ? View.GONE : View.VISIBLE);
-        tvTiming.setText(mPresenter == null ? "" : mPresenter.getTimingHint("00"));
-        ivFlashlight.setOnClickListener(this);
     }
 
     @Override
@@ -205,6 +207,9 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             }
         } else if (id == R.id.iv_record_video_flashlight) {
             ivFlashlight.setSelected(!ivFlashlight.isSelected());
+            if (mPresenter != null) {
+                mPresenter.switchFlashlightState(ivFlashlight.isSelected());
+            }
         }
     }
 
@@ -278,7 +283,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             playViewsVisibility = View.GONE;
             recordViewsVisibility = View.VISIBLE;
             if (mPresenter != null) {
-                showTimingText(mPresenter.getTimingHint("00"));
+                showTimingText(mPresenter.getTimingHint("00", false));
             }
             if (!mOption.isHideFlipCameraButton()) {
                 ivFlipCamera.setVisibility(recordViewsVisibility);

@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * <pre>
- *     author : xyj
+ *     author : MingYueChunQiu
  *     Github : https://github.com/MingYueChunQiu
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/3/8
@@ -14,7 +14,7 @@ import java.util.List;
  *     version: 1.0
  * </pre>
  */
-public interface CameraInterceptable {
+public interface ICameraInterceptor {
 
     /**
      * 拦截本机支持的相机预览大小参数设置

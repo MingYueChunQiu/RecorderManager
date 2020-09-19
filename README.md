@@ -377,24 +377,24 @@ public class RecorderManagerFactory {
     /**
      * 创建录制管理类实例
      *
-     * @param recorderable 实际录制类
+     * @param helper 实际录制类
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(Recorderable recorderable) {
-        return newInstance(recorderable, null);
+    public static RecorderManagerable newInstance(Recorderable helper) {
+        return newInstance(helper, null);
     }
 
     /**
      * 创建录制管理类实例
      *
-     * @param recorderable 实际录制类
+     * @param helper 实际录制类
      * @param intercept    录制管理器拦截器
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(Recorderable recorderable, RecorderManagerInterceptable intercept) {
-        return new RecorderManager(recorderable, intercept);
+    public static RecorderManagerable newInstance(Recorderable helper, RecorderManagerInterceptable intercept) {
+        return new RecorderManager(helper, intercept);
     }
 
     @NonNull
@@ -421,9 +421,9 @@ public interface RecorderManagerable extends Recorderable {
 /**
      * 设置录制对象
      *
-     * @param recorderable 录制对象实例
+     * @param helper 录制对象实例
      */
-    void setRecorderable(Recorderable recorderable);
+    void setRecorderable(Recorderable helper);
 
     /**
      * 获取录制对象
