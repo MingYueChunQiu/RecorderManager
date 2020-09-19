@@ -205,9 +205,18 @@ class RecorderManager implements IRecorderManager {
         if (mIntercept != null) {
             mIntercept.switchFlashlight(turnOn);
         }
+        //getParameters failed (empty parameters) 需要加上锁保证每个时间最多只有一个线程访问Camera
+        //声明Parameters前加lock，防止其他的线程访问，在 camera.setParameters(parameters); 后面设置unlock
+        mCamera.lock();
         Camera.Parameters parameters = mCamera.getParameters();
+        //如果不支持闪光灯设置，则直接返回
+        if (parameters.getFlashMode() == null) {
+            mCamera.unlock();
+            return;
+        }
         parameters.setFlashMode(turnOn ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF);
         mCamera.setParameters(parameters);
+        mCamera.unlock();
     }
 
     @Nullable

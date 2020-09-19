@@ -323,7 +323,9 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         }
     }
 
-    public override fun switchFlashlightState(turnOn: Boolean) {}
+    public override fun switchFlashlightState(turnOn: Boolean) {
+        mManager.switchFlashlight(turnOn)
+    }
 
     override fun release() {
         mHandler.removeCallbacksAndMessages(null)
