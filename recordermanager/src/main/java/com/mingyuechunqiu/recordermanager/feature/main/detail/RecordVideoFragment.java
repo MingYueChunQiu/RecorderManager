@@ -12,6 +12,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -526,6 +527,10 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
      */
     private void switchFlashlightState() {
         if (mPresenter == null || !mPresenter.switchFlashlightState(!ivFlashlight.isSelected())) {
+            Context context = getContext();
+            if (context != null) {
+                Toast.makeText(context, getString(R.string.rm_error_switch_flashlight), Toast.LENGTH_SHORT).show();
+            }
             return;
         }
         ValueAnimator animator = ValueAnimator.ofFloat(1.0F, 0.6F, 1.0F).setDuration(300);

@@ -13,5 +13,6 @@
     <string name="rm_warn_allow_record_video_permissions">Please allow recording storage permissions in order to use the shooting function</string>
 
     <string name="rm_error_start_record_video_page">The parameters of the start video recording interface are abnormal</string>
+    <string name="rm_error_switch_flashlight">Failed to switch flash</string>
 
 </resources>
