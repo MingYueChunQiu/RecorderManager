@@ -11,8 +11,9 @@
 2.移除rxjava库，减少依赖</br>
 3.升级最新SDK</br>
 4.新增闪光灯功能，增加计时前提示文本设置</br>
-5.修复已知问题，优化代码</br>
-6.对外用户调用API改动较少，主要为内部调整，见下方文档，欢迎大家测试反馈完善功能</br>
+5.增加国际化支持，英文和中文
+6.修复已知问题，优化代码</br>
+7.对外用户调用API改动较少，主要为内部调整，见下方文档，欢迎大家测试反馈完善功能</br>
 
 0.2.29版本更新：
 1.新增圆形进度按钮配置功能</br>
@@ -283,7 +284,9 @@ public class RecordVideoOption：
         private int maxDuration;//最大录制时间（秒数）
         private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
-        private OnRecordVideoListener listener;//录制视频监听器(直接使用RecorderManagerFactory启动视频录制界面，不需要设置此项)
+        private boolean hideFlashlightButton;//隐藏闪光灯按钮
+        private String timingHint;//录制按钮上方提示语句（默认：0:%s）
+        private String errorToastMsg;//录制发生错误Toast（默认：录制时间小于1秒，请重试）
 
 	/**
      * 录制视频监听器
