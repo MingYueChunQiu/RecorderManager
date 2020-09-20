@@ -26,7 +26,7 @@ public interface IRecorderManager extends IRecorderHelper {
      *
      * @param helper 录制对象实例
      */
-    void setRecorderable(@NonNull IRecorderHelper helper);
+    void setRecorderHelper(@NonNull IRecorderHelper helper);
 
     /**
      * 获取录制对象
@@ -34,7 +34,7 @@ public interface IRecorderManager extends IRecorderHelper {
      * @return 返回录制对象实例
      */
     @NonNull
-    IRecorderHelper getRecorderable();
+    IRecorderHelper getRecorderHelper();
 
     /**
      * 初始化相机对象

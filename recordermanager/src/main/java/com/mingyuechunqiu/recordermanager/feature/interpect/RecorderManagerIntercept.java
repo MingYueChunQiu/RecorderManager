@@ -29,13 +29,13 @@ public class RecorderManagerIntercept implements IRecorderManagerInterceptor {
 
     @NonNull
     @Override
-    public IRecorderHelper setRecorderable(@NonNull IRecorderHelper helper) {
+    public IRecorderHelper setRecorderHelper(@NonNull IRecorderHelper helper) {
         return helper;
     }
 
     @NonNull
     @Override
-    public IRecorderHelper getRecorderable(@NonNull IRecorderHelper helper) {
+    public IRecorderHelper getRecorderHelper(@NonNull IRecorderHelper helper) {
         return helper;
     }
 

@@ -19,7 +19,7 @@ import com.mingyuechunqiu.recordermanager.feature.record.IRecorderHelper;
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/3/8
  *     desc   : 录制管理器拦截接口
- *              继承自CameraInterceptable
+ *              继承自ICameraInterceptor
  *     version: 1.0
  * </pre>
  */
@@ -84,7 +84,7 @@ public interface IRecorderManagerInterceptor extends ICameraInterceptor {
      * @param helper 录制对象实例
      */
     @NonNull
-    IRecorderHelper setRecorderable(@NonNull IRecorderHelper helper);
+    IRecorderHelper setRecorderHelper(@NonNull IRecorderHelper helper);
 
     /**
      * 获取录制对象
@@ -92,7 +92,7 @@ public interface IRecorderManagerInterceptor extends ICameraInterceptor {
      * @return 返回录制对象实例
      */
     @NonNull
-    IRecorderHelper getRecorderable(@NonNull IRecorderHelper helper);
+    IRecorderHelper getRecorderHelper(@NonNull IRecorderHelper helper);
 
     /**
      * 初始化相机对象

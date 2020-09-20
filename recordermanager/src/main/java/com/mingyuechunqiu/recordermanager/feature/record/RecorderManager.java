@@ -28,7 +28,7 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     e-mail : xiyujieit@163.com
  *     time   : 2018/10/31
  *     desc   : 录制管理类，用于调用具体的录制实现类，并提供公共方法
- *              实现RecorderManagerable
+ *              实现IRecorderManager
  *     version: 1.0
  * </pre>
  */
@@ -126,9 +126,9 @@ class RecorderManager implements IRecorderManager {
     }
 
     @Override
-    public void setRecorderable(@NonNull IRecorderHelper helper) {
+    public void setRecorderHelper(@NonNull IRecorderHelper helper) {
         if (mIntercept != null) {
-            mRecorderHelper = mIntercept.setRecorderable(helper);
+            mRecorderHelper = mIntercept.setRecorderHelper(helper);
         } else {
             mRecorderHelper = helper;
         }
@@ -136,10 +136,10 @@ class RecorderManager implements IRecorderManager {
 
     @NonNull
     @Override
-    public IRecorderHelper getRecorderable() {
+    public IRecorderHelper getRecorderHelper() {
         checkOrCreateDefaultRecorderable();
         if (mIntercept != null) {
-            mRecorderHelper = mIntercept.getRecorderable(mRecorderHelper);
+            mRecorderHelper = mIntercept.getRecorderHelper(mRecorderHelper);
         }
         return mRecorderHelper;
     }
