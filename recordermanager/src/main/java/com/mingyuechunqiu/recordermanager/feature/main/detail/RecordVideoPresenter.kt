@@ -122,6 +122,9 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         holder?.let {
             mCamera = mManager.flipCamera(it)
             mCameraType = mManager.cameraType
+
+            //切换到前置摄像头时隐藏闪光灯设置
+            mViewRef?.get()?.showFlashlightButton(mCameraType != CameraType.CAMERA_FRONT)
         }
     }
 
@@ -323,8 +326,8 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         }
     }
 
-    public override fun switchFlashlightState(turnOn: Boolean) {
-        mManager.switchFlashlight(turnOn)
+    public override fun switchFlashlightState(turnOn: Boolean): Boolean {
+        return mManager.switchFlashlight(turnOn)
     }
 
     override fun release() {

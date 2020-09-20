@@ -43,6 +43,13 @@ interface RecordVideoContract {
          * @param isInPlayingState 是否正在播放
          */
         void controlRecordOrPlayVisibility(boolean isInPlayingState);
+
+        /**
+         * 控制闪光灯显示
+         *
+         * @param show true表示显示，false隐藏
+         */
+        void showFlashlightButton(boolean show);
     }
 
     abstract class Presenter<V extends View<?>> extends BaseAbstractPresenter<V> {
@@ -169,7 +176,7 @@ interface RecordVideoContract {
         /**
          * 获取计时提示信息
          *
-         * @param timing 计时信息
+         * @param timing     计时信息
          * @param isInTiming 是否正在计时，true表示
          * @return 返回最终文本
          */
@@ -180,7 +187,8 @@ interface RecordVideoContract {
          * 切换闪光灯状态
          *
          * @param turnOn true表示打开，false关闭
+         * @return 如果切换状态成功返回true，否则返回false
          */
-        abstract void switchFlashlightState(boolean turnOn);
+        abstract boolean switchFlashlightState(boolean turnOn);
     }
 }

@@ -60,7 +60,7 @@ public interface IRecorderManager extends IRecorderHelper {
      *
      * @param turnOn true表示打开，false关闭
      */
-    void switchFlashlight(boolean turnOn);
+    boolean switchFlashlight(boolean turnOn);
 
     /**
      * 翻转摄像头

@@ -1,5 +1,8 @@
 package com.mingyuechunqiu.recordermanager.feature.main.detail;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -158,6 +161,10 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         if (mPresenter != null && ivPlay != null) {
             mPresenter.pausePlayVideo(false, ivPlay);
         }
+        //此时闪光灯会被切断，要重置状态
+        if (ivFlashlight != null) {
+            ivFlashlight.setSelected(false);
+        }
     }
 
     @Override
@@ -185,9 +192,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
                 mPresenter.controlPlayOrPauseVideo(ivPlay, svVideo.getHolder());
             }
         } else if (id == R.id.iv_record_video_flip_camera) {
-            if (mPresenter != null) {
-                mPresenter.flipCamera(svVideo.getHolder());
-            }
+            flipCamera();
         } else if (id == R.id.iv_record_video_play) {
             if (mPresenter != null && ivPlay != null && svVideo != null) {
                 mPresenter.resumePlayVideo(true, ivPlay, svVideo.getHolder());
@@ -206,10 +211,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
                 mPresenter.onClickBack();
             }
         } else if (id == R.id.iv_record_video_flashlight) {
-            ivFlashlight.setSelected(!ivFlashlight.isSelected());
-            if (mPresenter != null) {
-                mPresenter.switchFlashlightState(ivFlashlight.isSelected());
-            }
+            switchFlashlightState();
         }
     }
 
@@ -242,7 +244,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
     }
 
     @Override
@@ -295,6 +296,15 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         tvTiming.setVisibility(recordViewsVisibility);
         cpbRecord.setVisibility(recordViewsVisibility);
         ivBack.setVisibility(recordViewsVisibility);
+    }
+
+    @Override
+    public void showFlashlightButton(boolean show) {
+        if (ivFlashlight == null) {
+            return;
+        }
+        ivFlashlight.setSelected(!show);
+        ivFlashlight.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -440,6 +450,58 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             mOption.getRecorderOption().setFilePath(
                     FilePathUtils.getSaveFilePath(getContext()));
         }
+    }
+
+    /**
+     * 翻转摄像头
+     */
+    private void flipCamera() {
+        if (mPresenter != null) {
+            mPresenter.flipCamera(svVideo.getHolder());
+        }
+        ValueAnimator animator = ValueAnimator.ofFloat(1.0F, 0.6F, 1.0F).setDuration(300);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                if (ivFlipCamera == null) {
+                    return;
+                }
+                ivFlipCamera.setScaleX((Float) animation.getAnimatedValue());
+                ivFlipCamera.setScaleY((Float) animation.getAnimatedValue());
+            }
+        });
+        animator.start();
+    }
+
+    /**
+     * 切换闪光灯状态
+     */
+    private void switchFlashlightState() {
+        if (mPresenter == null || !mPresenter.switchFlashlightState(!ivFlashlight.isSelected())) {
+            return;
+        }
+        ValueAnimator animator = ValueAnimator.ofFloat(1.0F, 0.6F, 1.0F).setDuration(300);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                if (ivFlashlight == null) {
+                    return;
+                }
+                ivFlashlight.setScaleX((Float) animation.getAnimatedValue());
+                ivFlashlight.setScaleY((Float) animation.getAnimatedValue());
+            }
+        });
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if (ivFlashlight == null) {
+                    return;
+                }
+                ivFlashlight.setSelected(!ivFlashlight.isSelected());
+            }
+        });
+        animator.start();
     }
 
     /**

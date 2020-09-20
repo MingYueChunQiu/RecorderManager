@@ -198,9 +198,9 @@ class RecorderManager implements IRecorderManager {
     }
 
     @Override
-    public void switchFlashlight(boolean turnOn) {
+    public boolean switchFlashlight(boolean turnOn) {
         if (mCamera == null) {
-            return;
+            return false;
         }
         if (mIntercept != null) {
             mIntercept.switchFlashlight(turnOn);
@@ -212,11 +212,12 @@ class RecorderManager implements IRecorderManager {
         //如果不支持闪光灯设置，则直接返回
         if (parameters.getFlashMode() == null) {
             mCamera.unlock();
-            return;
+            return false;
         }
         parameters.setFlashMode(turnOn ? Camera.Parameters.FLASH_MODE_TORCH : Camera.Parameters.FLASH_MODE_OFF);
         mCamera.setParameters(parameters);
         mCamera.unlock();
+        return true;
     }
 
     @Nullable
