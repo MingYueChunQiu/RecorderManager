@@ -12,7 +12,7 @@
 3.升级最新SDK
 4.新增闪光灯功能，增加计时前提示文本设置
 5.修复已知问题，优化代码
-6.对外用户调用API改动较少，主要为内部调整，见下方文档
+6.对外用户调用API改动较少，主要为内部调整，见下方文档，欢迎大家测试反馈完善功能
 
 0.2.29版本更新：
 1.新增圆形进度按钮配置功能</br>
@@ -53,6 +53,7 @@ allprojects {
 
 ```
 dependencies {
+		//0.3-beta.2
 	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.29'
 	}
 ```
@@ -140,6 +141,8 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
 	  
 	//从0.2.28版本开始可以使用下面这种方式，更安全更灵活，兼容性强
 	RecordVideoResultInfo info = RecorderManagerFactory.getRecordVideoResult(data);
+	//从0.3版本开始
+	RecordVideoResultInfo info = RecorderManagerFactory.getRecordVideoResultParser().parseRecordVideoResult(data);
 	
 	if (info != null) {
                 Log.e("MainActivity", "onActivityResult: " + " "
@@ -223,6 +226,8 @@ rm_record_video_cancel.png
 rm_record_video_confirm.png
 rm_record_video_play.png
 rm_record_video_pull_down.png
+rm_record_video_flashlight_turn_off.png
+rm_record_video_flashlight_turn_on.png
 ```
 
 #### (3).同时提供了对应的RecordVideoFragment，实现与RecordVideoActivity同样的功能，实际RecordVideoActivity就是包裹了一个RecordVideoFragment
@@ -261,10 +266,9 @@ rm_record_video_pull_down.png
      */
     public static RecordVideoFragment newInstance(@Nullable RecordVideoOption option) {
         RecordVideoFragment fragment = new RecordVideoFragment();
-        fragment.mOption = option;
-        if (fragment.mOption == null) {
-            fragment.mOption = new RecordVideoOption();
-        }
+        Bundle args = new Bundle();
+        args.putParcelable(BUNDLE_EXTRA_RECORD_VIDEO_OPTION, option == null ? new RecordVideoOption() : option);
+        fragment.setArguments(args);
         return fragment;
     }
 ```
@@ -315,6 +319,40 @@ public class RecordVideoOption：
         void onClickBack();
     }
 ```
+原OnRecordVideoListener现已改为RMOnRecordVideoListener，并从RecordVideoOption中移除，主要用于用户自己activity或fragment实现此接口，用于承载RecordVideoFragment，获取相关步骤回调
+```
+interface RMOnRecordVideoListener {
+
+    /**
+     * 当完成一次录制时回调
+     *
+     * @param filePath      视频文件路径
+     * @param videoDuration 视频时长（毫秒）
+     */
+    fun onCompleteRecordVideo(filePath: String?, videoDuration: Int)
+
+    /**
+     * 当点击确认录制结果按钮时回调
+     *
+     * @param filePath      视频文件路径
+     * @param videoDuration 视频时长（毫秒）
+     */
+    fun onClickConfirm(filePath: String?, videoDuration: Int)
+
+    /**
+     * 当点击取消按钮时回调
+     *
+     * @param filePath      视频文件路径
+     * @param videoDuration 视频时长（毫秒）
+     */
+    fun onClickCancel(filePath: String?, videoDuration: Int)
+
+    /**
+     * 当点击返回按钮时回调
+     */
+    fun onClickBack()
+}
+```
 4.RecordVideoButtonOption是圆形进度按钮配置类
 ```
 	private @ColorInt
@@ -361,13 +399,16 @@ public class RecordVideoOption：
 ```
 public class RecorderManagerFactory {
 
-/**
+    private RecorderManagerFactory() {
+    }
+
+    /**
      * 创建录制管理类实例（使用默认录制类）
      *
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance() {
+    public static IRecorderManager newInstance() {
         return newInstance(new RecorderHelper());
     }
 
@@ -378,7 +419,7 @@ public class RecorderManagerFactory {
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(RecorderManagerInterceptable intercept) {
+    public static IRecorderManager newInstance(@NonNull IRecorderManagerInterceptor intercept) {
         return newInstance(new RecorderHelper(), intercept);
     }
 
@@ -389,56 +430,53 @@ public class RecorderManagerFactory {
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(Recorderable helper) {
+    public static IRecorderManager newInstance(@NonNull IRecorderHelper helper) {
         return newInstance(helper, null);
     }
 
     /**
      * 创建录制管理类实例
      *
-     * @param helper 实际录制类
-     * @param intercept    录制管理器拦截器
+     * @param helper    实际录制类
+     * @param intercept 录制管理器拦截器
      * @return 返回录制管理类实例
      */
     @NonNull
-    public static RecorderManagerable newInstance(Recorderable helper, RecorderManagerInterceptable intercept) {
+    public static IRecorderManager newInstance(@NonNull IRecorderHelper helper, @Nullable IRecorderManagerInterceptor intercept) {
         return new RecorderManager(helper, intercept);
     }
 
     @NonNull
-    public static RequestRecordVideoPageable getRecordVideoRequest() {
+    public static IRecordVideoRequest getRecordVideoRequest() {
         return new RecordVideoPageRequest();
     }
-    
-    @Nullable
-    public static RecordVideoResultInfo getRecordVideoResult(@Nullable Intent data) {
-        RecordVideoResultInfo info = null;
-        if (data != null) {
-            info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
-        }
-        return info;
-    }
 
+    //0.3之后版本通过解析器来进行处理数据
+    @NonNull
+    public static IRecordVideoResultParser getRecordVideoResultParser() {
+        return new RecordVideoResultParser();
+    }
 }
 ```
-它们返回的都是RecorderManagerable 接口类型，RecorderManager 是默认的实现类，RecorderManager 内持有一个真正进行操作的Recorderable。
+它们返回的都是IRecorderManager 接口类型，RecorderManager 是默认的实现类，RecorderManager 内持有一个真正进行操作的RecorderHelper。
 
 ```
-public interface RecorderManagerable extends Recorderable {
+public interface IRecorderManager extends IRecorderHelper {
 
-/**
+    /**
      * 设置录制对象
      *
      * @param helper 录制对象实例
      */
-    void setRecorderable(Recorderable helper);
+    void setRecorderHelper(@NonNull IRecorderHelper helper);
 
     /**
      * 获取录制对象
      *
      * @return 返回录制对象实例
      */
-    Recorderable getRecorderable();
+    @NonNull
+    IRecorderHelper getRecorderHelper();
 
     /**
      * 初始化相机对象
@@ -446,7 +484,8 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder Surface持有者
      * @return 返回初始化好的相机对象
      */
-    Camera initCamera(SurfaceHolder holder);
+    @Nullable
+    Camera initCamera(@NonNull SurfaceHolder holder);
 
     /**
      * 初始化相机对象
@@ -455,7 +494,15 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder     Surface持有者
      * @return 返回初始化好的相机对象
      */
-    Camera initCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+    @Nullable
+    Camera initCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder);
+
+    /**
+     * 打开或关闭闪光灯
+     *
+     * @param turnOn true表示打开，false关闭
+     */
+    boolean switchFlashlight(boolean turnOn);
 
     /**
      * 翻转摄像头
@@ -463,7 +510,8 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder Surface持有者
      * @return 返回翻转并初始化好的相机对象
      */
-    Camera flipCamera(SurfaceHolder holder);
+    @Nullable
+    Camera flipCamera(@NonNull SurfaceHolder holder);
 
     /**
      * 翻转到指定类型摄像头
@@ -472,39 +520,42 @@ public interface RecorderManagerable extends Recorderable {
      * @param holder     Surface持有者
      * @return 返回翻转并初始化好的相机对象
      */
-    Camera flipCamera(Constants.CameraType cameraType, SurfaceHolder holder);
+    @Nullable
+    Camera flipCamera(@NonNull RecorderManagerConstants.CameraType cameraType, @NonNull SurfaceHolder holder);
 
     /**
      * 获取当前摄像头类型
      *
      * @return 返回摄像头类型
      */
-    Constants.CameraType getCameraType();
+    @NonNull
+    RecorderManagerConstants.CameraType getCameraType();
 
     /**
      * 释放相机资源
      */
     void releaseCamera();
+
 }
 ```
-RecorderManagerIntercept实现RecorderManagerInterceptable接口，用户可以直接继承RecorderManagerIntercept，它里面所有方法都是空实现，可以自己改写需要的方法
+RecorderManagerIntercept实现IRecorderManagerInterceptor接口，用户可以直接继承RecorderManagerIntercept，它里面所有方法都是空实现，可以自己改写需要的方法
 
 ```
-public interface RecorderManagerInterceptable extends RecorderManagerable, CameraInterceptable {
+public interface IRecorderManagerInterceptor extends ICameraInterceptor {
 }
 ```
-Recorderable是一个接口类型，由实现Recorderable的子类来进行录制操作，默认提供的是RecorderHelper，RecorderHelper实现了Recorderable。
+IRecorderHelper是一个接口类型，由实现IRecorderHelper的子类来进行录制操作，默认提供的是RecorderHelper，RecorderHelper实现了IRecorderHelper。
 
 ```
-public interface Recorderable {
+public interface IRecorderHelper {
 
-/**
+    /**
      * 录制音频
      *
      * @param path 文件存储路径
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
-    boolean recordAudio(String path);
+    boolean recordAudio(@NonNull String path);
 
     /**
      * 录制音频
@@ -512,7 +563,7 @@ public interface Recorderable {
      * @param option 存储录制信息的对象
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
-    boolean recordAudio(RecorderOption option);
+    boolean recordAudio(@NonNull RecorderOption option);
 
     /**
      * 录制视频
@@ -522,7 +573,7 @@ public interface Recorderable {
      * @param path    文件存储路径
      * @return 返回是否成功开启录制，成功返回true，否则返回false
      */
-    boolean recordVideo(Camera camera, Surface surface, String path);
+    boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable String path);
 
     /**
      * 录制视频
@@ -532,7 +583,7 @@ public interface Recorderable {
      * @param option  存储录制信息的对象
      * @return 返回是否成功开启视频录制，成功返回true，否则返回false
      */
-    boolean recordVideo(Camera camera, Surface surface, RecorderOption option);
+    boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable RecorderOption option);
 
     /**
      * 释放资源
@@ -544,6 +595,7 @@ public interface Recorderable {
      *
      * @return 返回实例对象
      */
+    @NonNull
     MediaRecorder getMediaRecorder();
 
     /**
@@ -551,6 +603,7 @@ public interface Recorderable {
      *
      * @return 返回实例对象
      */
+    @Nullable
     RecorderOption getRecorderOption();
 }
 ```
