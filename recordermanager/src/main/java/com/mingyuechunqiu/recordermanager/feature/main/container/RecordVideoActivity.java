@@ -15,7 +15,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+import com.mingyuechunqiu.recordermanager.framework.RMOnRecordVideoListener;
 import com.mingyuechunqiu.recordermanager.ui.activity.BaseRecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
@@ -31,16 +31,16 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
 
 /**
  * <pre>
- *     author : xyj
+ *     author : MingYueChunQiu
  *     Github : https://github.com/MingYueChunQiu
  *     e-mail : yujie.xi@ehailuo.com
  *     time   : 2019/1/28
  *     desc   : 录制视频Activity
- *              继承自AppCompatActivity
+ *              继承自BaseRecordVideoActivity
  *     version: 1.0
  * </pre>
  */
-public class RecordVideoActivity extends BaseRecordVideoActivity implements EasyPermissions.PermissionCallbacks {
+public class RecordVideoActivity extends BaseRecordVideoActivity implements EasyPermissions.PermissionCallbacks, RMOnRecordVideoListener {
 
     private RecordVideoFragment mRecordVideoFg;
 
@@ -84,6 +84,30 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         RecordPermissionUtils.handleOnPermissionDenied(this);
+    }
+
+    @Override
+    public void onCompleteRecordVideo(@Nullable String filePath, int videoDuration) {
+    }
+
+    @Override
+    public void onClickConfirm(@Nullable String filePath, int videoDuration) {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
+                .setDuration(videoDuration)
+                .setFilePath(filePath)
+                .build());
+        setResult(RESULT_OK, intent);
+        finishActivity();
+    }
+
+    @Override
+    public void onClickCancel(@Nullable String filePath, int videoDuration) {
+    }
+
+    @Override
+    public void onClickBack() {
+        finishActivity();
     }
 
     /**
@@ -158,11 +182,7 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
         if (intent != null) {
             RecordVideoRequestOption option = intent.getParcelableExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION);
             if (option != null && option.getRecordVideoOption() != null) {
-                RecordVideoOption recordVideoOption = option.getRecordVideoOption();
-                if (!RecorderManagerFactory.getRecordDispatcher().isRegisteredOnRecordVideoListener()) {
-                    recordVideoOption.setOnRecordVideoListener(initOnRecordVideoListener());
-                }
-                return recordVideoOption;
+                return option.getRecordVideoOption();
             }
             maxDuration = option == null ? DEFAULT_RECORD_VIDEO_DURATION : option.getMaxDuration();
             filePath = option == null ? null : option.getFilePath();
@@ -179,37 +199,7 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
                 .setRecorderOption(new RecorderOption.Builder()
                         .buildDefaultVideoBean(filePath))
                 .setMaxDuration(maxDuration)
-                .setOnRecordVideoListener(initOnRecordVideoListener()).build();
-    }
-
-    @NonNull
-    private RecordVideoOption.OnRecordVideoListener initOnRecordVideoListener() {
-        return new RecordVideoOption.OnRecordVideoListener() {
-
-            @Override
-            public void onCompleteRecordVideo(String filePath1, int videoDuration) {
-            }
-
-            @Override
-            public void onClickConfirm(String filePath1, int videoDuration) {
-                Intent intent = new Intent();
-                intent.putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
-                        .setDuration(videoDuration)
-                        .setFilePath(filePath1)
-                        .build());
-                setResult(RESULT_OK, intent);
-                finishActivity();
-            }
-
-            @Override
-            public void onClickCancel(String filePath1, int videoDuration) {
-            }
-
-            @Override
-            public void onClickBack() {
-                finishActivity();
-            }
-        };
+                .build();
     }
 
     /**

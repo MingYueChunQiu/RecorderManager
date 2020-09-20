@@ -102,14 +102,6 @@ public class RecordVideoOption implements Parcelable {
         mBuilder.hideFlashlightButton = hideFlashlightButton;
     }
 
-    public OnRecordVideoListener getOnRecordVideoListener() {
-        return mBuilder.listener;
-    }
-
-    public void setOnRecordVideoListener(OnRecordVideoListener listener) {
-        mBuilder.listener = listener;
-    }
-
     @Nullable
     public String getTimingHint() {
         return mBuilder.timingHint;
@@ -156,7 +148,6 @@ public class RecordVideoOption implements Parcelable {
         private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
         private boolean hideFlashlightButton;//隐藏闪光灯按钮
-        private OnRecordVideoListener listener;//录制视频监听器
         private String timingHint;//录制按钮上方提示语句（默认：0：%s）
         private String errorToastMsg;//录制发生错误Toast（默认：录制时间小于1秒，请重试）
 
@@ -220,15 +211,6 @@ public class RecordVideoOption implements Parcelable {
 
         public Builder setHideFlashlightButton(boolean hideFlashlightButton) {
             this.hideFlashlightButton = hideFlashlightButton;
-            return this;
-        }
-
-        public OnRecordVideoListener getOnRecordVideoListener() {
-            return listener;
-        }
-
-        public Builder setOnRecordVideoListener(OnRecordVideoListener listener) {
-            this.listener = listener;
             return this;
         }
 

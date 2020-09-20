@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">RecorderManager</string>
+
+    <string name="rm_cancel">取消</string>
+    <string name="rm_set">设置</string>
+    <string name="rm_set_permission">设置权限</string>
+
+    <string name="rm_request_record_video_rationale">请打开相关权限以便进行视频录制</string>
+
+    <string name="rm_fill_record_timing">0:%s</string>
+
+    <string name="rm_warn_record_time_too_short">录制时间小于1秒，请重试</string>
+    <string name="rm_warn_allow_record_video_permissions">请允许拍摄录音存储权限，以便使用拍摄功能</string>
+
+    <string name="rm_error_start_record_video_page">启动视频录制界面参数异常</string>
+
+</resources>

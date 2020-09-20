@@ -71,7 +71,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
      * @return 如果成功开始录制返回true，否则返回false
      */
     public override fun pressToStartRecordVideo(holder: SurfaceHolder?, ivFlipCamera: AppCompatImageView,
-                                                ivBack: AppCompatImageView): Boolean {
+                                                ivFlashlight: AppCompatImageView, ivBack: AppCompatImageView): Boolean {
         if (mCamera == null) {
             startPreview(holder)
         }
@@ -80,6 +80,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         }
         hasHandledReleaseRecord = false
         ivFlipCamera.visibility = View.GONE
+        ivFlashlight.visibility = View.GONE
         ivBack.visibility = View.GONE
         isRecording = true
         isReleaseRecord = false
@@ -289,7 +290,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
      * 点击确认录制视频事件
      */
     public override fun onClickConfirm() {
-        RecorderManagerFactory.getRecordDispatcher().onClickConfirm(mOption?.recorderOption?.filePath, mVideoDuration)
+        mViewRef?.get()?.onClickConfirm(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
     /**
@@ -302,7 +303,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
                 file.delete()
             }
         }
-        RecorderManagerFactory.getRecordDispatcher().onClickCancel(mOption?.recorderOption?.filePath, mVideoDuration)
+        mViewRef?.get()?.onClickCancel(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
     /**
@@ -313,7 +314,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
             resetResource()
             onClickCancel()
         } else {
-            RecorderManagerFactory.getRecordDispatcher().onClickBack()
+            mViewRef?.get()?.onClickBack()
         }
     }
 
@@ -349,7 +350,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         if (mTiming < 10) {
             sbTiming.insert(0, "0")
         }
-        mViewRef?.get()?.showTimingText(getTimingHint(sbTiming.toString(), true));
+        mViewRef?.get()?.showTimingText(getTimingHint(sbTiming.toString(), true))
     }
 
     /**
@@ -367,7 +368,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
      * 当完成一次录制时回调
      */
     private fun onCompleteRecordVideo() {
-        RecorderManagerFactory.getRecordDispatcher().onCompleteRecordVideo(mOption?.recorderOption?.filePath, mVideoDuration)
+        mViewRef?.get()?.onCompleteRecordVideo(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
     private fun showErrorToast() {

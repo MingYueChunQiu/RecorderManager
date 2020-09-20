@@ -14,7 +14,6 @@ import androidx.fragment.app.FragmentManager;
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.constants.KeyPrefixConstants;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
 import java.util.List;
@@ -73,17 +72,11 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
 
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        RecorderManagerFactory.getRecordDispatcher().unregisterOnRecordVideoListener();
         RecordPermissionUtils.handleOnPermissionDenied(this);
     }
 
     public static RequestPermissionFragment newInstance(@Nullable RecordVideoRequestOption option, int requestCode) {
         RequestPermissionFragment permissionFragment = new RequestPermissionFragment();
-        if (option != null && option.getRecordVideoOption() != null &&
-                option.getRecordVideoOption().getOnRecordVideoListener() != null) {
-            RecorderManagerFactory.getRecordDispatcher().registerOnRecordVideoListener(
-                    option.getRecordVideoOption().getOnRecordVideoListener());
-        }
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_RECORD_VIDEO_REQUEST_OPTION, option);
         args.putInt(BUNDLE_EXTRA_REQUEST_CODE, requestCode);

@@ -19,7 +19,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
  *      Version:    1.0
  * </pre>
  */
-public interface IRecordVideoResultParser extends IParser {
+public interface IRecordVideoResultParser extends IRMParser {
 
     @Nullable
     RecordVideoResultInfo parseRecordVideoResult(@Nullable Intent data);

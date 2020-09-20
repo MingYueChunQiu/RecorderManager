@@ -18,7 +18,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
  *     version: 1.0
  * </pre>
  */
-public interface IRecordVideoRequest extends IRequest {
+public interface IRecordVideoRequest extends IRMRequest {
 
     /**
      * 以默认配置打开录制视频界面

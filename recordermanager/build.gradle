@@ -36,12 +36,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     implementation 'pub.devrel:easypermissions:3.0.0'
-    // https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.9'
-    // https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid
-    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'
 }
 repositories {
     mavenCentral()

@@ -67,6 +67,7 @@ public class TestFragment extends Fragment {
                                 .setMaxDuration(20)
                                 .setRecordVideoOption(new RecordVideoOption.Builder()
 //                                        .setHideFlipCameraButton(true)
+                                        .setHideFlashlightButton(true)
                                         .setMaxDuration(60)
                                         .setRecordVideoButtonOption(new RecordVideoButtonOption.Builder()
                                                 .setIdleCircleColor(Color.BLUE)

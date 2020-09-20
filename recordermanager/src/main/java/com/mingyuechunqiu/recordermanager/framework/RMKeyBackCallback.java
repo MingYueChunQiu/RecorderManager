@@ -12,7 +12,7 @@ import android.view.KeyEvent;
  *     version: 1.0
  * </pre>
  */
-public interface KeyBackCallback {
+public interface RMKeyBackCallback {
 
     void addOnKeyBackListener(OnKeyBackListener listener);
 

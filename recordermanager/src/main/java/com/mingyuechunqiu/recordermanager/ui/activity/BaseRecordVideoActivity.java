@@ -1,16 +1,17 @@
 package com.mingyuechunqiu.recordermanager.ui.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.KeyEvent;
 
-import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.mingyuechunqiu.recordermanager.framework.RMKeyBackCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * <pre>
- *     author : xyj
+ *     author : MingYueChunQiu
  *     Github : https://github.com/MingYueChunQiu
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/4/29
@@ -19,7 +20,7 @@ import java.util.List;
  *     version: 1.0
  * </pre>
  */
-public class BaseRecordVideoActivity extends AppCompatActivity implements KeyBackCallback {
+public class BaseRecordVideoActivity extends AppCompatActivity implements RMKeyBackCallback {
 
     private List<OnKeyBackListener> mListeners;
 
@@ -35,7 +36,7 @@ public class BaseRecordVideoActivity extends AppCompatActivity implements KeyBac
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && mListeners != null && mListeners.size() > 0) {
-            for (KeyBackCallback.OnKeyBackListener listener : mListeners) {
+            for (RMKeyBackCallback.OnKeyBackListener listener : mListeners) {
                 if (listener != null && listener.onClickKeyBack(event)) {
                     return true;
                 }

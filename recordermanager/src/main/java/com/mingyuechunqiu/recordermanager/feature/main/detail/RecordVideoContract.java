@@ -10,6 +10,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import com.mingyuechunqiu.recordermanager.base.presenter.BaseAbstractPresenter;
 import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
+import com.mingyuechunqiu.recordermanager.framework.RMOnRecordVideoListener;
 
 /**
  * <pre>
@@ -23,7 +24,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
  */
 interface RecordVideoContract {
 
-    interface View<P extends Presenter<?>> extends IBaseView<P> {
+    interface View<P extends Presenter<?>> extends IBaseView<P>, RMOnRecordVideoListener {
 
         Context getCurrentContext();
 
@@ -73,11 +74,12 @@ interface RecordVideoContract {
          *
          * @param holder       图层控制
          * @param ivFlipCamera 翻转摄像头控件
+         * @param ivFlashlight 闪光灯控件
          * @param ivBack       返回录制控件
          * @return 如果成功开始录制返回true，否则返回false
          */
         abstract boolean pressToStartRecordVideo(@Nullable SurfaceHolder holder, @NonNull AppCompatImageView ivFlipCamera,
-                                                 @NonNull AppCompatImageView ivBack);
+                                                 @NonNull AppCompatImageView ivFlashlight, @NonNull AppCompatImageView ivBack);
 
         /**
          * 释放按钮停止录制视频

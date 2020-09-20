@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoButtonOption;
@@ -24,8 +26,8 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.data.constants.KeyPrefixConstants;
 import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
-import com.mingyuechunqiu.recordermanager.framework.KeyBackCallback;
+import com.mingyuechunqiu.recordermanager.framework.RMKeyBackCallback;
+import com.mingyuechunqiu.recordermanager.framework.RMOnRecordVideoListener;
 import com.mingyuechunqiu.recordermanager.ui.fragment.BasePresenterFragment;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
@@ -106,7 +108,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
                 if (!checkHasPermissions() || mPresenter == null || ivFlipCamera == null || ivBack == null) {
                     return false;
                 }
-                return mPresenter.pressToStartRecordVideo(svVideo.getHolder(), ivFlipCamera, ivBack);
+                return mPresenter.pressToStartRecordVideo(svVideo.getHolder(), ivFlipCamera, ivFlashlight, ivBack);
             }
 
             @Override
@@ -132,8 +134,8 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             }
         });
 
-        if (getActivity() instanceof KeyBackCallback) {
-            ((KeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
+        if (getActivity() instanceof RMKeyBackCallback) {
+            ((RMKeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
                 @Override
                 public boolean onClickKeyBack(KeyEvent event) {
                     if (mPresenter != null) {
@@ -174,7 +176,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
 
     @Override
     protected void releaseOnDestroyView() {
-        RecorderManagerFactory.getRecordDispatcher().unregisterOnRecordVideoListener();
     }
 
     @Override
@@ -273,7 +274,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     @Override
     public void controlRecordOrPlayVisibility(boolean isInPlayingState) {
         if (tvTiming == null || ivFlipCamera == null || ivPlay == null || ivCancel == null ||
-                ivConfirm == null || cpbRecord == null || ivBack == null) {
+                ivConfirm == null || cpbRecord == null || ivBack == null || ivFlashlight == null) {
             return;
         }
         int playViewsVisibility, recordViewsVisibility;
@@ -288,6 +289,9 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             }
             if (!mOption.isHideFlipCameraButton()) {
                 ivFlipCamera.setVisibility(recordViewsVisibility);
+            }
+            if (!mOption.isHideFlashlightButton()) {
+                ivFlashlight.setVisibility(recordViewsVisibility);
             }
             ivPlay.setVisibility(playViewsVisibility);
         }
@@ -310,6 +314,54 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     @Override
     public void setPresenter(@NonNull RecordVideoContract.Presenter<?> presenter) {
         mPresenter = presenter;
+    }
+
+    @Override
+    public void onCompleteRecordVideo(@org.jetbrains.annotations.Nullable String filePath, int videoDuration) {
+        FragmentActivity activity = getActivity();
+        if (activity instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) activity).onCompleteRecordVideo(filePath, videoDuration);
+        }
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) parentFragment).onCompleteRecordVideo(filePath, videoDuration);
+        }
+    }
+
+    @Override
+    public void onClickConfirm(@org.jetbrains.annotations.Nullable String filePath, int videoDuration) {
+        FragmentActivity activity = getActivity();
+        if (activity instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) activity).onClickConfirm(filePath, videoDuration);
+        }
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) parentFragment).onClickConfirm(filePath, videoDuration);
+        }
+    }
+
+    @Override
+    public void onClickCancel(@org.jetbrains.annotations.Nullable String filePath, int videoDuration) {
+        FragmentActivity activity = getActivity();
+        if (activity instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) activity).onClickCancel(filePath, videoDuration);
+        }
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) parentFragment).onClickCancel(filePath, videoDuration);
+        }
+    }
+
+    @Override
+    public void onClickBack() {
+        FragmentActivity activity = getActivity();
+        if (activity instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) activity).onClickBack();
+        }
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof RMOnRecordVideoListener) {
+            ((RMOnRecordVideoListener) parentFragment).onClickBack();
+        }
     }
 
     /**
@@ -348,11 +400,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     public static RecordVideoFragment newInstance(@Nullable RecordVideoOption option) {
         RecordVideoFragment fragment = new RecordVideoFragment();
         Bundle args = new Bundle();
-        RecordVideoOption o = option == null ? new RecordVideoOption() : option;
-        if (o.getOnRecordVideoListener() != null) {
-            RecorderManagerFactory.getRecordDispatcher().registerOnRecordVideoListener(o.getOnRecordVideoListener());
-        }
-        args.putParcelable(BUNDLE_EXTRA_RECORD_VIDEO_OPTION, o);
+        args.putParcelable(BUNDLE_EXTRA_RECORD_VIDEO_OPTION, option == null ? new RecordVideoOption() : option);
         fragment.setArguments(args);
         return fragment;
     }
