@@ -345,6 +345,10 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
     }
 
     private fun updateTiming() {
+        //如果已经结束录制，则退出计时
+        if (isReleaseRecord) {
+            return
+        }
         mTiming++
         val sbTiming = StringBuilder(mTiming.toString() + "")
         if (mTiming < 10) {
