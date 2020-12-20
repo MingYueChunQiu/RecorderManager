@@ -154,12 +154,12 @@ public class RecordVideoOption implements Parcelable {
 
         private RecorderOption recorderOption;//录制配置信息
         private RecordVideoButtonOption recordVideoButtonOption;//录制视频按钮配置信息类
-        private int minDuration;//最小录制时长
+        private int minDuration;//最小录制时长（秒数，最小是1，会自动调整不大于最大录制时长），可以和timingHint配合使用
         private int maxDuration;//最大录制时间（秒数）
         private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
         private boolean hideFlashlightButton;//隐藏闪光灯按钮
-        private String timingHint;//录制按钮上方提示语句（默认：0：%s）
+        private String timingHint;//录制按钮上方提示语句（默认：0：%s）,会在计时前显示
         private String errorToastMsg;//录制发生错误Toast（默认：录制时间小于1秒，请重试）
 
         public Builder() {
