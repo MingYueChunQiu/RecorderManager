@@ -72,7 +72,7 @@ public class RecordVideoResultInfo implements Parcelable {
      */
     public static class Builder {
 
-        private RecordVideoResultInfo mInfo;
+        private final RecordVideoResultInfo mInfo;
 
         public Builder() {
             mInfo = new RecordVideoResultInfo();

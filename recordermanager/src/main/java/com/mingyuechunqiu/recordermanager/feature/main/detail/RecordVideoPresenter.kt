@@ -101,6 +101,8 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
 
     /**
      * 释放按钮停止录制视频
+     *
+     * @param isCancel 是否是取消操作导致停止录制，true表示是，否则为false
      */
     public override fun releaseToStopRecordVideo(isCancel: Boolean) {
         //释放方法会执行两次，进行过滤
@@ -108,15 +110,14 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
             return
         }
         hasHandledReleaseRecord = true
-        //防止用户按下就抬起，导致MediaRecorder初始化还没完成就release导致报错
         mHandler.removeMessages(MSG_STOP_RECORD)
-        if (mTiming < 1) {
+        if (checkIsRecordingDurationShort()) {
             needStopDelayed = true
         }
         val message = mHandler.obtainMessage()
         message.what = MSG_STOP_RECORD
         message.arg1 = if (isCancel) 1 else 0
-        mHandler.sendMessageDelayed(message, if (needStopDelayed) 1200 else 0.toLong())
+        mHandler.sendMessageDelayed(message, if (needStopDelayed && isNeedDelayToStopWhenRecordingDurationShort()) 1200 else 0.toLong())
     }
 
     public override fun flipCamera(holder: SurfaceHolder?) {
@@ -159,7 +160,7 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         }
         releaseRecorderManager()
         var isRecordSuccessful = true //标记记录录制是否成功
-        if (mTiming < 1) {
+        if (checkIsRecordingDurationShort()) {
             showErrorToast()
             isRecordSuccessful = false
         }
@@ -375,11 +376,24 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
         mViewRef?.get()?.onCompleteRecordVideo(mOption?.recorderOption?.filePath, mVideoDuration)
     }
 
+
+    private fun checkIsRecordingDurationShort(): Boolean {
+        return mTiming < getRecordingMinDuration()
+    }
+
+    private fun getRecordingMinDuration(): Int {
+        return mOption?.minDuration ?: DEFAULT_RECORDING_MIN_DURATION
+    }
+
+    private fun isNeedDelayToStopWhenRecordingDurationShort(): Boolean {
+        return mTiming < DEFAULT_RECORDING_MIN_DURATION
+    }
+
     private fun showErrorToast() {
         val context = mViewRef?.get()?.currentContext ?: return
         var msg = mOption?.errorToastMsg
         if (TextUtils.isEmpty(msg)) {
-            msg = context.getString(R.string.rm_warn_record_time_too_short)
+            msg = context.getString(R.string.rm_fill_warn_record_time_too_short, getRecordingMinDuration())
         }
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
@@ -414,6 +428,9 @@ internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
     }
 
     companion object {
+
+        //默认最小为1秒，防止用户按下就抬起，导致MediaRecorder初始化还没完成就release导致报错
+        private const val DEFAULT_RECORDING_MIN_DURATION = 1
 
         //更新计时
         private const val MSG_UPDATE_TIMING = 0x01

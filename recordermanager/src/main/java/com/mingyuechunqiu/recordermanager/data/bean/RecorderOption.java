@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
  */
 public class RecorderOption implements Parcelable {
 
-    private Builder mBuilder;
+    private final Builder mBuilder;
 
     public RecorderOption() {
         this(new Builder());

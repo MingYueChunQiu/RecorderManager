@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
  */
 public class RecordVideoRequestOption implements Parcelable {
 
-    private Builder mBuilder;
+    private final Builder mBuilder;
 
     public RecordVideoRequestOption() {
         this(new Builder());

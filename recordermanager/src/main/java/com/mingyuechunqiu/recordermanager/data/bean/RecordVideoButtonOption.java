@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
  */
 public class RecordVideoButtonOption implements Parcelable {
 
-    private Builder mBuilder;
+    private final Builder mBuilder;
 
     public RecordVideoButtonOption() {
         this(new Builder());

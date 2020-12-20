@@ -20,7 +20,7 @@ import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstant
  */
 public class RecordVideoOption implements Parcelable {
 
-    private Builder mBuilder;
+    private final Builder mBuilder;
 
     public RecordVideoOption() {
         this(new Builder());
@@ -34,6 +34,7 @@ public class RecordVideoOption implements Parcelable {
         mBuilder = new Builder();
         mBuilder.recorderOption = in.readParcelable(RecorderOption.class.getClassLoader());
         mBuilder.recordVideoButtonOption = in.readParcelable(RecordVideoButtonOption.class.getClassLoader());
+        mBuilder.minDuration = in.readInt();
         mBuilder.maxDuration = in.readInt();
         mBuilder.cameraType = RecorderManagerConstants.CameraType.values()[in.readInt()];
         mBuilder.hideFlipCameraButton = in.readByte() != 0;
@@ -70,12 +71,20 @@ public class RecordVideoOption implements Parcelable {
         mBuilder.recordVideoButtonOption = recordVideoButtonOption;
     }
 
+    public int getMinDuration() {
+        return mBuilder.minDuration;
+    }
+
+    public void setMinDuration(int minDuration) {
+        mBuilder.setMinDuration(minDuration);
+    }
+
     public int getMaxDuration() {
         return mBuilder.maxDuration;
     }
 
     public void setMaxDuration(int maxDuration) {
-        mBuilder.maxDuration = maxDuration;
+        mBuilder.setMaxDuration(maxDuration);
     }
 
     public RecorderManagerConstants.CameraType getCameraType() {
@@ -129,6 +138,7 @@ public class RecordVideoOption implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(mBuilder.recorderOption, flags);
         dest.writeParcelable(mBuilder.recordVideoButtonOption, flags);
+        dest.writeInt(mBuilder.minDuration);
         dest.writeInt(mBuilder.maxDuration);
         dest.writeInt(mBuilder.cameraType.ordinal());
         dest.writeByte((byte) (mBuilder.hideFlipCameraButton ? 1 : 0));
@@ -144,6 +154,7 @@ public class RecordVideoOption implements Parcelable {
 
         private RecorderOption recorderOption;//录制配置信息
         private RecordVideoButtonOption recordVideoButtonOption;//录制视频按钮配置信息类
+        private int minDuration;//最小录制时长
         private int maxDuration;//最大录制时间（秒数）
         private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
@@ -152,6 +163,7 @@ public class RecordVideoOption implements Parcelable {
         private String errorToastMsg;//录制发生错误Toast（默认：录制时间小于1秒，请重试）
 
         public Builder() {
+            minDuration = 1;//最小1秒
             maxDuration = 30;//默认30秒
             cameraType = RecorderManagerConstants.CameraType.CAMERA_NOT_SET;
         }
@@ -178,12 +190,31 @@ public class RecordVideoOption implements Parcelable {
             return this;
         }
 
+        public int getMinDuration() {
+            return minDuration;
+        }
+
+        public Builder setMinDuration(int minDuration) {
+            if (minDuration > 1) {
+                this.minDuration = minDuration;
+            }
+            if (this.minDuration > maxDuration) {
+                this.minDuration = maxDuration;
+            }
+            return this;
+        }
+
         public int getMaxDuration() {
             return maxDuration;
         }
 
         public Builder setMaxDuration(int maxDuration) {
-            this.maxDuration = maxDuration;
+            if (maxDuration > 1) {
+                this.maxDuration = maxDuration;
+            }
+            if (minDuration > maxDuration) {
+                minDuration = maxDuration;
+            }
             return this;
         }
 
@@ -233,40 +264,5 @@ public class RecordVideoOption implements Parcelable {
             this.errorToastMsg = errorToastMsg;
             return this;
         }
-    }
-
-    /**
-     * 录制视频监听器
-     */
-    public interface OnRecordVideoListener {
-
-        /**
-         * 当完成一次录制时回调
-         *
-         * @param filePath      视频文件路径
-         * @param videoDuration 视频时长（毫秒）
-         */
-        void onCompleteRecordVideo(String filePath, int videoDuration);
-
-        /**
-         * 当点击确认录制结果按钮时回调
-         *
-         * @param filePath      视频文件路径
-         * @param videoDuration 视频时长（毫秒）
-         */
-        void onClickConfirm(String filePath, int videoDuration);
-
-        /**
-         * 当点击取消按钮时回调
-         *
-         * @param filePath      视频文件路径
-         * @param videoDuration 视频时长（毫秒）
-         */
-        void onClickCancel(String filePath, int videoDuration);
-
-        /**
-         * 当点击返回按钮时回调
-         */
-        void onClickBack();
     }
 }
