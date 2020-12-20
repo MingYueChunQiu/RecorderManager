@@ -6,7 +6,11 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.3-beta.2版本更新：详情见文档</br>
+最新0.3.1版本更新：详情见文档</br>
+	1.新增最小录制时间设置RecordVideoOption.setMinDuration(//最小录制时长（秒数，最小是1，会自动调整不大于最大录制时长）)
+	2.优化代码
+
+0.3-beta.2版本更新：
 1.重构项目代码，kotlin改写部分功能</br>
 2.移除rxjava库，减少依赖</br>
 3.升级最新SDK</br>
@@ -54,8 +58,7 @@ allprojects {
 
 ```
 dependencies {
-		//0.3-beta.2
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.2.29'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.3.1'
 	}
 ```
 ## 三.使用
@@ -281,46 +284,13 @@ public class RecordVideoOption：
 
 	private RecorderOption recorderOption;//录制配置信息
         private RecordVideoButtonOption recordVideoButtonOption;//录制视频按钮配置信息类
+	private int minDuration;//最小录制时长（秒数，最小是1，会自动调整不大于最大录制时长），可以和timingHint配合使用
         private int maxDuration;//最大录制时间（秒数）
         private RecorderManagerConstants.CameraType cameraType;//摄像头类型
         private boolean hideFlipCameraButton;//隐藏返回翻转摄像头按钮
         private boolean hideFlashlightButton;//隐藏闪光灯按钮
-        private String timingHint;//录制按钮上方提示语句（默认：0:%s）
+        private String timingHint;//录制按钮上方提示语句（默认：0:%s）,会在计时前显示
         private String errorToastMsg;//录制发生错误Toast（默认：录制时间小于1秒，请重试）
-
-	/**
-     * 录制视频监听器
-     */
-    public interface OnRecordVideoListener {
-		/**
-         * 当完成一次录制时回调
-         *
-         * @param filePath      视频文件路径
-         * @param videoDuration 视频时长（毫秒）
-         */
-        void onCompleteRecordVideo(String filePath, int videoDuration);
-
-        /**
-         * 当点击确认录制结果按钮时回调
-         *
-         * @param filePath      视频文件路径
-         * @param videoDuration 视频时长（毫秒）
-         */
-        void onClickConfirm(String filePath, int videoDuration);
-
-  /**
-         * 当点击取消按钮时回调
-         *
-         * @param filePath      视频文件路径
-         * @param videoDuration 视频时长（毫秒）
-         */
-        void onClickCancel(String filePath, int videoDuration);
-
-        /**
-         * 当点击返回按钮时回调
-         */
-        void onClickBack();
-    }
 ```
 原OnRecordVideoListener现已改为RMOnRecordVideoListener，并从RecordVideoOption中移除，主要用于用户自己activity或fragment实现此接口，用于承载RecordVideoFragment，获取相关步骤回调
 ```
@@ -398,7 +368,7 @@ interface RMOnRecordVideoListener {
 ```
 
 #### (4).如果想自定义自己的界面，可以直接使用RecorderManagerable类
-1.通过RecorderManagerFactory获取RecorderManagerable
+1.通过RecorderManagerFactory获取IRecorderManager
 ```
 public class RecorderManagerFactory {
 
