@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">RecorderManager</string>
-
     <string name="rm_cancel">取消</string>
     <string name="rm_set">设置</string>
     <string name="rm_set_permission">设置权限</string>
@@ -14,5 +12,4 @@
 
     <string name="rm_error_start_record_video_page">启动视频录制界面参数异常</string>
     <string name="rm_error_switch_flashlight">切换闪光灯失败</string>
-
 </resources>
