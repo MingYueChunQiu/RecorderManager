@@ -6,10 +6,13 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.3.1版本更新：详情见文档</br>
+最新0.3.2版本:1.移除strings.xml中app_name</br>
+	     2.升级kotlin
+
+0.3.1版本更新：详情见文档</br>
 	1.新增最小录制时间设置RecordVideoOption.setMinDuration(//最小录制时长（秒数，最小是1，会自动调整不大于最大录制时长）)
 	2.优化代码
-
+	
 0.3-beta.2版本更新：
 1.重构项目代码，kotlin改写部分功能</br>
 2.移除rxjava库，减少依赖</br>
@@ -58,7 +61,7 @@ allprojects {
 
 ```
 dependencies {
-	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.3.1'
+	        implementation 'com.github.MingYueChunQiu:RecorderManager:0.3.2'
 	}
 ```
 ## 三.使用
