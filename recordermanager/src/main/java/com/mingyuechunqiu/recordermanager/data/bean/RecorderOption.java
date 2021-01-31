@@ -251,7 +251,7 @@ public class RecorderOption implements Parcelable {
                     .setVideoHeight(480)
                     .setBitRate(3 * 1024 * 1024)
                     .setFrameRate(30)
-                    .setOrientationHint(90)
+                    .setOrientationHint(270)
                     .setFilePath(path)
                     .build();
         }

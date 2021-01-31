@@ -45,7 +45,7 @@ class RecorderManager implements IRecorderManager {
 
     RecorderManager(@NonNull IRecorderHelper helper, @Nullable IRecorderManagerInterceptor intercept) {
         mRecorderHelper = helper;
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         mCameraType = CAMERA_NOT_SET;
         mIntercept = intercept;
         if (mIntercept == null) {
@@ -55,7 +55,7 @@ class RecorderManager implements IRecorderManager {
 
     @Override
     public boolean recordAudio(@NonNull String path) {
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         if (mIntercept != null) {
             mIntercept.recordAudio(path);
         }
@@ -64,7 +64,7 @@ class RecorderManager implements IRecorderManager {
 
     @Override
     public boolean recordAudio(@NonNull RecorderOption option) {
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         if (mIntercept != null) {
             mIntercept.recordAudio(option);
         }
@@ -73,7 +73,7 @@ class RecorderManager implements IRecorderManager {
 
     @Override
     public boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable String path) {
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         if (mIntercept != null) {
             mIntercept.recordVideo(camera, surface, path);
         }
@@ -82,7 +82,7 @@ class RecorderManager implements IRecorderManager {
 
     @Override
     public boolean recordVideo(@Nullable Camera camera, @Nullable Surface surface, @Nullable RecorderOption option) {
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         if (mIntercept != null) {
             mIntercept.recordVideo(camera, surface, option);
         }
@@ -106,7 +106,7 @@ class RecorderManager implements IRecorderManager {
     @NonNull
     @Override
     public MediaRecorder getMediaRecorder() {
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         MediaRecorder recorder = mRecorderHelper.getMediaRecorder();
         if (mIntercept != null) {
             recorder = mIntercept.getMediaRecorder(recorder);
@@ -117,7 +117,7 @@ class RecorderManager implements IRecorderManager {
     @Nullable
     @Override
     public RecorderOption getRecorderOption() {
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         RecorderOption option = mRecorderHelper.getRecorderOption();
         if (mIntercept != null) {
             option = mIntercept.getRecorderOption(option);
@@ -137,7 +137,7 @@ class RecorderManager implements IRecorderManager {
     @NonNull
     @Override
     public IRecorderHelper getRecorderHelper() {
-        checkOrCreateDefaultRecorderable();
+        checkOrCreateDefaultRecorderHelper();
         if (mIntercept != null) {
             mRecorderHelper = mIntercept.getRecorderHelper(mRecorderHelper);
         }
@@ -346,7 +346,7 @@ class RecorderManager implements IRecorderManager {
     /**
      * 检查或者创建默认的录制对象
      */
-    private void checkOrCreateDefaultRecorderable() {
+    private void checkOrCreateDefaultRecorderHelper() {
         if (mRecorderHelper == null) {
             mRecorderHelper = new RecorderHelper();
         }
