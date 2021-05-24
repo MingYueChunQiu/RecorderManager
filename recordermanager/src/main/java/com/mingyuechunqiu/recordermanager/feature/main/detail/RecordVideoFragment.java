@@ -6,7 +6,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -26,17 +25,12 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoButtonOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.data.constants.KeyPrefixConstants;
-import com.mingyuechunqiu.recordermanager.feature.main.container.RecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.framework.RMKeyBackCallback;
-import com.mingyuechunqiu.recordermanager.framework.RMOnRecordVideoListener;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoCallback;
 import com.mingyuechunqiu.recordermanager.ui.fragment.BasePresenterFragment;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
-
-import java.util.List;
-
-import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.DEFAULT_RECORD_VIDEO_DURATION;
 
@@ -51,8 +45,8 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     version: 1.0
  * </pre>
  */
-public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View<RecordVideoContract.Presenter<?>>, RecordVideoContract.Presenter<?>>
-        implements RecordVideoContract.View<RecordVideoContract.Presenter<?>>, View.OnClickListener, SurfaceHolder.Callback, EasyPermissions.PermissionCallbacks {
+public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContract.View, RecordVideoContract.Presenter<RecordVideoContract.View>>
+        implements RecordVideoContract.View, View.OnClickListener, SurfaceHolder.Callback {
 
     private static final String BUNDLE_EXTRA_RECORD_VIDEO_OPTION = KeyPrefixConstants.KEY_BUNDLE + "record_video_option";
 
@@ -75,7 +69,15 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        checkHasPermissions();
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        if (!RecordPermissionUtils.checkHasRecordVideoPermissions(activity)) {
+            //This fragment is a specific recording interface and should not have permission. If it does not have permission, its activity should be destroyed
+            onMissingRecordVideoPermissions();
+            return;
+        }
         initRecorderOption();
         mPresenter.initConfiguration(mOption);
 
@@ -106,7 +108,10 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
         cpbRecord.setOnCircleProgressButtonListener(new CircleProgressButton.OnCircleProgressButtonListener() {
             @Override
             public boolean onPreProgress(CircleProgressButton v) {
-                if (!checkHasPermissions() || mPresenter == null || ivFlipCamera == null || ivBack == null) {
+                if (!RecordPermissionUtils.checkOrRequestRecordVideoPermissions(RecordVideoFragment.this, null)) {
+                    return false;
+                }
+                if (mPresenter == null || ivFlipCamera == null || ivBack == null) {
                     return false;
                 }
                 return mPresenter.pressToStartRecordVideo(svVideo.getHolder(), ivFlipCamera, ivFlashlight, ivBack);
@@ -135,16 +140,13 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             }
         });
 
-        if (getActivity() instanceof RMKeyBackCallback) {
-            ((RMKeyBackCallback) getActivity()).addOnKeyBackListener(new RecordVideoActivity.OnKeyBackListener() {
-                @Override
-                public boolean onClickKeyBack(KeyEvent event) {
-                    if (mPresenter != null) {
-                        mPresenter.onClickBack();
-                        return true;
-                    }
-                    return false;
+        if (activity instanceof RMKeyBackCallback) {
+            ((RMKeyBackCallback) activity).addOnKeyBackListener(event -> {
+                if (mPresenter != null) {
+                    mPresenter.onClickBack();
+                    return true;
                 }
+                return false;
             });
         }
     }
@@ -171,7 +173,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     @Override
-    protected RecordVideoContract.Presenter<?> initPresenter() {
+    protected RecordVideoContract.Presenter<RecordVideoContract.View> initPresenter() {
         return new RecordVideoPresenter();
     }
 
@@ -186,7 +188,7 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         //库需要使用if else，使用switch判断id会导致问题
         int id = v.getId();
         if (id == R.id.sv_record_video_screen) {
@@ -218,39 +220,24 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (mPresenter != null && holder != null && ivPlay != null) {
+    public void surfaceCreated(@NonNull SurfaceHolder holder) {
+        if (mPresenter != null && ivPlay != null) {
             mPresenter.onSurfaceCreated(holder, ivPlay);
         }
         isSurfaceHolderDestroyed = false;
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
         holder.setKeepScreenOn(true);
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
         if (mPresenter != null) {
             mPresenter.releaseCamera();
         }
         isSurfaceHolderDestroyed = true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        RecordPermissionUtils.handleOnPermissionDenied(this);
     }
 
     @Override
@@ -313,55 +300,58 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     @Override
-    public void setPresenter(@NonNull RecordVideoContract.Presenter<?> presenter) {
-        mPresenter = presenter;
+    public void onMissingRecordVideoPermissions() {
+        FragmentActivity activity = getActivity();
+        if (activity instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) activity).onMissingRecordVideoPermissions();
+        }
     }
 
     @Override
     public void onCompleteRecordVideo(@org.jetbrains.annotations.Nullable String filePath, int videoDuration) {
         FragmentActivity activity = getActivity();
-        if (activity instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) activity).onCompleteRecordVideo(filePath, videoDuration);
+        if (activity instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) activity).onCompleteRecordVideo(filePath, videoDuration);
         }
         Fragment parentFragment = getParentFragment();
-        if (parentFragment instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) parentFragment).onCompleteRecordVideo(filePath, videoDuration);
+        if (parentFragment instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) parentFragment).onCompleteRecordVideo(filePath, videoDuration);
         }
     }
 
     @Override
     public void onClickConfirm(@org.jetbrains.annotations.Nullable String filePath, int videoDuration) {
         FragmentActivity activity = getActivity();
-        if (activity instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) activity).onClickConfirm(filePath, videoDuration);
+        if (activity instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) activity).onClickConfirm(filePath, videoDuration);
         }
         Fragment parentFragment = getParentFragment();
-        if (parentFragment instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) parentFragment).onClickConfirm(filePath, videoDuration);
+        if (parentFragment instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) parentFragment).onClickConfirm(filePath, videoDuration);
         }
     }
 
     @Override
     public void onClickCancel(@org.jetbrains.annotations.Nullable String filePath, int videoDuration) {
         FragmentActivity activity = getActivity();
-        if (activity instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) activity).onClickCancel(filePath, videoDuration);
+        if (activity instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) activity).onClickCancel(filePath, videoDuration);
         }
         Fragment parentFragment = getParentFragment();
-        if (parentFragment instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) parentFragment).onClickCancel(filePath, videoDuration);
+        if (parentFragment instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) parentFragment).onClickCancel(filePath, videoDuration);
         }
     }
 
     @Override
     public void onClickBack() {
         FragmentActivity activity = getActivity();
-        if (activity instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) activity).onClickBack();
+        if (activity instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) activity).onClickBack();
         }
         Fragment parentFragment = getParentFragment();
-        if (parentFragment instanceof RMOnRecordVideoListener) {
-            ((RMOnRecordVideoListener) parentFragment).onClickBack();
+        if (parentFragment instanceof RMRecordVideoCallback) {
+            ((RMRecordVideoCallback) parentFragment).onClickBack();
         }
     }
 
@@ -470,15 +460,6 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
     }
 
     /**
-     * 检测是否已经获取到权限
-     *
-     * @return 如果获取到权限返回true，否则返回false
-     */
-    private boolean checkHasPermissions() {
-        return RecordPermissionUtils.checkRecordPermissions(this);
-    }
-
-    /**
      * 初始化录制参数信息对象
      */
     private void initRecorderOption() {
@@ -509,15 +490,12 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             mPresenter.flipCamera(svVideo.getHolder());
         }
         ValueAnimator animator = ValueAnimator.ofFloat(1.0F, 0.6F, 1.0F).setDuration(300);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                if (ivFlipCamera == null) {
-                    return;
-                }
-                ivFlipCamera.setScaleX((Float) animation.getAnimatedValue());
-                ivFlipCamera.setScaleY((Float) animation.getAnimatedValue());
+        animator.addUpdateListener(animation -> {
+            if (ivFlipCamera == null) {
+                return;
             }
+            ivFlipCamera.setScaleX((Float) animation.getAnimatedValue());
+            ivFlipCamera.setScaleY((Float) animation.getAnimatedValue());
         });
         animator.start();
     }
@@ -534,15 +512,12 @@ public class RecordVideoFragment extends BasePresenterFragment<RecordVideoContra
             return;
         }
         ValueAnimator animator = ValueAnimator.ofFloat(1.0F, 0.6F, 1.0F).setDuration(300);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                if (ivFlashlight == null) {
-                    return;
-                }
-                ivFlashlight.setScaleX((Float) animation.getAnimatedValue());
-                ivFlashlight.setScaleY((Float) animation.getAnimatedValue());
+        animator.addUpdateListener(animation -> {
+            if (ivFlashlight == null) {
+                return;
             }
+            ivFlashlight.setScaleX((Float) animation.getAnimatedValue());
+            ivFlashlight.setScaleY((Float) animation.getAnimatedValue());
         });
         animator.addListener(new AnimatorListenerAdapter() {
             @Override

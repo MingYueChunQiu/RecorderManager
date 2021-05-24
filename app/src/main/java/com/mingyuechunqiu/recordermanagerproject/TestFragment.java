@@ -1,6 +1,5 @@
 package com.mingyuechunqiu.recordermanagerproject;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,8 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoButtonOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
-import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
 
 /**
  * <pre>
@@ -62,7 +60,9 @@ public class TestFragment extends Fragment {
 //                    return;
 //                }
 //                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
-                RecorderManagerFactory.getRecordVideoRequest().startRecordVideo(TestFragment.this, 0,
+                RecorderManagerProvider.getRecordVideoRequest().startRecordVideo(TestFragment.this,
+                        info -> Log.e("MainActivity", "onActivityResult: " + " "
+                                + info.getDuration() + " " + info.getFilePath()),
                         new RecordVideoRequestOption.Builder()
                                 .setMaxDuration(20)
                                 .setRecordVideoOption(new RecordVideoOption.Builder()
@@ -92,16 +92,16 @@ public class TestFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == 0 && data != null) {
-//            Uri uri = data.getData();
-            RecordVideoResultInfo info = RecorderManagerFactory.getRecordVideoResultParser().parseRecordVideoResult(data);
-            if (info != null) {
-                Log.e("MainActivity", "onActivityResult: " + " "
-                        + info.getDuration() + " " + info.getFilePath());
-            }
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode == Activity.RESULT_OK && requestCode == 0 && data != null) {
+////            Uri uri = data.getData();
+//            RecordVideoResultInfo info = RecorderManagerProvider.getRecordVideoResultParser().parseRecordVideoResult(data);
+//            if (info != null) {
+//                Log.e("MainActivity", "onActivityResult: " + " "
+//                        + info.getDuration() + " " + info.getFilePath());
+//            }
+//        }
+//    }
 }

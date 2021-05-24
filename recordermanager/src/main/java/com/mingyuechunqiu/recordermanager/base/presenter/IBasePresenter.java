@@ -16,7 +16,7 @@ import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
  *     version: 1.0
  * </pre>
  */
-public interface IBasePresenter<V extends IBaseView<?>> extends LifecycleObserver {
+public interface IBasePresenter<V extends IBaseView> extends LifecycleObserver {
 
     void attachView(V view);
 

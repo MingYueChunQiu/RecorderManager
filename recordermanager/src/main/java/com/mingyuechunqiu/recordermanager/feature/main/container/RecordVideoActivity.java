@@ -15,19 +15,16 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
-import com.mingyuechunqiu.recordermanager.framework.RMOnRecordVideoListener;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoCallback;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultObserver;
 import com.mingyuechunqiu.recordermanager.ui.activity.BaseRecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
-import java.util.List;
-
-import pub.devrel.easypermissions.EasyPermissions;
-
 import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.DEFAULT_RECORD_VIDEO_DURATION;
 import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_REQUEST_OPTION;
-import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
 /**
  * <pre>
@@ -40,7 +37,7 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     version: 1.0
  * </pre>
  */
-public class RecordVideoActivity extends BaseRecordVideoActivity implements EasyPermissions.PermissionCallbacks, RMOnRecordVideoListener {
+public class RecordVideoActivity extends BaseRecordVideoActivity implements RMRecordVideoCallback {
 
     private RecordVideoFragment mRecordVideoFg;
 
@@ -48,7 +45,7 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rm_activity_record_video);
-        if (!RecordPermissionUtils.checkRecordPermissions(this)) {
+        if (!RecordPermissionUtils.checkHasRecordVideoPermissions(this)) {
             finishActivity();
             return;
         }
@@ -71,19 +68,8 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        RecordPermissionUtils.handleOnPermissionDenied(this);
+    public void onMissingRecordVideoPermissions() {
+        finishActivity();
     }
 
     @Override
@@ -92,12 +78,19 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements Easy
 
     @Override
     public void onClickConfirm(@Nullable String filePath, int videoDuration) {
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
-                .setDuration(videoDuration)
-                .setFilePath(filePath)
-                .build());
-        setResult(RESULT_OK, intent);
+//        Intent intent = new Intent();
+//        intent.putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
+//                .setDuration(videoDuration)
+//                .setFilePath(filePath)
+//                .build());
+//        setResult(RESULT_OK, intent);
+        RMRecordVideoResultObserver observer = RecorderManagerProvider.getRecordManagerGlobalDataStore().getRecordVideoResultObserver();
+        if (observer != null) {
+            observer.getCallback().onGetRecordVideoResult(new RecordVideoResultInfo.Builder()
+                    .setDuration(videoDuration)
+                    .setFilePath(filePath)
+                    .build());
+        }
         finishActivity();
     }
 

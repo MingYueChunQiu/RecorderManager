@@ -15,7 +15,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption
 import com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.CameraType
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoContract.Presenter
 import com.mingyuechunqiu.recordermanager.feature.record.IRecorderManager
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -31,9 +31,9 @@ import java.util.*
  * version: 1.0
 </pre> *
  */
-internal class RecordVideoPresenter : Presenter<RecordVideoContract.View<*>>() {
+internal class RecordVideoPresenter : Presenter<RecordVideoContract.View>() {
 
-    private val mManager: IRecorderManager by lazy { RecorderManagerFactory.newInstance() }
+    private val mManager: IRecorderManager by lazy { RecorderManagerProvider.newInstance() }
     private var mOption: RecordVideoOption? = null
     private var mCamera: Camera? = null
     private var isRecording = false//标记是否正在录制中

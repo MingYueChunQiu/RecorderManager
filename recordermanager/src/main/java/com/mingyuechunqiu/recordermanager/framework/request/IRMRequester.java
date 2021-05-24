@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.framework.parser;
+package com.mingyuechunqiu.recordermanager.framework.request;
 
 /**
  * <pre>
@@ -7,10 +7,10 @@ package com.mingyuechunqiu.recordermanager.framework.parser;
  *      Author:     MingYueChunQiu
  *      Github:     https://github.com/MingYueChunQiu
  *      Email:      xiyujieit@163.com
- *      Time:       2020/5/22 9:11 PM
- *      Desc:       库解析类父接口
+ *      Time:       2020/5/22 9:12 PM
+ *      Desc:       库请求者类父接口
  *      Version:    1.0
  * </pre>
  */
-public interface IRMParser {
+public interface IRMRequester {
 }

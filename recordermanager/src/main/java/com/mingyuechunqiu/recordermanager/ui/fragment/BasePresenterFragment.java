@@ -2,11 +2,13 @@ package com.mingyuechunqiu.recordermanager.ui.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.mingyuechunqiu.recordermanager.base.presenter.IBasePresenter;
 import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
+import com.mingyuechunqiu.recordermanager.base.view.IViewAttachPresenter;
 
 /**
  * <pre>
@@ -19,7 +21,7 @@ import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
  *     version: 1.0
  * </pre>
  */
-public abstract class BasePresenterFragment<V extends IBaseView<P>, P extends IBasePresenter> extends Fragment {
+public abstract class BasePresenterFragment<V extends IBaseView, P extends IBasePresenter<V>> extends Fragment implements IViewAttachPresenter<P> {
 
     protected P mPresenter;
 
@@ -52,11 +54,16 @@ public abstract class BasePresenterFragment<V extends IBaseView<P>, P extends IB
      */
     @SuppressWarnings("unchecked")
     protected void attachPresenter() {
-        ((V) this).setPresenter(initPresenter());
+        bindPresenter(initPresenter());
         if (mPresenter != null) {
             mPresenter.attachView((V) this);
             getLifecycle().addObserver(mPresenter);
         }
+    }
+
+    @Override
+    public void bindPresenter(@NonNull P presenter) {
+        mPresenter = presenter;
     }
 
     protected abstract P initPresenter();

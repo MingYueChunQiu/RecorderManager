@@ -1,13 +1,23 @@
 package com.mingyuechunqiu.recordermanager.util;
 
 import android.Manifest;
-import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.Settings;
+
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.mingyuechunqiu.recordermanager.R;
 
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
+import java.util.Map;
 
 /**
  * <pre>
@@ -26,64 +36,97 @@ public class RecordPermissionUtils {
             Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    /**
-     * 检查是否已经获取相机权限
-     *
-     * @param activity Activity
-     * @return 如果已经获取返回true，否则返回false
-     */
-    public static boolean checkRecordPermissions(Activity activity) {
-        if (activity == null) {
-            return false;
-        }
-        if (!EasyPermissions.hasPermissions(activity, sPermissions)) {
-            EasyPermissions.requestPermissions(activity, activity.getString(R.string.rm_warn_allow_record_video_permissions), 1, sPermissions);
-            return false;
-        } else {
-            return true;
-        }
+    @NonNull
+    public static String[] getRecordVideoPermissions() {
+        return sPermissions;
     }
 
     /**
-     * 检查是否已经获取相机权限
+     * 检测是否已经获取到权限
      *
-     * @param fragment Fragment
-     * @return 如果已经获取返回true，否则返回false
+     * @param activity 界面
+     * @param callback 请求权限回调
+     * @return 如果获取到权限返回true，否则返回false
      */
-    public static boolean checkRecordPermissions(Fragment fragment) {
-        if (fragment == null || fragment.getContext() == null) {
+    public static boolean checkOrRequestRecordVideoPermissions(@NonNull FragmentActivity activity, @NonNull RequestPermissionCallback callback) {
+        boolean hasPermissions = checkHasRecordVideoPermissions(activity);
+        if (!hasPermissions) {
+            activity.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                    result -> handleRequestPermissionsResult(callback, activity, result))
+                    .launch(RecordPermissionUtils.getRecordVideoPermissions());
+        }
+        return hasPermissions;
+    }
+
+    /**
+     * 检测是否已经获取到权限
+     *
+     * @param fragment 界面
+     * @param callback 请求权限回调
+     * @return 如果获取到权限返回true，否则返回false
+     */
+    public static boolean checkOrRequestRecordVideoPermissions(@NonNull Fragment fragment, @Nullable RequestPermissionCallback callback) {
+        Context context = fragment.getContext();
+        if (context == null) {
             return false;
         }
-        if (!EasyPermissions.hasPermissions(fragment.getContext(), sPermissions)) {
-            EasyPermissions.requestPermissions(fragment, fragment.getString(R.string.rm_warn_allow_record_video_permissions), 1, sPermissions);
-            return false;
+        boolean hasPermissions = checkHasRecordVideoPermissions(context);
+        if (!hasPermissions) {
+            fragment.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                    result -> handleRequestPermissionsResult(callback, context, result))
+                    .launch(RecordPermissionUtils.getRecordVideoPermissions());
+        }
+        return hasPermissions;
+    }
+
+    public static boolean checkHasRecordVideoPermissions(@NonNull Context context) {
+        boolean hasPermissions = true;
+        for (String permission : RecordPermissionUtils.getRecordVideoPermissions()) {
+            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                hasPermissions = false;
+                break;
+            }
+        }
+        return hasPermissions;
+    }
+
+    private static void handleRequestPermissionsResult(@Nullable RequestPermissionCallback callback, @NonNull Context context, @NonNull Map<String, Boolean> result) {
+        boolean isAllGranted = true;
+        for (Map.Entry<String, Boolean> entry : result.entrySet()) {
+            if (!entry.getValue()) {
+                isAllGranted = false;
+                break;
+            }
+        }
+        if (!isAllGranted) {
+            showAppSettingsDialog(context);
         } else {
-            return true;
+            if (callback != null) {
+                callback.onPermissionsGranted();
+            }
         }
     }
 
-    public static void handleOnPermissionDenied(Activity activity) {
-        if (activity == null) {
-            return;
-        }
-        showAppSettingsDialog(new AppSettingsDialog.Builder(activity));
+    private static void showAppSettingsDialog(@NonNull Context context) {
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.rm_set_permission)
+                .setMessage(R.string.rm_warn_allow_record_video_permissions)
+                .setPositiveButton(R.string.rm_set, (dialog, which) -> startDetailSettingsActivity(context))
+                .setNegativeButton(R.string.rm_cancel, (dialog, which) -> {
+                })
+                .create()
+                .show();
     }
 
-    public static void handleOnPermissionDenied(Fragment fragment) {
-        if (fragment == null) {
-            return;
-        }
-        showAppSettingsDialog(new AppSettingsDialog.Builder(fragment));
+    private static void startDetailSettingsActivity(@NonNull Context context) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .setData(Uri.fromParts("package", context.getPackageName(), null));
+        context.startActivity(intent);
     }
 
-    private static void showAppSettingsDialog(AppSettingsDialog.Builder builder) {
-        if (builder == null) {
-            return;
-        }
-        builder.setTitle(R.string.rm_set_permission)
-                .setRationale(R.string.rm_warn_allow_record_video_permissions)
-                .setPositiveButton(R.string.rm_set)
-                .setNegativeButton(R.string.rm_cancel)
-                .build().show();
+
+    public interface RequestPermissionCallback {
+
+        void onPermissionsGranted();
     }
 }

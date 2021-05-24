@@ -13,12 +13,9 @@ import androidx.fragment.app.FragmentManager;
 
 import com.mingyuechunqiu.recordermanager.R;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
-import com.mingyuechunqiu.recordermanager.data.constants.KeyPrefixConstants;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultObserver;
 import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
-
-import java.util.List;
-
-import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_REQUEST_OPTION;
 
@@ -33,22 +30,18 @@ import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerC
  *     version: 1.0
  * </pre>
  */
-public class RequestPermissionFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
-
-    private static final String BUNDLE_EXTRA_REQUEST_CODE = KeyPrefixConstants.KEY_BUNDLE + "request_code";
+public class RequestPermissionFragment extends Fragment {
 
     private RecordVideoRequestOption mOption;
-    private int mRequestCode;
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
             mOption = args.getParcelable(EXTRA_RECORD_VIDEO_REQUEST_OPTION);
-            mRequestCode = args.getInt(BUNDLE_EXTRA_REQUEST_CODE);
         }
-        if (RecordPermissionUtils.checkRecordPermissions(this)) {
+        if (RecordPermissionUtils.checkOrRequestRecordVideoPermissions(this, this::startRecordVideoPage)) {
             startRecordVideoPage();
         }
     }
@@ -59,31 +52,6 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
         mOption = null;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        startRecordVideoPage();
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        RecordPermissionUtils.handleOnPermissionDenied(this);
-    }
-
-    public static RequestPermissionFragment newInstance(@Nullable RecordVideoRequestOption option, int requestCode) {
-        RequestPermissionFragment permissionFragment = new RequestPermissionFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(EXTRA_RECORD_VIDEO_REQUEST_OPTION, option);
-        args.putInt(BUNDLE_EXTRA_REQUEST_CODE, requestCode);
-        permissionFragment.setArguments(args);
-        return permissionFragment;
-    }
-
     /**
      * 打开录制视频界面
      */
@@ -92,22 +60,27 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
         if (context == null) {
             return;
         }
+        RMRecordVideoResultObserver observer = RecorderManagerProvider.getRecordManagerGlobalDataStore().getRecordVideoResultObserver();
+        if (observer == null) {
+            throw new IllegalArgumentException("must set RMRecordVideoResultCallback first!");
+        }
         Intent intent = new Intent(getContext(), RecordVideoActivity.class);
         intent.putExtra(EXTRA_RECORD_VIDEO_REQUEST_OPTION, mOption);
         FragmentManager fragmentManager = null;
         Fragment parentFragment = getParentFragment();
         if (parentFragment != null) {
             fragmentManager = parentFragment.getChildFragmentManager();
-            parentFragment.startActivityForResult(intent, mRequestCode);
+            parentFragment.getViewLifecycleOwner().getLifecycle().addObserver(observer);
         } else {
             FragmentActivity activity = getActivity();
             if (activity != null) {
                 fragmentManager = activity.getSupportFragmentManager();
-                activity.startActivityForResult(intent, mRequestCode);
+                activity.getLifecycle().addObserver(observer);
             }
         }
+        startActivity(intent);
         if (fragmentManager == null) {
-            Toast.makeText(context, getContext().getString(R.string.rm_error_start_record_video_page), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.rm_error_start_record_video_page), Toast.LENGTH_SHORT).show();
         }
         removeRequestPermissionPage(fragmentManager);
     }
@@ -125,5 +98,15 @@ public class RequestPermissionFragment extends Fragment implements EasyPermissio
                 .beginTransaction()
                 .remove(this)
                 .commitAllowingStateLoss();
+    }
+
+    @NonNull
+    public static RequestPermissionFragment newInstance(@Nullable RecordVideoRequestOption option, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback) {
+        RequestPermissionFragment permissionFragment = new RequestPermissionFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(EXTRA_RECORD_VIDEO_REQUEST_OPTION, option);
+        permissionFragment.setArguments(args);
+        RecorderManagerProvider.getRecordManagerGlobalDataStore().setRecordVideoResultObserver(new RMRecordVideoResultObserver(callback));
+        return permissionFragment;
     }
 }

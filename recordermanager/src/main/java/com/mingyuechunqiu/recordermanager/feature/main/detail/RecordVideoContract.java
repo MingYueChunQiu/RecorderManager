@@ -10,7 +10,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import com.mingyuechunqiu.recordermanager.base.presenter.BaseAbstractPresenter;
 import com.mingyuechunqiu.recordermanager.base.view.IBaseView;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
-import com.mingyuechunqiu.recordermanager.framework.RMOnRecordVideoListener;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoCallback;
 
 /**
  * <pre>
@@ -24,7 +24,7 @@ import com.mingyuechunqiu.recordermanager.framework.RMOnRecordVideoListener;
  */
 interface RecordVideoContract {
 
-    interface View<P extends Presenter<?>> extends IBaseView<P>, RMOnRecordVideoListener {
+    interface View extends IBaseView, RMRecordVideoCallback {
 
         Context getCurrentContext();
 
@@ -53,7 +53,7 @@ interface RecordVideoContract {
         void showFlashlightButton(boolean show);
     }
 
-    abstract class Presenter<V extends View<?>> extends BaseAbstractPresenter<V> {
+    abstract class Presenter<V extends View> extends BaseAbstractPresenter<V> {
 
         /**
          * 初始化配置

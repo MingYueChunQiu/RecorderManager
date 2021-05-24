@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.mingyuechunqiu.recordermanager.feature.record.IRecorderManager;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
 
 import java.io.File;
 
@@ -69,7 +69,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (mManager == null) {
-            mManager = RecorderManagerFactory.newInstance();
+            mManager = RecorderManagerProvider.newInstance();
         }
         startPreview();
     }

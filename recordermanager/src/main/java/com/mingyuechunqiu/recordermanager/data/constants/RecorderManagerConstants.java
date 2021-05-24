@@ -16,8 +16,6 @@ public class RecorderManagerConstants {
 
     //录制视频请求配置信息
     public static final String EXTRA_RECORD_VIDEO_REQUEST_OPTION = KEY_EXTRA + "record_video_request_option";
-    //录制视频结果
-    public static final String EXTRA_RECORD_VIDEO_RESULT_INFO = KEY_EXTRA + "record_video_result_info";
 
     public static final String SUFFIX_MP4 = ".mp4";//MP4视频格式后缀
 

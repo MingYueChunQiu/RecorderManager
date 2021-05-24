@@ -1,9 +1,5 @@
 package com.mingyuechunqiu.recordermanager.base.view;
 
-import androidx.annotation.NonNull;
-
-import com.mingyuechunqiu.recordermanager.base.presenter.IBasePresenter;
-
 /**
  * <pre>
  *     author : xyj
@@ -16,7 +12,5 @@ import com.mingyuechunqiu.recordermanager.base.presenter.IBasePresenter;
  *     version: 1.0
  * </pre>
  */
-public interface IBaseView<P extends IBasePresenter> {
-
-    void setPresenter(@NonNull P presenter);
+public interface IBaseView {
 }

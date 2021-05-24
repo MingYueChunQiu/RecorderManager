@@ -4,8 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mingyuechunqiu.recordermanager.feature.interpect.IRecorderManagerInterceptor;
-import com.mingyuechunqiu.recordermanager.framework.parser.IRecordVideoResultParser;
-import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoRequest;
+import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoPageRequester;
 
 /**
  * <pre>
@@ -17,9 +16,9 @@ import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoRequest;
  *     version: 1.0
  * </pre>
  */
-public final class RecorderManagerFactory {
+public final class RecorderManagerProvider {
 
-    private RecorderManagerFactory() {
+    private RecorderManagerProvider() {
     }
 
     /**
@@ -67,12 +66,12 @@ public final class RecorderManagerFactory {
     }
 
     @NonNull
-    public static IRecordVideoRequest getRecordVideoRequest() {
-        return new RecordVideoPageRequest();
+    public static IRecordVideoPageRequester getRecordVideoRequest() {
+        return new RecordVideoPageRequester();
     }
 
     @NonNull
-    public static IRecordVideoResultParser getRecordVideoResultParser() {
-        return new RecordVideoResultParser();
+    public static RecordManagerGlobalDataStore getRecordManagerGlobalDataStore() {
+        return RecordManagerGlobalDataStore.INSTANCE;
     }
 }

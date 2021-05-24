@@ -12,7 +12,12 @@ package com.mingyuechunqiu.recordermanager.framework
  *      Version:    1.0
  * </pre>
  */
-interface RMOnRecordVideoListener {
+interface RMRecordVideoCallback {
+
+    /**
+     * 当缺少录制视频权限时回调
+     */
+    fun onMissingRecordVideoPermissions();
 
     /**
      * 当完成一次录制时回调

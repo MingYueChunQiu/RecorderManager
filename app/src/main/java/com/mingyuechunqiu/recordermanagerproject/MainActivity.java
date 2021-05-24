@@ -12,14 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerFactory;
+import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
 
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
-
-import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
@@ -78,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK && requestCode == 0) {
 //            Uri uri = data.getData();
-            RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
-            Log.e("MainActivity", "onActivityResult: bbb" + " "
-                    + info.getDuration() + " " + info.getFilePath());
-            Toast.makeText(this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
+//            RecordVideoResultInfo info = data.getParcelableExtra(EXTRA_RECORD_VIDEO_RESULT_INFO);
+//            Log.e("MainActivity", "onActivityResult: bbb" + " "
+//                    + info.getDuration() + " " + info.getFilePath());
+//            Toast.makeText(this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -94,7 +91,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         Log.d("份", requestCode + "");
-        RecorderManagerFactory.getRecordVideoRequest().startRecordVideo(MainActivity.this, 0);
+        RecorderManagerProvider.getRecordVideoRequest().startRecordVideo(MainActivity.this, info -> {
+            Log.e("MainActivity", "onActivityResult: bbb" + " "
+                    + info.getDuration() + " " + info.getFilePath());
+            Toast.makeText(this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override
