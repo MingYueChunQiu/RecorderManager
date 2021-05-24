@@ -31,6 +31,6 @@ class RMRecordVideoResultObserver(val callback: RMRecordVideoResultCallback) :
 
     interface RMRecordVideoResultCallback {
 
-        fun onGetRecordVideoResult(info: RecordVideoResultInfo)
+        fun onResponseRecordVideoResult(info: RecordVideoResultInfo)
     }
 }

@@ -78,15 +78,9 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements RMRe
 
     @Override
     public void onClickConfirm(@Nullable String filePath, int videoDuration) {
-//        Intent intent = new Intent();
-//        intent.putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
-//                .setDuration(videoDuration)
-//                .setFilePath(filePath)
-//                .build());
-//        setResult(RESULT_OK, intent);
         RMRecordVideoResultObserver observer = RecorderManagerProvider.getRecordManagerGlobalDataStore().getRecordVideoResultObserver();
         if (observer != null) {
-            observer.getCallback().onGetRecordVideoResult(new RecordVideoResultInfo.Builder()
+            observer.getCallback().onResponseRecordVideoResult(new RecordVideoResultInfo.Builder()
                     .setDuration(videoDuration)
                     .setFilePath(filePath)
                     .build());
