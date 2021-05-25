@@ -10,7 +10,7 @@
 	     2.移除EasyPermissions和废弃方法，使用新API registerForActivityResult，请采用Java1.8以上版本</br>
 	     3.重构框架，优化代码
 	     4.库调用做部分调整，详见下方文档说明
-	     5.欢迎大家测试反馈完善功能
+	     5.欢迎大家测试反馈完善功能，版本正在快速变动中，暂不推荐使用
 
 0.3.2版本:1.移除strings.xml中app_name</br>
 	     2.升级kotlin</br>
