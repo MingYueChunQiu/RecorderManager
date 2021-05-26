@@ -14,7 +14,7 @@ import com.mingyuechunqiu.recordermanager.BuildConfig;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.feature.main.container.RequestPermissionsFragment;
 import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultCallback;
-import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoPageRequester;
+import com.mingyuechunqiu.recordermanager.framework.requester.IRecordVideoPageRequester;
 
 /**
  * <pre>

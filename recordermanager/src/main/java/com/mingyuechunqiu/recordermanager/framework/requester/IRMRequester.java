@@ -1,4 +1,4 @@
-package com.mingyuechunqiu.recordermanager.framework.request;
+package com.mingyuechunqiu.recordermanager.framework.requester;
 
 /**
  * <pre>

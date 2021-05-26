@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.mingyuechunqiu.recordermanager.feature.interpect.IRecorderManagerInterceptor;
 import com.mingyuechunqiu.recordermanager.framework.parser.IRecordVideoResultParser;
-import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoPageRequester;
+import com.mingyuechunqiu.recordermanager.framework.requester.IRecordVideoPageRequester;
 
 /**
  * <pre>
