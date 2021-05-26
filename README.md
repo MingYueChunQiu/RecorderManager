@@ -7,6 +7,7 @@
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
 最新0.4.0-beta.1版本:</br>
+	     该版本正在快速变动中，暂不推荐使用，请先使用稳定版
 	     1.升级依赖</br>
 	     2.移除EasyPermissions和废弃方法，使用新API registerForActivityResult，请采用Java1.8以上版本</br>
 	     3.重构框架，优化代码
