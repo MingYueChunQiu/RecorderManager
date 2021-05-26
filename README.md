@@ -6,8 +6,7 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.4.0-beta.1版本:</br>
-	     该版本正在快速变动中，暂不推荐使用，请先使用稳定版
+最新0.4.0-beta.2版本:</br>
 	     1.升级依赖</br>
 	     2.移除EasyPermissions和废弃方法，使用新API registerForActivityResult，请采用Java1.8以上版本</br>
 	     3.重构框架，优化代码
@@ -97,14 +96,22 @@ mRecorderManager.recordAudio(new RecorderOption.Builder()
 ```
 RecorderManagerFactory.getRecordVideoRequest().startRecordVideo(MainActivity.this, 0);
 ```
-从0.4.0-beta.1开始，因为采用registerForActivityResult，所以直接传入结果回调
+从0.4.0-beta版本开始，因为采用registerForActivityResult，所以直接传入结果回调
 ```
-   RecorderManagerProvider.getRecordVideoRequest().startRecordVideo(MainActivity.this, info -> {
-            Log.e("MainActivity", "onActivityResult: " + info.getDuration() + " " + info.getFilePath());
-            Toast.makeText(this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
+      RecorderManagerProvider.getRecordVideoRequester().startRecordVideo(MainActivity.this, new RMRecordVideoResultCallback() {
+            @Override
+            public void onResponseRecordVideoResult(@NonNull RecordVideoResultInfo info) {
+                Log.e("MainActivity", "onActivityResult: " + info.getDuration() + " " + info.getFilePath());
+                Toast.makeText(MainActivity.this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull RecorderManagerException e) {
+                Log.e("MainActivity", "onActivityResult: " + e.getErrorCode() + " " + e.getMessage());
+            }
         });
 ```
-从0.4.0-beta.1版本开始：RecorderManagerFactory重命名为RecorderManagerProvider
+从0.4.0-beta版本开始：RecorderManagerFactory重命名为RecorderManagerProvider
 RecorderManagerFactory中可以拿到IRecordVideoPageRequester，在IRecordVideoPageRequester接口中
 
 ```
@@ -152,7 +159,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param activity Activity
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback);
+    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback);
 
     /**
      * 以默认配置打开录制视频界面
@@ -160,7 +167,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param fragment Fragment
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback);
+    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback);
 
     /**
      * 打开录制视频界面
@@ -169,7 +176,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
 
     /**
      * 打开录制视频界面
@@ -178,7 +185,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
 }
 ```
 RecordVideoRequestOption可配置最大时长（秒）和文件保存路径
@@ -216,13 +223,15 @@ RecordVideoActivity里已经配置好了默认参数，可以直接使用，然�
 从0.4.0-beta.1版本开始：
 由于采用Android新API registerForActivityResult，所以startActivityForResult等相关方法皆已废弃，相关回调将直接通过RMRecordVideoResultCallback传递
 ```
- interface RMRecordVideoResultCallback {
+interface RMRecordVideoResultCallback {
 
-        fun onResponseRecordVideoResult(info: RecordVideoResultInfo)
-    }
+    fun onResponseRecordVideoResult(info: RecordVideoResultInfo)
+
+    fun onFailure(e: RecorderManagerException)
+}
     
     通过下列IRecordVideoPageRequester相关方法，调用时同时传入响应结果回调
-    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback);
+    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback);
 ```
 
 #### (2).如果想要界面一些控件的样式，可以继承RecordVideoActivity，里面提供了几个protected方法，可以拿到界面的一些控件
@@ -438,7 +447,7 @@ interface RMOnRecordVideoListener {
 
 #### (4).如果想自定义自己的界面，可以直接使用RecorderManagerable类
 1.通过RecorderManagerFactory获取IRecorderManager
-从0.4.0-beta.1版本开始：RecorderManagerFactory重命名为RecorderManagerProvider，IRecordVideoResultParser被移除
+从0.4.0-beta版本开始：RecorderManagerFactory重命名为RecorderManagerProvider
 ```
 public class RecorderManagerFactory {
 
