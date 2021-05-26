@@ -12,10 +12,13 @@ import static com.mingyuechunqiu.recordermanager.data.constants.KeyPrefixConstan
  *     version: 1.0
  * </pre>
  */
-public class RecorderManagerConstants {
+public final class RecorderManagerConstants {
 
     //录制视频请求配置信息
     public static final String EXTRA_RECORD_VIDEO_REQUEST_OPTION = KEY_EXTRA + "record_video_request_option";
+
+    //录制视频结果
+    public static final String EXTRA_RECORD_VIDEO_RESULT_INFO = KEY_EXTRA + "record_video_result_info";
 
     public static final String SUFFIX_MP4 = ".mp4";//MP4视频格式后缀
 
@@ -26,5 +29,10 @@ public class RecorderManagerConstants {
      */
     public enum CameraType {
         CAMERA_NOT_SET, CAMERA_FRONT, CAMERA_BACK
+    }
+
+    public static final class ErrorCode {
+
+        public static final int CODE_RECORD_VIDEO_RESULT_IS_EMPTY = 1;
     }
 }

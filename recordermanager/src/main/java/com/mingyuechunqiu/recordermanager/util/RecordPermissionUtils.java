@@ -75,6 +75,10 @@ public class RecordPermissionUtils {
             fragment.registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
                     result -> handleRequestPermissionsResult(callback, context, result))
                     .launch(RecordPermissionUtils.getRecordVideoPermissions());
+        } else {
+            if (callback != null) {
+                callback.onPermissionsGranted();
+            }
         }
         return hasPermissions;
     }
@@ -100,6 +104,9 @@ public class RecordPermissionUtils {
         }
         if (!isAllGranted) {
             showAppSettingsDialog(context);
+            if (callback != null) {
+                callback.onPermissionsDenied();
+            }
         } else {
             if (callback != null) {
                 callback.onPermissionsGranted();
@@ -128,5 +135,7 @@ public class RecordPermissionUtils {
     public interface RequestPermissionCallback {
 
         void onPermissionsGranted();
+
+        void onPermissionsDenied();
     }
 }

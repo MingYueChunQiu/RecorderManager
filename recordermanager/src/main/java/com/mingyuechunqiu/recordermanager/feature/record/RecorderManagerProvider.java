@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.mingyuechunqiu.recordermanager.feature.interpect.IRecorderManagerInterceptor;
+import com.mingyuechunqiu.recordermanager.framework.parser.IRecordVideoResultParser;
 import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoPageRequester;
 
 /**
@@ -12,7 +13,7 @@ import com.mingyuechunqiu.recordermanager.framework.request.IRecordVideoPageRequ
  *     Github : https://github.com/MingYueChunQiu
  *     e-mail : xiyujieit@163.com
  *     time   : 2019/2/21
- *     desc   : 录制管理工厂类
+ *     desc   : 录制管理全局提供类（单例）
  *     version: 1.0
  * </pre>
  */
@@ -66,12 +67,12 @@ public final class RecorderManagerProvider {
     }
 
     @NonNull
-    public static IRecordVideoPageRequester getRecordVideoRequest() {
+    public static IRecordVideoPageRequester getRecordVideoRequester() {
         return new RecordVideoPageRequester();
     }
 
     @NonNull
-    public static RecordManagerGlobalDataStore getRecordManagerGlobalDataStore() {
-        return RecordManagerGlobalDataStore.INSTANCE;
+    public static IRecordVideoResultParser getRecordVideoResultParser() {
+        return new RecordVideoResultParser();
     }
 }

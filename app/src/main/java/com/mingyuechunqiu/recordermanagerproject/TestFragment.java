@@ -17,7 +17,10 @@ import androidx.fragment.app.Fragment;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoButtonOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
+import com.mingyuechunqiu.recordermanager.data.exception.RecorderManagerException;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultCallback;
 
 /**
  * <pre>
@@ -60,9 +63,18 @@ public class TestFragment extends Fragment {
 //                    return;
 //                }
 //                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
-                RecorderManagerProvider.getRecordVideoRequest().startRecordVideo(TestFragment.this,
-                        info -> Log.e("MainActivity", "onActivityResult: " + " "
-                                + info.getDuration() + " " + info.getFilePath()),
+                RecorderManagerProvider.getRecordVideoRequester().startRecordVideo(TestFragment.this,
+                        new RMRecordVideoResultCallback() {
+                            @Override
+                            public void onResponseRecordVideoResult(@NonNull RecordVideoResultInfo info) {
+                                Log.e("TestFragment", "onActivityResult: " + info.getDuration() + " " + info.getFilePath());
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull RecorderManagerException e) {
+                                Log.e("TestFragment", "onActivityResult: " + e.getErrorCode() + " " + e.getMessage());
+                            }
+                        },
                         new RecordVideoRequestOption.Builder()
                                 .setMaxDuration(20)
                                 .setRecordVideoOption(new RecordVideoOption.Builder()

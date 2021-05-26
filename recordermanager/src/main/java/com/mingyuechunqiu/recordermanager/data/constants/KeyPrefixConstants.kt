@@ -17,6 +17,4 @@ object KeyPrefixConstants {
     const val KEY_EXTRA = "EXTRA_" //Intent数据前缀
 
     const val KEY_BUNDLE = "BUNDLE_" //Bundle
-
-    const val KEY_INTENT_ACTION = "INTENT_ACTION_"
 }

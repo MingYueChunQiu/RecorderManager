@@ -12,7 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
+import com.mingyuechunqiu.recordermanager.data.exception.RecorderManagerException;
 import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultCallback;
 
 import java.util.List;
 
@@ -90,11 +93,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        Log.d("份", requestCode + "");
-        RecorderManagerProvider.getRecordVideoRequest().startRecordVideo(MainActivity.this, info -> {
-            Log.e("MainActivity", "onActivityResult: bbb" + " "
-                    + info.getDuration() + " " + info.getFilePath());
-            Toast.makeText(this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
+        RecorderManagerProvider.getRecordVideoRequester().startRecordVideo(MainActivity.this, new RMRecordVideoResultCallback() {
+            @Override
+            public void onResponseRecordVideoResult(@NonNull RecordVideoResultInfo info) {
+                Log.e("MainActivity", "onActivityResult: " + info.getDuration() + " " + info.getFilePath());
+                Toast.makeText(MainActivity.this, info.getDuration() + " " + info.getFilePath(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull RecorderManagerException e) {
+                Log.e("MainActivity", "onActivityResult: " + e.getErrorCode() + " " + e.getMessage());
+            }
         });
     }
 

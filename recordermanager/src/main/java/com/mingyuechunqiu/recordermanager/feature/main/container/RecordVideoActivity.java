@@ -15,9 +15,7 @@ import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoResultInfo;
 import com.mingyuechunqiu.recordermanager.data.bean.RecorderOption;
 import com.mingyuechunqiu.recordermanager.feature.main.detail.RecordVideoFragment;
-import com.mingyuechunqiu.recordermanager.feature.record.RecorderManagerProvider;
 import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoCallback;
-import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultObserver;
 import com.mingyuechunqiu.recordermanager.ui.activity.BaseRecordVideoActivity;
 import com.mingyuechunqiu.recordermanager.ui.widget.CircleProgressButton;
 import com.mingyuechunqiu.recordermanager.util.FilePathUtils;
@@ -25,6 +23,7 @@ import com.mingyuechunqiu.recordermanager.util.RecordPermissionUtils;
 
 import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.DEFAULT_RECORD_VIDEO_DURATION;
 import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_REQUEST_OPTION;
+import static com.mingyuechunqiu.recordermanager.data.constants.RecorderManagerConstants.EXTRA_RECORD_VIDEO_RESULT_INFO;
 
 /**
  * <pre>
@@ -78,13 +77,12 @@ public class RecordVideoActivity extends BaseRecordVideoActivity implements RMRe
 
     @Override
     public void onClickConfirm(@Nullable String filePath, int videoDuration) {
-        RMRecordVideoResultObserver observer = RecorderManagerProvider.getRecordManagerGlobalDataStore().getRecordVideoResultObserver();
-        if (observer != null) {
-            observer.getCallback().onResponseRecordVideoResult(new RecordVideoResultInfo.Builder()
-                    .setDuration(videoDuration)
-                    .setFilePath(filePath)
-                    .build());
-        }
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_RECORD_VIDEO_RESULT_INFO, new RecordVideoResultInfo.Builder()
+                .setDuration(videoDuration)
+                .setFilePath(filePath)
+                .build());
+        setResult(RESULT_OK, intent);
         finishActivity();
     }
 

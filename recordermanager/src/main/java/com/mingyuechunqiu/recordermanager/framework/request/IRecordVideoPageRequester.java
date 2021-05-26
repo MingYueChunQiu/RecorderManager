@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.mingyuechunqiu.recordermanager.data.bean.RecordVideoRequestOption;
-import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultObserver;
+import com.mingyuechunqiu.recordermanager.framework.RMRecordVideoResultCallback;
 
 /**
  * <pre>
@@ -27,7 +27,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param activity Activity
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback);
+    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback);
 
     /**
      * 以默认配置打开录制视频界面
@@ -35,7 +35,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param fragment Fragment
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback);
+    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback);
 
     /**
      * 打开录制视频界面
@@ -44,7 +44,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
 
     /**
      * 打开录制视频界面
@@ -53,5 +53,5 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultObserver.RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
 }
