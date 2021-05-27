@@ -31,16 +31,16 @@ final class RecordVideoPageRequester implements IRecordVideoPageRequester {
 
     @Override
     public void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback) {
-        startRecordVideo(activity, callback, null);
+        startRecordVideo(activity, null, callback);
     }
 
     @Override
     public void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback) {
-        startRecordVideo(fragment, callback, null);
+        startRecordVideo(fragment, null, callback);
     }
 
     @Override
-    public void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option) {
+    public void startRecordVideo(@NonNull FragmentActivity activity, @Nullable RecordVideoRequestOption option, @NonNull RMRecordVideoResultCallback callback) {
         if (!activity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             return;
         }
@@ -48,7 +48,7 @@ final class RecordVideoPageRequester implements IRecordVideoPageRequester {
     }
 
     @Override
-    public void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option) {
+    public void startRecordVideo(@NonNull Fragment fragment, @Nullable RecordVideoRequestOption option, @NonNull RMRecordVideoResultCallback callback) {
         addRequestPermissionPage(fragment, fragment.getChildFragmentManager(), RequestPermissionsFragment.newInstance(option, callback));
     }
 

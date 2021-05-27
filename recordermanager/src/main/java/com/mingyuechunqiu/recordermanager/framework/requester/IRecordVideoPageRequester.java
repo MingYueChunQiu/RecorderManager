@@ -44,7 +44,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull FragmentActivity activity, @Nullable RecordVideoRequestOption option, @NonNull RMRecordVideoResultCallback callback);
 
     /**
      * 打开录制视频界面
@@ -53,5 +53,5 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull Fragment fragment, @Nullable RecordVideoRequestOption option, @NonNull RMRecordVideoResultCallback callback);
 }

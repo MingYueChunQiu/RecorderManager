@@ -64,17 +64,6 @@ public class TestFragment extends Fragment {
 //                }
 //                startActivity(new Intent(MainActivity.this, RecordVideoActivity.class));
                 RecorderManagerProvider.getRecordVideoRequester().startRecordVideo(TestFragment.this,
-                        new RMRecordVideoResultCallback() {
-                            @Override
-                            public void onResponseRecordVideoResult(@NonNull RecordVideoResultInfo info) {
-                                Log.e("TestFragment", "onActivityResult: " + info.getDuration() + " " + info.getFilePath());
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull RecorderManagerException e) {
-                                Log.e("TestFragment", "onActivityResult: " + e.getErrorCode() + " " + e.getMessage());
-                            }
-                        },
                         new RecordVideoRequestOption.Builder()
                                 .setMaxDuration(20)
                                 .setRecordVideoOption(new RecordVideoOption.Builder()
@@ -90,7 +79,7 @@ public class TestFragment extends Fragment {
                                         .setTimingHint("较为金额")
                                         .setErrorToastMsg("的方法教教我")
                                         .build())
-                                .build()
+                                .build(),
 //                        , new RecordVideoRequestOption.Builder()
 //                                .setMaxDuration(10)
 //                                .setHideFlipCameraButton(true)
@@ -98,7 +87,17 @@ public class TestFragment extends Fragment {
 //                                        .buildDefaultVideoBean(getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
 //                                                + File.separator + "test.mp4"))
 //                                .build()
-                );
+                        new RMRecordVideoResultCallback() {
+                            @Override
+                            public void onResponseRecordVideoResult(@NonNull RecordVideoResultInfo info) {
+                                Log.e("TestFragment", "onActivityResult: " + info.getDuration() + " " + info.getFilePath());
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull RecorderManagerException e) {
+                                Log.e("TestFragment", "onActivityResult: " + e.getErrorCode() + " " + e.getMessage());
+                            }
+                        });
             }
         });
         return view;
