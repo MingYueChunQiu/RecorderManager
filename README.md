@@ -6,7 +6,7 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.4.0-beta.2版本:</br>
+最新0.4.0-beta.3版本:</br>
 	     1.升级依赖</br>
 	     2.移除EasyPermissions和废弃方法，使用新API registerForActivityResult，请采用Java1.8以上版本</br>
 	     3.重构框架，优化代码
@@ -149,7 +149,7 @@ RecorderManagerFactory中可以拿到IRecordVideoPageRequester，在IRecordVideo
      */
     void startRecordVideo(@NonNull Fragment fragment, int requestCode, @Nullable RecordVideoRequestOption option);
 ```
-从0.4.0-beta.1版本开始：
+从0.4.0-beta版本开始：
 ```
 public interface IRecordVideoPageRequester extends IRMRequester {
 
@@ -176,7 +176,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull FragmentActivity activity, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull FragmentActivity activity, @Nullable RecordVideoRequestOption option, @NonNull RMRecordVideoResultCallback callback);
 
     /**
      * 打开录制视频界面
@@ -185,7 +185,7 @@ public interface IRecordVideoPageRequester extends IRMRequester {
      * @param option   视频录制请求配置信息类
      * @param callback 视频录制结果回调
      */
-    void startRecordVideo(@NonNull Fragment fragment, @NonNull RMRecordVideoResultCallback callback, @Nullable RecordVideoRequestOption option);
+    void startRecordVideo(@NonNull Fragment fragment, @Nullable RecordVideoRequestOption option, @NonNull RMRecordVideoResultCallback callback);
 }
 ```
 RecordVideoRequestOption可配置最大时长（秒）和文件保存路径
