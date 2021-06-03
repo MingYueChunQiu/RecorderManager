@@ -12,4 +12,5 @@
 
     <string name="rm_error_start_record_video_page">The parameters of the start video recording interface are abnormal</string>
     <string name="rm_error_switch_flashlight">Failed to switch flash</string>
+    <string name="rm_error_not_found_app_permissions_page">无法自动打开设置界面，请您手动尝试</string>
 </resources>

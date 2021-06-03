@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -128,7 +129,11 @@ public class RecordPermissionUtils {
     private static void startDetailSettingsActivity(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 .setData(Uri.fromParts("package", context.getPackageName(), null));
-        context.startActivity(intent);
+        if (context.getPackageManager().resolveActivity(intent, 0) != null) {
+            context.startActivity(intent);
+        } else {
+            Toast.makeText(context, R.string.rm_error_not_found_app_permissions_page, Toast.LENGTH_SHORT).show();
+        }
     }
 
 
