@@ -12,5 +12,5 @@
 
     <string name="rm_error_start_record_video_page">启动视频录制界面参数异常</string>
     <string name="rm_error_switch_flashlight">切换闪光灯失败</string>
-    <string name="rm_error_not_found_app_permissions_page">Unable to open the settings page automatically, please try it manually</string>
+    <string name="rm_error_not_found_app_permissions_page">无法自动打开设置界面，请您手动尝试</string>
 </resources>
