@@ -6,7 +6,7 @@
 
 因为在项目中经常需要使用音视频录制，所以写了一个公共库RecorderManager，欢迎大家使用。
 
-最新0.4.0-beta.4版本:</br>
+最新0.4.0-beta.5版本:</br>
 	     1.升级依赖</br>
 	     2.移除EasyPermissions和废弃方法，使用新API registerForActivityResult，请采用Java1.8以上版本</br>
 	     3.重构框架，优化代码
@@ -449,9 +449,9 @@ interface RMOnRecordVideoListener {
 1.通过RecorderManagerFactory获取IRecorderManager
 从0.4.0-beta版本开始：RecorderManagerFactory重命名为RecorderManagerProvider
 ```
-public class RecorderManagerFactory {
+public final class RecorderManagerProvider {
 
-    private RecorderManagerFactory() {
+    private RecorderManagerProvider() {
     }
 
     /**
@@ -499,11 +499,10 @@ public class RecorderManagerFactory {
     }
 
     @NonNull
-    public static IRecordVideoRequest getRecordVideoRequest() {
-        return new RecordVideoPageRequest();
+    public static IRecordVideoPageRequester getRecordVideoRequester() {
+        return new RecordVideoPageRequester();
     }
 
-    //0.3之后版本通过解析器来进行处理数据
     @NonNull
     public static IRecordVideoResultParser getRecordVideoResultParser() {
         return new RecordVideoResultParser();
