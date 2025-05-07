@@ -51,8 +51,8 @@
 
 ## 一.效果展示
 仿微信界面视频录制
-![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/2/12/168df9c38e4d10d3?w=1080&h=2280&f=jpeg&s=1065098)
-![在这里插入图片描述](https://user-gold-cdn.xitu.io/2019/1/29/1689916e86ee15a3?w=1080&h=2280&f=jpeg&s=819744)
+![在这里插入图片描述](https://upload-images.jianshu.io/upload_images/9073042-ffbc2a8c3077554a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![在这里插入图片描述](https://upload-images.jianshu.io/upload_images/9073042-0957312265c9f3aa?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 2.音频录制界面比较简单，就不放图了
 ## 二.引用
 1.Add it in your root build.gradle at the end of repositories
